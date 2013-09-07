@@ -1,0 +1,12 @@
+TimeStep:4862 Converge!
+Begin TimeStep: 1696
+Converge TimeStep: 4862
+Iteration #: 3166
+PE # per Iteration:1536
+
+
+TimeStep:904 Converge!
+Begin TimeStep: 652
+Converge TimeStep: 904
+Iteration #: 252
+PE # per Iteration:3291

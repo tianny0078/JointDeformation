@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="HNThread">
+    <Position X="4" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNThread.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNThreadRunnable">
+    <Position X="14.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAQAAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNThreadRunnable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNData">
+    <Position X="1" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIAMEAAAQAAEAAQAAAAAAgAAAAAAwAAAAAAAAgA=</HashCode>
+      <FileName>HNData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNPacket">
+    <Position X="14.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQQAAAAAAAAACAAAIAAAAAAAAAAAAIAAAAQAAAAAAA=</HashCode>
+      <FileName>HNPacket.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNPacketMarshallerUtil">
+    <Position X="12.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>HNPacketMarshallerUtil.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNPacketMarshallHandler">
+    <Position X="1" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAQAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>HNPacketMarshallHandler.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNPacketLockedMarshallHandler">
+    <Position X="1" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPacketMarshallHandler.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNEventGenerator&lt;T&gt;">
+    <Position X="12.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAQAAAAAAEYAgAAAAAAAAAA=</HashCode>
+      <FileName>HNEventGenerator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNMutex">
+    <Position X="10" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAEAAAAAAIAAAAAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>HNMutex.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNObjectFactory">
+    <Position X="7" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>HNObjectFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNThreadSafe">
+    <Position X="10" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAgIAAAAAAAAAABAAAIAAAAA=</HashCode>
+      <FileName>HNThreadSafe.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNWindowsMutex">
+    <Position X="10" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNWindowsMutex.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNWindowsObjectFactory">
+    <Position X="7" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>HNWindowsObjectFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HNWindowsThread">
+    <Position X="4" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNWindowsThread.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="HNPoint2&lt;T&gt;">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAQAAAAAAAAAAAAAAABgAECAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNPoint3&lt;T&gt;">
+    <Position X="3.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAQAAAAAAAAAACAAAAAAAQCAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNPoint4&lt;T&gt;">
+    <Position X="2.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAQAAAAAAAAAAAAQAAgAAACAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNRGB">
+    <Position X="7.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAgAIAQABAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNPointXYZRGB">
+    <Position X="4.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAQAAAACAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNDimension">
+    <Position X="14.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAQAQAQAQAAAAAAgAAAAAQAAAIIAEAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNTransform">
+    <Position X="12.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAgEAAAAAAAAAAQQAAACAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="HNAngleConverter">
+    <Position X="12.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAEAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="HNPoint" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="HNPointXYZ" Collapsed="true">
+    <Position X="4.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="HNPointXYZW" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="HNPoint3i" Collapsed="true">
+    <Position X="6.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HNPoints.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

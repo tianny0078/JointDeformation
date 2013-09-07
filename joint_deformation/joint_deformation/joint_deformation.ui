@@ -1,0 +1,2782 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>joint_deformationClass</class>
+ <widget class="QMainWindow" name="joint_deformationClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>850</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1400</width>
+    <height>850</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1400</width>
+    <height>850</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>joint_deformation</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="Renderer" name="renderWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>1024</width>
+      <height>768</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>50</y>
+      <width>331</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="tabPosition">
+     <enum>QTabWidget::East</enum>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Geometry</string>
+     </attribute>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Grid density</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox_gridDensity">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>256</number>
+         </property>
+         <property name="value">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setGridDensity">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Apply</string>
+         </property>
+         <property name="icon">
+          <iconset resource="joint_deformation.qrc">
+           <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>291</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QComboBox" name="comboBox_selectTreeDepth">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>Root</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_lastSameLevel">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>&lt;&lt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_nextSameLevel">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>&gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="minimumSize">
+          <size>
+           <width>55</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>55</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Append</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="minimumSize">
+          <size>
+           <width>55</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>55</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Level</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_level"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_addLevel">
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_deleteLevel">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Damping</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_damping">
+         <property name="text">
+          <string>0.01</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setDamping">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SetDamp</string>
+         </property>
+         <property name="icon">
+          <iconset resource="joint_deformation.qrc">
+           <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Times Of Shape Matching</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox_TimesShapeMatching">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>300</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setTimesSM">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SetTimes</string>
+         </property>
+         <property name="icon">
+          <iconset resource="joint_deformation.qrc">
+           <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QCheckBox" name="checkBox_multigrid">
+         <property name="text">
+          <string>Multigrid</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_dynamics">
+         <property name="text">
+          <string>Dynamics</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_10">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>250</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QCheckBox" name="checkBox_gravity">
+         <property name="text">
+          <string>Gravity</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>Gravity Magnitude</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_gravityMagnitude">
+         <property name="text">
+          <string>0.01</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setGravityMagnitude">
+         <property name="text">
+          <string>SetMagnitude</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_11">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>330</y>
+        <width>296</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QCheckBox" name="checkBox_exportObj">
+         <property name="text">
+          <string>ExportOBJ</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_captureScreen">
+         <property name="text">
+          <string>CaptureScreen</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_captureSubScreen">
+         <property name="text">
+          <string>CaptureSubScreen</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_9">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>290</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="label_17">
+         <property name="text">
+          <string>Force Scalar</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_forceScalar">
+         <property name="text">
+          <string>10.0</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setForceScalar">
+         <property name="text">
+          <string>Set</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Shape matching</string>
+     </attribute>
+     <widget class="QWidget" name="horizontalLayoutWidget_8">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>70</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>X:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_forceX">
+         <property name="text">
+          <string>0.15</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Y:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_forceY">
+         <property name="text">
+          <string>0.5</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Z:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_forceZ">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setForce">
+         <property name="text">
+          <string>Set</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_15">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_16">
+       <item>
+        <widget class="QCheckBox" name="checkBox_setForce">
+         <property name="text">
+          <string>Manual Force</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_exportTxt">
+         <property name="text">
+          <string>ExportTXT</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_16">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>110</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_15">
+       <item>
+        <widget class="QPushButton" name="pushButton_loadCamConfig">
+         <property name="text">
+          <string>LoadCameraConfig</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_saveCameraConfig">
+         <property name="text">
+          <string>SaveCameraConfig</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_17">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>150</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_17">
+       <item>
+        <widget class="QPushButton" name="pushButton_loadConstraint">
+         <property name="text">
+          <string>LoadConstraints</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_saveConstraint">
+         <property name="text">
+          <string>SaveConstraints</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_19">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_19">
+       <item>
+        <widget class="QCheckBox" name="checkBox_setWindForce">
+         <property name="text">
+          <string>Wind</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>Wind Magnitude</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_windMagnitude">
+         <property name="text">
+          <string>10.0</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setWindMagnitude">
+         <property name="text">
+          <string>SetMagnitude</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_20">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>190</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_20">
+       <item>
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>Mass</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_mass">
+         <property name="text">
+          <string>1.0</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setMass">
+         <property name="text">
+          <string>SetMass</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_resetMass">
+         <property name="text">
+          <string>ResetMass</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>Network</string>
+     </attribute>
+     <widget class="QWidget" name="horizontalLayoutWidget_12">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QCheckBox" name="checkBox_Network">
+         <property name="text">
+          <string>Network</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_Server">
+         <property name="text">
+          <string>Server</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_Client">
+         <property name="text">
+          <string>Client</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_13">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QSpinBox" name="spinBox_NumClients">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setNumOfClients">
+         <property name="text">
+          <string>SetNumOfClients</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_configNetwork">
+         <property name="text">
+          <string>Config</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QListWidget" name="listWidget_Status">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>291</width>
+        <height>141</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_14">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_14">
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_IP">
+         <property name="text">
+          <string>cs72283</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_Port">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>37000</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_18">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_18">
+       <item>
+        <widget class="QPushButton" name="pushButton_dataFirst">
+         <property name="text">
+          <string>Initialize Data</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_21">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_21">
+       <item>
+        <widget class="QCheckBox" name="checkBox_isCompressed">
+         <property name="text">
+          <string>CompressData</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="test">
+     <attribute name="title">
+      <string>test</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>301</width>
+        <height>221</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Test Parameters</string>
+      </property>
+      <widget class="QSpinBox" name="spinBox_gridDensity_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>256</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_gridDensity_3">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>20</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+       <property name="value">
+        <number>128</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>20</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestShowVox</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_neighbor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>20</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestNeighbor</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_parent_neighbor">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>50</y>
+         <width>111</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestParentNeighbor</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_gridDensity_vertex">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>80</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_vox4vertex">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>80</y>
+         <width>111</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestVox4Vertex</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_voxX">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>110</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_voxY">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>110</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spinBox_voxZ">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>110</y>
+         <width>47</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_vox4idx">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>110</y>
+         <width>111</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestVox4Idx</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_showLowerMesh">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>150</y>
+         <width>111</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TestShowLowerMesh</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_22">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>180</y>
+         <width>291</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_22">
+        <item>
+         <widget class="QPushButton" name="pushButton_testSleep">
+          <property name="text">
+           <string>TestSleepTime</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_sleep"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="pushButton_testFunction">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>230</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>testFunction</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_testVoxConnection">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>230</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>testVoxConnection</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>1060</x>
+      <y>519</y>
+      <width>301</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButton_initSimulator">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gnome_run.png</normaloff>:/joint_deformation/Resources/gnome_run.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_startSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_nextStep">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_pauseSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_pause.png</normaloff>:/joint_deformation/Resources/gtk_media_pause.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_resetSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_stop.png</normaloff>:/joint_deformation/Resources/gtk_media_stop.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QComboBox" name="comboBox_chooseSimulator">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>20</y>
+      <width>331</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>NONE</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Native Shape Matching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Velocity Matching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Single Grid</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Hierarchical Shape Matching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Pair Matching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Multiple Velocity Matching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Simulation through Network</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Simulation for Mobile</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QTreeView" name="ClusterTree">
+    <property name="geometry">
+     <rect>
+      <x>1090</x>
+      <y>580</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>430</y>
+      <width>311</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Force | Constraint</string>
+    </property>
+    <widget class="QRadioButton" name="radioButton_setConstraintNode">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Constraint</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_setForceNode">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>131</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Force</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>470</y>
+      <width>311</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Constraints</string>
+    </property>
+    <widget class="QRadioButton" name="radioButton_point">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Position Constraint</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_orientation">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>131</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Orientation Constraint</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1400</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionLoadMesh"/>
+   <addaction name="separator"/>
+   <addaction name="actionScaleMesh"/>
+   <addaction name="actionShowMesh"/>
+   <addaction name="actionShowGrid"/>
+   <addaction name="actionShowVox"/>
+   <addaction name="actionShowGoalPosition"/>
+   <addaction name="actionSetClusterTree"/>
+   <addaction name="actionShowSelection"/>
+   <addaction name="separator"/>
+   <addaction name="actionSetConstraint"/>
+   <addaction name="actionShowTest"/>
+   <addaction name="actionSetMass"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLoadMesh">
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/fileopen.png</normaloff>:/joint_deformation/Resources/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>loadMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionScaleMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/scale_ruler.png</normaloff>:/joint_deformation/Resources/scale_ruler.png</iconset>
+   </property>
+   <property name="text">
+    <string>scaleMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionShowGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/Matrix.png</normaloff>:/joint_deformation/Resources/Matrix.png</iconset>
+   </property>
+   <property name="text">
+    <string>showGrid</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionShowMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/mesh.png</normaloff>:/joint_deformation/Resources/mesh.png</iconset>
+   </property>
+   <property name="text">
+    <string>showMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionShowVox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/CMS.png</normaloff>:/joint_deformation/Resources/CMS.png</iconset>
+   </property>
+   <property name="text">
+    <string>showVox</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionShowSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/Selection.png</normaloff>:/joint_deformation/Resources/Selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>showSelection</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionSetClusterTree">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/tree_diagramm_new.png</normaloff>:/joint_deformation/Resources/tree_diagramm_new.png</iconset>
+   </property>
+   <property name="text">
+    <string>setClusterTree</string>
+   </property>
+  </action>
+  <action name="actionShowGoalPosition">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/target.png</normaloff>:/joint_deformation/Resources/target.png</iconset>
+   </property>
+   <property name="text">
+    <string>showGoalPosition</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="actionShowTest">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+   </property>
+   <property name="text">
+    <string>showTest</string>
+   </property>
+  </action>
+  <action name="actionSetConstraint">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/Selection4Constraint.png</normaloff>:/joint_deformation/Resources/Selection4Constraint.png</iconset>
+   </property>
+   <property name="text">
+    <string>setConstraint</string>
+   </property>
+  </action>
+  <action name="actionSetMass">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/TwoCubes.png</normaloff>:/joint_deformation/Resources/TwoCubes.png</iconset>
+   </property>
+   <property name="text">
+    <string>setMass</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Renderer</class>
+   <extends>QWidget</extends>
+   <header>renderer.h</header>
+   <container>1</container>
+   <slots>
+    <signal>appendCluster()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="joint_deformation.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionLoadMesh</sender>
+   <signal>triggered()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionScaleMesh</sender>
+   <signal>triggered()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>scaleMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowGrid</sender>
+   <signal>triggered()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showGrid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setGridDensity</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setGridDensity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowMesh</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showMesh(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowVox</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showVox(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowSelection</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showSelection(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_startSimulation</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>startSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1176</x>
+     <y>600</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_initSimulator</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>initializeSimulator()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1106</x>
+     <y>600</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_pauseSimulation</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>pauseSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1298</x>
+     <y>600</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSetClusterTree</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setRenderMode(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>renderWidget</sender>
+   <signal>appendCluster()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>updateTreeDepth()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>590</x>
+     <y>549</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1143</x>
+     <y>816</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_lastSameLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>lastSameLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1176</x>
+     <y>219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_nextSameLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>nextSameLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1216</x>
+     <y>219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_selectTreeDepth</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>updateCurrentParentCluster(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1115</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_chooseSimulator</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>chooseSimulator(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1215</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowGoalPosition</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showGoalPosition(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>addLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1270</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1318</x>
+     <y>382</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_level</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>chooseLevelDisplay(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1189</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1086</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setShowNum()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1266</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1217</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_neighbor</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testNeighbor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1288</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1319</x>
+     <y>472</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_parent_neighbor</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testParentNeighbor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1243</x>
+     <y>179</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1238</x>
+     <y>494</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowTest</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showTest(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSetConstraint</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>showConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_point</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setPositionConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1162</x>
+     <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_orientation</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setOrientationConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1242</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1314</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_vox4vertex</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testVox4Vertex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1273</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1280</x>
+     <y>523</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setDamping</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setDampParameter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1386</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_multigrid</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setMultigrid(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1089</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1044</x>
+     <y>407</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setTimesSM</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setTimesShapeMatching()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>304</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1382</x>
+     <y>393</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setForce</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setForce()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1392</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_setForce</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>enableSetForce(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1068</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1043</x>
+     <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_vox4idx</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testVox4Idx()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1326</x>
+     <y>239</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1386</x>
+     <y>573</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_dynamics</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setDynamics(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1312</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1384</x>
+     <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_gravity</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setGravity(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1120</x>
+     <y>380</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1391</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setGravityMagnitude</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setGravityMagnitude()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1381</x>
+     <y>484</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_exportObj</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setExportObj(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1080</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1045</x>
+     <y>481</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_setConstraintNode</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setConstraintNode(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1128</x>
+     <y>506</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1127</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_setForceNode</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setForceNode(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1217</x>
+     <y>521</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1196</x>
+     <y>530</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_Network</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setNetwork(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1091</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1042</x>
+     <y>63</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_Server</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setServer(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1253</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1159</x>
+     <y>61</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_Client</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setClient(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1250</x>
+     <y>65</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setNumOfClients</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setNumOfClients()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1253</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1302</x>
+     <y>65</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_configNetwork</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>configNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1392</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_captureScreen</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setCaptureScreen(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1237</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1373</x>
+     <y>535</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_captureSubScreen</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setCaptureSubScreen(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1345</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1394</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_setWindForce</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>enableSetWindForce(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1099</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1040</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadCamConfig</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadCamConfig()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1126</x>
+     <y>243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1040</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveCameraConfig</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveCamConfig()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1307</x>
+     <y>243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1044</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_dataFirst</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>sendInitData()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1116</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1047</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setWindMagnitude</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setWindMagnitude()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1341</x>
+     <y>163</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1397</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_exportTxt</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setExportTxt(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1307</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1394</x>
+     <y>81</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_isCompressed</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setCompressedData(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1142</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1384</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testSleep</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testSleepTime()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1078</x>
+     <y>305</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1042</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testFunction</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testFunction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1089</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1043</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_deleteLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>clearLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1388</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSetMass</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setEnableMass(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setMass</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setMass()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1270</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1041</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_resetMass</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>resetMass()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1351</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1373</x>
+     <y>512</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testVoxConnection</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testVoxConnection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1200</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1396</x>
+     <y>414</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>loadMesh()</slot>
+  <slot>scaleMesh()</slot>
+  <slot>setGridDensity()</slot>
+  <slot>showGrid()</slot>
+  <slot>showMesh(bool)</slot>
+  <slot>showVox(bool)</slot>
+  <slot>showSelection(bool)</slot>
+  <slot>startSimulation()</slot>
+  <slot>initializeSimulator()</slot>
+  <slot>pauseSimulation()</slot>
+  <slot>setRenderMode(bool)</slot>
+  <slot>updateTreeDepth()</slot>
+  <slot>lastSameLevel()</slot>
+  <slot>nextSameLevel()</slot>
+  <slot>updateCurrentParentCluster(int)</slot>
+  <slot>chooseSimulator(int)</slot>
+  <slot>showGoalPosition(bool)</slot>
+  <slot>addLevel()</slot>
+  <slot>chooseLevel(int)</slot>
+  <slot>chooseLevelDisplay(int)</slot>
+  <slot>setShowNum()</slot>
+  <slot>testNeighbor()</slot>
+  <slot>testParentNeighbor()</slot>
+  <slot>showTest(bool)</slot>
+  <slot>showConstraint(bool)</slot>
+  <slot>setPositionConstraint(bool)</slot>
+  <slot>setOrientationConstraint(bool)</slot>
+  <slot>testVox4Vertex()</slot>
+  <slot>setDampParameter()</slot>
+  <slot>setMultigrid(bool)</slot>
+  <slot>setTimesShapeMatching()</slot>
+  <slot>setForce()</slot>
+  <slot>enableSetForce(bool)</slot>
+  <slot>setForceScalar()</slot>
+  <slot>testVox4Idx()</slot>
+  <slot>setDynamics(bool)</slot>
+  <slot>setGravity(bool)</slot>
+  <slot>setGravityMagnitude()</slot>
+  <slot>setExportObj(bool)</slot>
+  <slot>setConstraintNode(bool)</slot>
+  <slot>setForceNode(bool)</slot>
+  <slot>setNetwork(bool)</slot>
+  <slot>setServer(bool)</slot>
+  <slot>setClient(bool)</slot>
+  <slot>setNumOfClients()</slot>
+  <slot>configNetwork()</slot>
+  <slot>setCaptureScreen(bool)</slot>
+  <slot>setCaptureSubScreen(bool)</slot>
+  <slot>enableSetWindForce(bool)</slot>
+  <slot>loadCamConfig()</slot>
+  <slot>saveCamConfig()</slot>
+  <slot>sendInitData()</slot>
+  <slot>setWindMagnitude()</slot>
+  <slot>setExportTxt(bool)</slot>
+  <slot>setCompressedData(bool)</slot>
+  <slot>testSleepTime()</slot>
+  <slot>testFunction()</slot>
+  <slot>clearLevel()</slot>
+  <slot>setMass()</slot>
+  <slot>resetMass()</slot>
+  <slot>setEnableMass(bool)</slot>
+  <slot>testVoxConnection()</slot>
+ </slots>
+</ui>

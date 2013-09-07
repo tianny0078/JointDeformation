@@ -1,0 +1,44 @@
+<RCC>
+  <qresource prefix="/joint_deformation">
+    <file>Resources/Selection4Constraint.png</file>
+    <file>Resources/add.png</file>
+    <file>Resources/CMS.png</file>
+    <file>Resources/dialog_ok.png</file>
+    <file>Resources/down.png</file>
+    <file>Resources/fileopen.png</file>
+    <file>Resources/filesave.png</file>
+    <file>Resources/folder_drag_accept.png</file>
+    <file>Resources/forward.png</file>
+    <file>Resources/gnome_run.png</file>
+    <file>Resources/gnome_session_hibernate.png</file>
+    <file>Resources/gnome_settings_theme.png</file>
+    <file>Resources/go_up.png</file>
+    <file>Resources/gtk_cancel.png</file>
+    <file>Resources/gtk_media_next_ltr.png</file>
+    <file>Resources/gtk_media_pause.png</file>
+    <file>Resources/gtk_media_play_ltr.png</file>
+    <file>Resources/gtk_media_stop.png</file>
+    <file>Resources/gtk_missing_image.png</file>
+    <file>Resources/gtk_remove.png</file>
+    <file>Resources/joint.png</file>
+    <file>Resources/matlabicon.png</file>
+    <file>Resources/Matrix.png</file>
+    <file>Resources/opened.png</file>
+    <file>Resources/pause.png</file>
+    <file>Resources/PickMode.png</file>
+    <file>Resources/Play.png</file>
+    <file>Resources/Render.png</file>
+    <file>Resources/scanners_and_cameras.png</file>
+    <file>Resources/Selection.png</file>
+    <file>Resources/siggraphlogo.png</file>
+    <file>Resources/Stop.png</file>
+    <file>Resources/subcamera.png</file>
+    <file>Resources/TwoCubes.png</file>
+    <file>Resources/undocamera.png</file>
+    <file>Resources/scale_ruler.png</file>
+    <file>Resources/dialog_apply.png</file>
+    <file>Resources/tree_diagramm_new.png</file>
+    <file>Resources/mesh.png</file>
+    <file>Resources/target.png</file>
+  </qresource>
+</RCC>
