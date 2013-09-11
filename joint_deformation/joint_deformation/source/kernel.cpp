@@ -3087,8 +3087,8 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 	if(flag_setWindForce)
 	{
 		srand(time(NULL));
-		wind_magnitude = (rand() % 100) * 0.01;
-		//wind_magnitude = 1;
+		//wind_magnitude = (rand() % 100) * 0.01;
+		wind_magnitude = 1;
 		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
 	}
 
@@ -3135,7 +3135,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			{
 				///////////////////////////////////////////////////////////////////////////////////////
 				////compute current position
-				ci->computeCurrentMassCentroid4Target();
+				//ci->computeCurrentMassCentroid4Target();
 				
 				////////////////////////////////////////////////////////////////////////////////////////
 				//slerp to interpolate rotation q_c
