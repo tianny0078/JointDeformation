@@ -510,7 +510,7 @@ void joint_deformation::testParentNeighbor()
 
 void joint_deformation::testVox4Vertex()
 {
-	int num = ui.spinBox_gridDensity_vertex->text().toInt();
+	int num = ui.spinBox_vox_vertex->text().toInt();
 	ui.renderWidget->showVox4Vertex = num;
 	ui.renderWidget->updateGL();
 }

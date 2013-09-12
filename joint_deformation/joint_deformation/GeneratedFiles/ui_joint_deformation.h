@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Sun Sep 8 16:00:25 2013
+** Created: Wed Sep 11 22:20:24 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -178,6 +178,7 @@ public:
     QHBoxLayout *horizontalLayout_22;
     QPushButton *pushButton_testSleep;
     QLineEdit *lineEdit_sleep;
+    QSpinBox *spinBox_vox_vertex;
     QPushButton *pushButton_testFunction;
     QPushButton *pushButton_testVoxConnection;
     QWidget *horizontalLayoutWidget_2;
@@ -847,7 +848,7 @@ public:
         pushButton_parent_neighbor->setGeometry(QRect(140, 50, 111, 23));
         spinBox_gridDensity_vertex = new QSpinBox(groupBox_2);
         spinBox_gridDensity_vertex->setObjectName(QString::fromUtf8("spinBox_gridDensity_vertex"));
-        spinBox_gridDensity_vertex->setGeometry(QRect(50, 80, 47, 25));
+        spinBox_gridDensity_vertex->setGeometry(QRect(20, 140, 47, 25));
         spinBox_gridDensity_vertex->setMinimumSize(QSize(0, 25));
         spinBox_gridDensity_vertex->setMaximumSize(QSize(16777215, 25));
         spinBox_gridDensity_vertex->setMinimum(0);
@@ -904,6 +905,14 @@ public:
 
         horizontalLayout_22->addWidget(lineEdit_sleep);
 
+        spinBox_vox_vertex = new QSpinBox(groupBox_2);
+        spinBox_vox_vertex->setObjectName(QString::fromUtf8("spinBox_vox_vertex"));
+        spinBox_vox_vertex->setGeometry(QRect(20, 80, 47, 25));
+        spinBox_vox_vertex->setMinimumSize(QSize(0, 25));
+        spinBox_vox_vertex->setMaximumSize(QSize(16777215, 25));
+        spinBox_vox_vertex->setMinimum(0);
+        spinBox_vox_vertex->setMaximum(100000);
+        spinBox_vox_vertex->setValue(1);
         pushButton_testFunction = new QPushButton(test);
         pushButton_testFunction->setObjectName(QString::fromUtf8("pushButton_testFunction"));
         pushButton_testFunction->setGeometry(QRect(0, 230, 75, 23));
@@ -1078,7 +1087,7 @@ public:
         QObject::connect(pushButton_resetMass, SIGNAL(clicked()), joint_deformationClass, SLOT(resetMass()));
         QObject::connect(pushButton_testVoxConnection, SIGNAL(clicked()), joint_deformationClass, SLOT(testVoxConnection()));
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);

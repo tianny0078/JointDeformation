@@ -370,7 +370,7 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 
 		//cout << vox_line << endl;
 		
-
+		/*
 		ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
@@ -402,7 +402,38 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+			*/
+		ni->para_interpolate[6] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
 
+		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[7]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[7]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[7]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[4] = (abs(ni->list_interpolation_nodes[4]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[4]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[4]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[5] = (abs(ni->list_interpolation_nodes[5]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[5]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[5]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[2] = (abs(ni->list_interpolation_nodes[2]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[2]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[2]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[3] = (abs(ni->list_interpolation_nodes[3]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[3]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[3]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[0]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[0]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[0]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+		ni->para_interpolate[1] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
+			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
+			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
 		}
 		else
 			ni->incident_cluster.clear();
@@ -419,11 +450,16 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 	double voxel_dim = 1.0/double(d * d_parent);
 	double vox_cube = voxel_dim * voxel_dim * voxel_dim;
 	//save index of voxel for each node in original mesh
+	int np = 0;
 	for (node_iterator ni = m->node_list.begin(); ni < m->node_list.end(); ++ni)
 	{
-		int xp = floor((ni->coordinate.x() + 0.5)/voxel_dim);
-		int yp = floor((ni->coordinate.y() + 0.5)/voxel_dim);
-		int zp = floor((ni->coordinate.z() + 0.5)/voxel_dim);
+		if (np == 12584 || np == 15980 || np == 16002 || np == 18563 || np == 20253 || np == 33916 || np == 52810)
+		{
+			np = np;
+		}
+		int xp = floor((ni->coordinate.x() + 0.5) * d * d_parent);
+		int yp = floor((ni->coordinate.y() + 0.5) * d * d_parent);
+		int zp = floor((ni->coordinate.z() + 0.5) * d * d_parent);
 		if( xp == (d * d_parent))
 			xp --;
 		if( yp == (d * d_parent))
@@ -439,6 +475,13 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 			int z = zp - parentVox->coord_grid[0] * d;
 			int y = yp - parentVox->coord_grid[1] * d;
 			int x = xp - parentVox->coord_grid[2] * d;
+
+			if (x == d)
+				x --;
+			if (y == d)
+				y --;
+			if (z == d)
+				z --;
 
 			int parent_index = parentVox->coord_grid[0]*d_parent*d_parent + parentVox->coord_grid[1]*d_parent + parentVox->coord_grid[2];
 			int vox_idx = parent_index *d*d*d + z*d*d + y*d + x;
@@ -500,6 +543,8 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 		}
 		else
 			ni->incident_cluster.clear();
+		
+		np ++;
 	}
 }
 
@@ -3540,15 +3585,21 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			}
 		}//cluster for
 	}
-	
+	int np = 0;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
+		if (np == 12584 || np == 15980 || np == 16002 || np == 18563 || np == 20253 || np == 33916 || np == 52810)
+		{
+			np = np;
+		}
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
 			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
 		}
+		np++;
 	}
+	test_findPointOutside();
 
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
@@ -8339,5 +8390,34 @@ void Kernel::resetMass4Level()
 			ci->computeRestMassCentroid();
 			ci->computeAQQ();
 		}
+	}
+}
+
+void Kernel::test_findPointOutside()
+{
+	int count = 0;
+	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	{
+		double maxX, maxY, maxZ, minX, minY, minZ;
+		maxX = minX = nmi->list_interpolation_nodes[0]->displacement.x() + nmi->list_interpolation_nodes[0]->coordinate.x();
+		maxY = minY = nmi->list_interpolation_nodes[0]->displacement.y() + nmi->list_interpolation_nodes[0]->coordinate.y();
+		maxZ = minZ = nmi->list_interpolation_nodes[0]->displacement.z() + nmi->list_interpolation_nodes[0]->coordinate.z();
+		for(int i = 1; i < 8; i++)
+		{
+			Vector3d temp;
+			temp = nmi->list_interpolation_nodes[i]->displacement + nmi->list_interpolation_nodes[i]->coordinate;
+			maxX = temp.x()>maxX?temp.x():maxX;
+			maxY = temp.y()>maxY?temp.y():maxY;
+			maxZ = temp.z()>maxZ?temp.z():maxZ;
+			minX = temp.x()<minX?temp.x():minX;
+			minY = temp.y()<minY?temp.y():minY;
+			minZ = temp.z()<minZ?temp.z():minZ;
+		}
+		//Vector3d pos = nmi->coordinate + nmi->displacement;
+		//if(pos.x() < (minX - 0.1) || pos.y() < (minY -0.1) || pos.z() < (minZ-0.1))
+		//	cout << "count min: "<< count << endl;
+		//if(pos.x() > (maxX + 0.1) || pos.y() > (maxY+0.1) || pos.z() > (maxZ+0.1))
+		//	cout << "count max: "<< count << endl;
+		count ++;
 	}
 }

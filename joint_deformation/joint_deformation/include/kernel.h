@@ -119,6 +119,9 @@ public:
 	void setServerRole(){network_role = NETWORK_ROLE_SERVER;}
 	void setClientRole(){network_role = NETWORK_ROLE_CLIENT;}
 	void configNetwork();
+
+	//test the point outside cube
+	void test_findPointOutside();
 	
 public:
 	Simulator used_simulator;

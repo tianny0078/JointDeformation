@@ -236,6 +236,7 @@ void Renderer::paintGL()
 			*/
 			//test vox according to index
 			renderLevelVox(plevel, showVox4Idx);
+			renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
 			
 			/*
 			if(p_kernel->p_mesh->mesh_simplified)
@@ -3897,7 +3898,7 @@ void Renderer::renderLevelVertex(const Mesh * m, const Level * plevel, int showV
 	{
 		Vector3d p = m->node_list[showVertexIndex].coordinate;
 		glColor3f(color[0], color[1], color[2]);
-		renderCube(0.04, p(0), p(1), p(2));
+		renderCube(0.01, p(0), p(1), p(2));
 
 		renderClusterStaticPosition(m->node_list[showVertexIndex].incident_cluster[plevel->level_index], color);
 	}
@@ -3910,7 +3911,7 @@ void Renderer::renderLevelVox(const Level * plevel, int showVoxIdx[])
 	float color[3] = {1.0, 1.0, 0.0};
 	int idx = plevel->gridDensity * plevel->gridDensity * plevel->gridDensity * showVoxIdx[3]
 		+ plevel->gridDensity * plevel->gridDensity * showVoxIdx[2] + plevel->gridDensity * showVoxIdx[1] + showVoxIdx[0];
-
+	cout << showVoxIdx[3] << showVoxIdx[2] << showVoxIdx[1] << showVoxIdx[0]<< endl;
 	if(plevel->voxmesh_level->vox_locator[idx] != NULL)
 	{
 		int cid = plevel->voxmesh_level->vox_locator[idx]->clusterid;
