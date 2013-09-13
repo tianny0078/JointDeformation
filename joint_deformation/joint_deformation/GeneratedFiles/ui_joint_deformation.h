@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Wed Sep 11 22:20:24 2013
+** Created: Thu Sep 12 16:51:30 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -1087,7 +1087,7 @@ public:
         QObject::connect(pushButton_resetMass, SIGNAL(clicked()), joint_deformationClass, SLOT(resetMass()));
         QObject::connect(pushButton_testVoxConnection, SIGNAL(clicked()), joint_deformationClass, SLOT(testVoxConnection()));
 
-        tabWidget->setCurrentIndex(3);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);
@@ -1206,6 +1206,7 @@ public:
          << QApplication::translate("joint_deformationClass", "Multiple Velocity Matching", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Simulation through Network", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "Experimental HSM", 0, QApplication::UnicodeUTF8)
         );
         groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | Constraint", 0, QApplication::UnicodeUTF8));
         radioButton_setConstraintNode->setText(QApplication::translate("joint_deformationClass", "Constraint", 0, QApplication::UnicodeUTF8));

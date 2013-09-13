@@ -49,7 +49,7 @@
      <enum>QTabWidget::East</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1485,6 +1485,11 @@
     <item>
      <property name="text">
       <string>Simulation for Mobile</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Experimental HSM</string>
      </property>
     </item>
    </widget>

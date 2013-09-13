@@ -39,7 +39,7 @@ class Kernel
 {
 
 public:
-	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE} Simulator;
+	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, EXPERIMENTAL_SHAPE_MATCHING} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 
 	typedef Matrix <double, 12, 12> Matrix12d;
@@ -83,6 +83,7 @@ public:
 	bool simulateNextStepForMobile();
 	bool simulateNextStep4MultipleVelocityMatching();
 	bool simulateNextStep4HierarchyShapeMatching();
+	bool simulateNextStep4Experimental();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();
