@@ -234,14 +234,12 @@ void Renderer::paintGL()
 			////test whether vertex belows to correct vox
 			//renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
 			*/
+			///////////////////////////////////////////////////////////////
 			//test vox according to index
-			renderLevelVox(plevel, showVox4Idx);
-			renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
-			
-			/*
-			if(p_kernel->p_mesh->mesh_simplified)
-				renderMesh(p_kernel->p_mesh->mesh_simplified);
-				*/
+			//renderLevelVox(plevel, showVox4Idx);
+			//renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
+			///////////////////////////////////////////////////////////////
+		
 		}
 
 		break;

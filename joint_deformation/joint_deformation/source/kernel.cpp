@@ -370,7 +370,7 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 
 		//cout << vox_line << endl;
 		
-		/*
+		
 		ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
@@ -400,38 +400,6 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 			* abs(ni->list_interpolation_nodes[0]->coordinate.z() - ni->coordinate.z())) / vox_cube;
 
 		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-			*/
-		ni->para_interpolate[6] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[7]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[7]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[7]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[4] = (abs(ni->list_interpolation_nodes[4]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[4]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[4]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[5] = (abs(ni->list_interpolation_nodes[5]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[5]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[5]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[2] = (abs(ni->list_interpolation_nodes[2]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[2]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[2]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[3] = (abs(ni->list_interpolation_nodes[3]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[3]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[3]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[0]->coordinate.x() - ni->coordinate.x()) 
-			* abs(ni->list_interpolation_nodes[0]->coordinate.y() - ni->coordinate.y()) 
-			* abs(ni->list_interpolation_nodes[0]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
-		ni->para_interpolate[1] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
 		}
@@ -3695,38 +3663,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 }
 
 bool Kernel::simulateNextStep4Experimental()
-{
-	/////////////////////////////////////////////////////////////////////////////////
-	//test whether quaternion is the same as rotation matrix.
-	//Matrix3d r1 = level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid].r;
-	//Quaterniond test1(r1);
-	//Matrix3d r2 = test1.toRotationMatrix();
-	////////////////////////////////////////////////////////////////////////////////
-	//test whether slerp could generate a reasonable result
-	//double PI = 3.14159265;
-	//Matrix3d r1 = Matrix3d::Identity();
-	//r1(1, 1) = cos(0 * PI / 180);
-	//r1(1, 2) = (-1) * sin(0 * PI / 180);
-	//r1(2, 1) = sin(0 * PI / 180);
-	//r1(2, 2) = cos(0 * PI / 180);
-
-	//Matrix3d r2 = Matrix3d::Identity();
-	//r2(1, 1) = cos(90 * PI / 180);
-	//r2(1, 2) = (-1) * sin(90 * PI / 180);
-	//r2(2, 1) = sin(90 * PI / 180);
-	//r2(2, 2) = cos(90 * PI / 180);
-
-	//Quaterniond test1(r1);
-	//Quaterniond test2(r2);
-	//Quaterniond test3 = test1.slerp(0.7, test2);
-	//Matrix3d r3 = test3.toRotationMatrix();
-
-	//// to save energy
-	//flag_setForce = true;
-	//const_force(0) = 0.15;
-	//const_force(1) = 0.5;
-	//const_force(2) = 0.0;
-	
+{	
 	time_counter->StartCounter();
 
 	double mass_sum = 0.0;
@@ -3745,7 +3682,6 @@ bool Kernel::simulateNextStep4Experimental()
 		wind_magnitude = 1;
 		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
 	}
-
 
 	double PI = 3.14159265;
 	int idx_bottom = level_list.size() - 1;
@@ -3889,11 +3825,12 @@ bool Kernel::simulateNextStep4Experimental()
 			}//for
 			
 		}
-		//else//if n == 0
+		else//if n == 0
 		{
 			//////////////////////////////////////////////////////////////////////////////////
 			// level 0 to bottom+1, directly implementing shape matching
 			//////////////////////////////////////////////////////////////////////////////////
+			
 			int iteration = level_list[n]->times_ShapeMatching;
 			if(n == 0 || n < level_list.size())
 			{
@@ -4026,7 +3963,7 @@ bool Kernel::simulateNextStep4Experimental()
 				}
 			}//
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+			
 			
 		}//else
 		
