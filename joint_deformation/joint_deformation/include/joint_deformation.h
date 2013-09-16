@@ -58,6 +58,9 @@ public slots:
 	void showConstraint(bool);
 	void setPositionConstraint(bool);
 	void setOrientationConstraint(bool);
+	void setCubeOperation(bool);
+	void setCubeStaticConstraint(bool);
+	void setCubeActiveConstraint(bool);
 	void setDampParameter();
 	void setMultigrid(bool);
 	void setTimesShapeMatching();
@@ -70,8 +73,7 @@ public slots:
 	void setGravity(bool);
 	void setGravityMagnitude();
 	void setExportObj(bool);
-	void setConstraintNode(bool);
-	void setForceNode(bool);
+	void setForceConstraint(bool);
 	void setNetwork(bool);
 	void setServer(bool);
 	void setClient(bool);

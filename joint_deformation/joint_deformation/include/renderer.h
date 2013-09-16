@@ -183,9 +183,12 @@ public:
 	bool flag_show_test;
 	//for point / orientation constraint
 	bool flag_show_constraints;
-	bool flag_position_constraint;
+	//bool flag_position_constraint;
 	int flag_axis;// 1 is x, 2 is y, 3 is z
 	bool flag_show_mass;
+	bool flag_cube_operation;
+	bool flag_show_cube_static_constraints;
+	bool flag_show_cube_active_constraints;
 	
 	// colors
 	QColor background_color;

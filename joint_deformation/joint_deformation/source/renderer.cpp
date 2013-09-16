@@ -41,9 +41,11 @@ Renderer::Renderer(QWidget *parent)
 	flag_simulating = false;
 	flag_show_test = false;
 	flag_show_constraints = false;
-	flag_position_constraint = true;
 	flag_axis = 1;
 	flag_show_mass = false;
+	flag_cube_operation = false;
+	flag_show_cube_static_constraints = false;
+	flag_show_cube_active_constraints = false;
 		
 	rotate_dist = 0;
 	view_dist = 0;
@@ -1461,71 +1463,116 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 					}
 				}
 				//many constraints
-				if(flag_position_constraint)
+				for(int j = 0; j < p_kernel->level_list.size(); j ++)
 				{
-					for(int j = 0; j < p_kernel->level_list.size(); j ++)
-					{
-						if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
-						{	
-							if(p_kernel->flag_forceNode)
+					if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+					{	
+						if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
+						{
+							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+							//put center to be the same, using the same force, set bottom level center.
+							Vector3d force_arrow_begin = p_kernel->level_list[p_kernel->level_list.size()-1]->voxmesh_level->constraint_center;
+							for(int k = 0; k < size_k; k ++)
 							{
-								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-								//put center to be the same, using the same force, set bottom level center.
-								Vector3d force_arrow_begin = p_kernel->level_list[p_kernel->level_list.size()-1]->voxmesh_level->constraint_center;
-								for(int k = 0; k < size_k; k ++)
-								{
-
-									double wx, wy, wz;
-
-									gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
-										currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-									wx = current_mouse_x;
-									wy = win_height - current_mouse_y;
-
-									gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-										&force_arrow[0], &force_arrow[1], &force_arrow[2]);
-							
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->force =  force_arrow - force_arrow_begin;
-
-									//revised here 0204
-									for(int i=0; i<p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
-									{
-										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = force_arrow - force_arrow_begin;
-									}
-								}
-							}
-							else
-							{
-								Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
 
 								double wx, wy, wz;
 
-								gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+								gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
 									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
 
 								wx = current_mouse_x;
 								wy = win_height - current_mouse_y;
 
-								Vector3d disp_center_after;
 								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-									&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+									&force_arrow[0], &force_arrow[1], &force_arrow[2]);
+							
+								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->force =  force_arrow - force_arrow_begin;
+
+								//revised here 0204
+								for(int i=0; i<p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
+								{
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = force_arrow - force_arrow_begin;
+								}
+							}
+						}
+						else if(p_kernel->constraintType == Kernel::ORIENTATION_CONSTRAINT)
+						{
+							double degree = ((current_mouse_xd - last_mouse_xd) +  (current_mouse_yd - last_mouse_yd)) *90;
+
+							//rotate(degree, axis_x, p_kernel->level_list[0]->voxmesh_level->constraint_center);
+							//rotate(degree, axis_x, LCS_x);
+
+							Matrix3d r;
+							Vector3d angular_velocity;
+							if(flag_axis == 1)
+							{
+								r = rotate(degree, LCS_x);
+								angular_velocity = getAngularVelocity(degree, LCS_x);
+							}
+							else if(flag_axis == 2)
+							{
+								r = rotate(degree, LCS_y);
+								angular_velocity = getAngularVelocity(degree, LCS_y);
+							}
+							else
+							{
+								r = rotate(degree, LCS_z);
+								angular_velocity = getAngularVelocity(degree, LCS_z);
+							}
+
+							LCS_rotation = r * LCS_rotation;
+							LCS_x = r * LCS_x;
+							LCS_y = r * LCS_y;
+							LCS_z = r * LCS_z;
+
+							//rotation
+							for(int j = 0; j < p_kernel->level_list.size(); j ++)
+							{
+								//p_kernel->level_list[j]->voxmesh_level->constraint_center = r * p_kernel->level_list[j]->voxmesh_level->constraint_center;
+								if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+								{
+									int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+									for(int k = 0; k < size_k; k ++)
+									{
+										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = p_kernel->level_list[j]->voxmesh_level->constraint_center + LCS_translation + LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k];
+										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation = r * p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation;
+									}
+								}
+							}
+
+						}
+						else if (p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
+						{
+							if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+							{
+							Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+
+							double wx, wy, wz;
+
+							gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+								currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+							wx = current_mouse_x;
+							wy = win_height - current_mouse_y;
+
+							Vector3d disp_center_after;
+							gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+								&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
 
 							
-								LCS_translation = disp_center_after - disp_center_before;
+							LCS_translation = disp_center_after - disp_center_before;
 
-								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-								for(int k = 0; k < size_k; k ++)
-								{
-									Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->flag_constraint_type = 1;
-								}
+							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+							for(int k = 0; k < size_k; k ++)
+							{
+								Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+							}
 							}
 						}
 					}
 				}
-				
+				break;
 			case Kernel::VELOCITY_MATCHING:
 			case Kernel::MULTIPLE_VELOCITY_MATCHING:
 				//single point
@@ -1559,7 +1606,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 					}
 				}
 				//many constraints
-				if(flag_position_constraint)
+				if(p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
 				{
 					for(int j = 0; j < p_kernel->level_list.size(); j ++)
 					{
@@ -1694,7 +1741,7 @@ void Renderer::mouseReleaseEvent(QMouseEvent *e)
 				force_arrow.setZero();
 			}
 			//if many active nodes, delete all
-			if(p_kernel->flag_forceNode)
+			if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
 			{
 				for(int j = 0; j < p_kernel->level_list.size(); j ++)
 				{
@@ -3470,7 +3517,7 @@ void Renderer::renderForce()
 		}
 	}
 	//many constraints
-	if(flag_position_constraint)
+	if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
 	{
 		if(force_arrow.norm() > 1e-3)
 		{
@@ -3685,7 +3732,7 @@ void Renderer::renderLevelStaticPosition(const Level * plevel, float * level_col
 
 			//show constraint nodes //revised not showing while doing shape matching
 			//if(!plevel->voxmesh_level->constraint_node_list.empty() && (p_kernel->used_simulator == Kernel::VELOCITY_MATCHING || p_kernel->used_simulator == Kernel::MULTIPLE_VELOCITY_MATCHING))
-			if((!plevel->voxmesh_level->constraint_node_list.empty()) && (!p_kernel->flag_forceNode))
+			if((!plevel->voxmesh_level->constraint_node_list.empty()) && (p_kernel->constraintType != Kernel::FORCE_CONSTRAINT))
 			{
 				vector<Node*>::const_iterator n_iter = plevel->voxmesh_level->constraint_node_list.begin();
 				for(; n_iter!=plevel->voxmesh_level->constraint_node_list.end(); ++n_iter)
@@ -3697,7 +3744,7 @@ void Renderer::renderLevelStaticPosition(const Level * plevel, float * level_col
 			}
 
 			//show local wcs
-			if(!flag_position_constraint && !plevel->voxmesh_level->constraint_node_list.empty())
+			if(p_kernel->constraintType == Kernel::ORIENTATION_CONSTRAINT && !plevel->voxmesh_level->constraint_node_list.empty())
 			{	
 				renderLCS(plevel->voxmesh_level->constraint_center + LCS_translation);
 			}

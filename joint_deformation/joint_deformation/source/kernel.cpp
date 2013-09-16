@@ -8,6 +8,7 @@
 Kernel::Kernel()
 {
 	used_simulator = UNDEFINED;
+	constraintType = FORCE_CONSTRAINT;
 	p_mesh = new Mesh;
 	p_mesh_low = new Mesh;
 	p_vox_mesh = new VoxMesh;
@@ -53,7 +54,6 @@ Kernel::Kernel()
 	gravity_magnitude = -0.01;
 
 
-	flag_forceNode = true;
 
 	flag_network = false;
 
@@ -2218,7 +2218,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
 	}
 
-	if(flag_setForce && flag_forceNode)
+	if(flag_setForce && constraintType == Kernel::FORCE_CONSTRAINT)
 	{
 		if (!p_vox_mesh->constraint_node_list.empty())
 		{
@@ -2235,7 +2235,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 			}
 		}
 	}
-	if(flag_setForce && !flag_forceNode)
+	if(flag_setForce && constraintType != Kernel::FORCE_CONSTRAINT)
 	{
 		if (!p_vox_mesh->constraint_node_list.empty())
 		{
@@ -2347,7 +2347,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 		}
 
 		ni->target_position /= double(ni->duplicates.size());
-		if(!flag_forceNode && ni->flag_constraint_node)
+		if(constraintType != Kernel::FORCE_CONSTRAINT  && ni->flag_constraint_node)
 			ni->target_position = ni->prescribed_position;
 
 		if(flag_dynamics)
@@ -3144,7 +3144,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 	for (int n = 0; n < level_list.size(); n++)
 	{
 		//force constraint
-		if(flag_setForce && flag_forceNode)
+		if(flag_setForce && constraintType == Kernel::FORCE_CONSTRAINT)
 		{
 			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
 			{
@@ -3161,7 +3161,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			}
 		}
 		//position constraint
-		if(flag_setForce && !flag_forceNode)
+		if(flag_setForce && constraintType != Kernel::FORCE_CONSTRAINT)
 		{
 			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
 			{
@@ -3268,7 +3268,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				}
 				
 				ni->target_position /= double(ni->duplicates.size());
-				if(!flag_forceNode && ni->flag_constraint_node)
+				if(constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
 					ni->target_position = ni->prescribed_position;
 
 				dn = ni->duplicates.begin();
@@ -3378,7 +3378,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 						}
 
 						ni->target_position /= double(ni->duplicates.size());
-						if(!flag_forceNode && ni->flag_constraint_node)
+						if( constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
 							ni->target_position = ni->prescribed_position;
 
 						if (n == idx_bottom)
@@ -3572,7 +3572,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 
 			//ni->static_position /= double(ni->duplicates.size());
 			ni->target_position /= double(ni->duplicates.size());
-			if(!flag_forceNode && ni->flag_constraint_node)
+			if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
 				ni->target_position = ni->prescribed_position;
 
 			dn = ni->duplicates.begin();
@@ -3689,7 +3689,7 @@ bool Kernel::simulateNextStep4Experimental()
 	for (int n = 0; n < level_list.size(); n++)
 	{
 		//force constraint
-		if(flag_setForce && flag_forceNode)
+		if(flag_setForce && constraintType == FORCE_CONSTRAINT)
 		{
 			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
 			{
@@ -3706,7 +3706,7 @@ bool Kernel::simulateNextStep4Experimental()
 			}
 		}
 		//position constraint
-		if(flag_setForce && !flag_forceNode)
+		if(flag_setForce && constraintType != FORCE_CONSTRAINT)
 		{
 			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
 			{
@@ -3813,7 +3813,7 @@ bool Kernel::simulateNextStep4Experimental()
 				}
 				
 				ni->target_position /= double(ni->duplicates.size());
-				if(!flag_forceNode && ni->flag_constraint_node)
+				if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
 					ni->target_position = ni->prescribed_position;
 
 				dn = ni->duplicates.begin();
@@ -3924,7 +3924,7 @@ bool Kernel::simulateNextStep4Experimental()
 						}
 
 						ni->target_position /= double(ni->duplicates.size());
-						if(!flag_forceNode && ni->flag_constraint_node)
+						if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
 							ni->target_position = ni->prescribed_position;
 
 						if (n == idx_bottom)
@@ -4118,7 +4118,7 @@ bool Kernel::simulateNextStep4Experimental()
 
 			//ni->static_position /= double(ni->duplicates.size());
 			ni->target_position /= double(ni->duplicates.size());
-			if(!flag_forceNode && ni->flag_constraint_node)
+			if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
 				ni->target_position = ni->prescribed_position;
 
 			dn = ni->duplicates.begin();

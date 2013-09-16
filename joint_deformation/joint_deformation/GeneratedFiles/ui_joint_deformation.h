@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Sun Sep 15 14:35:04 2013
+** Created: Sun Sep 15 17:44:27 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,6 +50,8 @@ public:
     QAction *actionSetConstraint;
     QAction *actionSetMass;
     QAction *actionCubeOperation;
+    QAction *actionSetCubeStaticConstraint;
+    QAction *actionSetCubeActiveConstraint;
     QWidget *centralWidget;
     Renderer *renderWidget;
     QTabWidget *tabWidget;
@@ -190,12 +192,9 @@ public:
     QPushButton *pushButton_resetSimulation;
     QComboBox *comboBox_chooseSimulator;
     QGroupBox *groupBox_3;
-    QRadioButton *radioButton_setConstraintNode;
-    QRadioButton *radioButton_setForceNode;
-    QRadioButton *radioButton_setConstraintCube;
-    QGroupBox *groupBox;
-    QRadioButton *radioButton_point;
-    QRadioButton *radioButton_orientation;
+    QRadioButton *radioButton_setForceConstraint;
+    QRadioButton *radioButton_setPositionConstraint;
+    QRadioButton *radioButton_setOrientationConstraint;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -275,9 +274,22 @@ public:
         actionSetMass->setIcon(icon10);
         actionCubeOperation = new QAction(joint_deformationClass);
         actionCubeOperation->setObjectName(QString::fromUtf8("actionCubeOperation"));
+        actionCubeOperation->setCheckable(true);
         QIcon icon11;
         icon11.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_settings_theme.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionCubeOperation->setIcon(icon11);
+        actionSetCubeStaticConstraint = new QAction(joint_deformationClass);
+        actionSetCubeStaticConstraint->setObjectName(QString::fromUtf8("actionSetCubeStaticConstraint"));
+        actionSetCubeStaticConstraint->setCheckable(true);
+        QIcon icon12;
+        icon12.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionSetCubeStaticConstraint->setIcon(icon12);
+        actionSetCubeActiveConstraint = new QAction(joint_deformationClass);
+        actionSetCubeActiveConstraint->setObjectName(QString::fromUtf8("actionSetCubeActiveConstraint"));
+        actionSetCubeActiveConstraint->setCheckable(true);
+        QIcon icon13;
+        icon13.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_missing_image.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionSetCubeActiveConstraint->setIcon(icon13);
         centralWidget = new QWidget(joint_deformationClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         renderWidget = new Renderer(centralWidget);
@@ -935,45 +947,43 @@ public:
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
         pushButton_initSimulator = new QPushButton(horizontalLayoutWidget_2);
         pushButton_initSimulator->setObjectName(QString::fromUtf8("pushButton_initSimulator"));
-        QIcon icon12;
-        icon12.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_initSimulator->setIcon(icon12);
+        QIcon icon14;
+        icon14.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_initSimulator->setIcon(icon14);
         pushButton_initSimulator->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_initSimulator);
 
         pushButton_startSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_startSimulation->setObjectName(QString::fromUtf8("pushButton_startSimulation"));
-        QIcon icon13;
-        icon13.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_startSimulation->setIcon(icon13);
+        QIcon icon15;
+        icon15.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_startSimulation->setIcon(icon15);
         pushButton_startSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_startSimulation);
 
         pushButton_nextStep = new QPushButton(horizontalLayoutWidget_2);
         pushButton_nextStep->setObjectName(QString::fromUtf8("pushButton_nextStep"));
-        QIcon icon14;
-        icon14.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_nextStep->setIcon(icon14);
+        QIcon icon16;
+        icon16.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_nextStep->setIcon(icon16);
         pushButton_nextStep->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_nextStep);
 
         pushButton_pauseSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_pauseSimulation->setObjectName(QString::fromUtf8("pushButton_pauseSimulation"));
-        QIcon icon15;
-        icon15.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_pauseSimulation->setIcon(icon15);
+        QIcon icon17;
+        icon17.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_pauseSimulation->setIcon(icon17);
         pushButton_pauseSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_pauseSimulation);
 
         pushButton_resetSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_resetSimulation->setObjectName(QString::fromUtf8("pushButton_resetSimulation"));
-        QIcon icon16;
-        icon16.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_resetSimulation->setIcon(icon16);
+        pushButton_resetSimulation->setIcon(icon12);
         pushButton_resetSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_resetSimulation);
@@ -983,26 +993,17 @@ public:
         comboBox_chooseSimulator->setGeometry(QRect(1050, 20, 331, 22));
         groupBox_3 = new QGroupBox(centralWidget);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
-        groupBox_3->setGeometry(QRect(1050, 430, 311, 51));
-        radioButton_setConstraintNode = new QRadioButton(groupBox_3);
-        radioButton_setConstraintNode->setObjectName(QString::fromUtf8("radioButton_setConstraintNode"));
-        radioButton_setConstraintNode->setGeometry(QRect(10, 20, 81, 17));
-        radioButton_setForceNode = new QRadioButton(groupBox_3);
-        radioButton_setForceNode->setObjectName(QString::fromUtf8("radioButton_setForceNode"));
-        radioButton_setForceNode->setGeometry(QRect(110, 20, 91, 17));
-        radioButton_setForceNode->setChecked(true);
-        radioButton_setConstraintCube = new QRadioButton(groupBox_3);
-        radioButton_setConstraintCube->setObjectName(QString::fromUtf8("radioButton_setConstraintCube"));
-        radioButton_setConstraintCube->setGeometry(QRect(210, 20, 91, 17));
-        groupBox = new QGroupBox(centralWidget);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(1050, 490, 311, 41));
-        radioButton_point = new QRadioButton(groupBox);
-        radioButton_point->setObjectName(QString::fromUtf8("radioButton_point"));
-        radioButton_point->setGeometry(QRect(30, 20, 111, 17));
-        radioButton_orientation = new QRadioButton(groupBox);
-        radioButton_orientation->setObjectName(QString::fromUtf8("radioButton_orientation"));
-        radioButton_orientation->setGeometry(QRect(160, 20, 131, 17));
+        groupBox_3->setGeometry(QRect(1050, 430, 341, 61));
+        radioButton_setForceConstraint = new QRadioButton(groupBox_3);
+        radioButton_setForceConstraint->setObjectName(QString::fromUtf8("radioButton_setForceConstraint"));
+        radioButton_setForceConstraint->setGeometry(QRect(10, 30, 61, 17));
+        radioButton_setForceConstraint->setChecked(true);
+        radioButton_setPositionConstraint = new QRadioButton(groupBox_3);
+        radioButton_setPositionConstraint->setObjectName(QString::fromUtf8("radioButton_setPositionConstraint"));
+        radioButton_setPositionConstraint->setGeometry(QRect(80, 30, 111, 17));
+        radioButton_setOrientationConstraint = new QRadioButton(groupBox_3);
+        radioButton_setOrientationConstraint->setObjectName(QString::fromUtf8("radioButton_setOrientationConstraint"));
+        radioButton_setOrientationConstraint->setGeometry(QRect(200, 30, 131, 17));
         joint_deformationClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(joint_deformationClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -1027,6 +1028,8 @@ public:
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionShowSelection);
         mainToolBar->addAction(actionSetConstraint);
+        mainToolBar->addAction(actionSetCubeStaticConstraint);
+        mainToolBar->addAction(actionSetCubeActiveConstraint);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionCubeOperation);
         mainToolBar->addAction(actionSetMass);
@@ -1058,8 +1061,8 @@ public:
         QObject::connect(pushButton_parent_neighbor, SIGNAL(clicked()), joint_deformationClass, SLOT(testParentNeighbor()));
         QObject::connect(actionShowTest, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(showTest(bool)));
         QObject::connect(actionSetConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(showConstraint(bool)));
-        QObject::connect(radioButton_point, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setPositionConstraint(bool)));
-        QObject::connect(radioButton_orientation, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setOrientationConstraint(bool)));
+        QObject::connect(radioButton_setPositionConstraint, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setPositionConstraint(bool)));
+        QObject::connect(radioButton_setOrientationConstraint, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setOrientationConstraint(bool)));
         QObject::connect(pushButton_vox4vertex, SIGNAL(clicked()), joint_deformationClass, SLOT(testVox4Vertex()));
         QObject::connect(pushButton_setDamping, SIGNAL(clicked()), joint_deformationClass, SLOT(setDampParameter()));
         QObject::connect(checkBox_multigrid, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setMultigrid(bool)));
@@ -1071,8 +1074,7 @@ public:
         QObject::connect(checkBox_gravity, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setGravity(bool)));
         QObject::connect(pushButton_setGravityMagnitude, SIGNAL(clicked()), joint_deformationClass, SLOT(setGravityMagnitude()));
         QObject::connect(checkBox_exportObj, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setExportObj(bool)));
-        QObject::connect(radioButton_setConstraintNode, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setConstraintNode(bool)));
-        QObject::connect(radioButton_setForceNode, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setForceNode(bool)));
+        QObject::connect(radioButton_setForceConstraint, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setForceConstraint(bool)));
         QObject::connect(checkBox_Network, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setNetwork(bool)));
         QObject::connect(radioButton_Server, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setServer(bool)));
         QObject::connect(radioButton_Client, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setClient(bool)));
@@ -1094,6 +1096,9 @@ public:
         QObject::connect(pushButton_setMass, SIGNAL(clicked()), joint_deformationClass, SLOT(setMass()));
         QObject::connect(pushButton_resetMass, SIGNAL(clicked()), joint_deformationClass, SLOT(resetMass()));
         QObject::connect(pushButton_testVoxConnection, SIGNAL(clicked()), joint_deformationClass, SLOT(testVoxConnection()));
+        QObject::connect(actionCubeOperation, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeOperation(bool)));
+        QObject::connect(actionSetCubeStaticConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeStaticConstraint(bool)));
+        QObject::connect(actionSetCubeActiveConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeActiveConstraint(bool)));
 
         tabWidget->setCurrentIndex(0);
 
@@ -1123,6 +1128,8 @@ public:
         actionSetConstraint->setText(QApplication::translate("joint_deformationClass", "setConstraint", 0, QApplication::UnicodeUTF8));
         actionSetMass->setText(QApplication::translate("joint_deformationClass", "setMass", 0, QApplication::UnicodeUTF8));
         actionCubeOperation->setText(QApplication::translate("joint_deformationClass", "cubeOperation", 0, QApplication::UnicodeUTF8));
+        actionSetCubeStaticConstraint->setText(QApplication::translate("joint_deformationClass", "setCubeStaticConstraint", 0, QApplication::UnicodeUTF8));
+        actionSetCubeActiveConstraint->setText(QApplication::translate("joint_deformationClass", "setCubeActiveConstraint", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("joint_deformationClass", "Grid density", 0, QApplication::UnicodeUTF8));
         pushButton_setGridDensity->setText(QApplication::translate("joint_deformationClass", "Apply", 0, QApplication::UnicodeUTF8));
         comboBox_selectTreeDepth->clear();
@@ -1217,13 +1224,10 @@ public:
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Experimental HSM", 0, QApplication::UnicodeUTF8)
         );
-        groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | Constraint", 0, QApplication::UnicodeUTF8));
-        radioButton_setConstraintNode->setText(QApplication::translate("joint_deformationClass", "Constraint", 0, QApplication::UnicodeUTF8));
-        radioButton_setForceNode->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));
-        radioButton_setConstraintCube->setText(QApplication::translate("joint_deformationClass", "Cube", 0, QApplication::UnicodeUTF8));
-        groupBox->setTitle(QApplication::translate("joint_deformationClass", "Constraints", 0, QApplication::UnicodeUTF8));
-        radioButton_point->setText(QApplication::translate("joint_deformationClass", "Position Constraint", 0, QApplication::UnicodeUTF8));
-        radioButton_orientation->setText(QApplication::translate("joint_deformationClass", "Orientation Constraint", 0, QApplication::UnicodeUTF8));
+        groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | PosConstraint | OrientationConstraint", 0, QApplication::UnicodeUTF8));
+        radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));
+        radioButton_setPositionConstraint->setText(QApplication::translate("joint_deformationClass", "Position Constraint", 0, QApplication::UnicodeUTF8));
+        radioButton_setOrientationConstraint->setText(QApplication::translate("joint_deformationClass", "Orientation Constraint", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

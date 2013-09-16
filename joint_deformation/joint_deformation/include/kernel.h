@@ -41,6 +41,7 @@ class Kernel
 public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, EXPERIMENTAL_SHAPE_MATCHING} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
+	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
 	typedef Matrix <double, 12, 12> Matrix12d;
 	typedef Matrix <double, 12, 1>  Vector12d;
@@ -127,6 +128,7 @@ public:
 public:
 	Simulator used_simulator;
 	PerformanceCounter * time_counter;
+	ConstraintType constraintType;
 
 	// status 
 	bool flag_mesh_ready;
@@ -183,9 +185,6 @@ public:
 	ofstream myHEnergy;
 	ofstream testoutput;
 	ifstream myMobile;
-
-	//if 0, force node, if 1, constraint node
-	bool flag_forceNode;
 
 
 

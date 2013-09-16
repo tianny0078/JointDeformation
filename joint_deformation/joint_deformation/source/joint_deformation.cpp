@@ -17,9 +17,6 @@ joint_deformation::joint_deformation(QWidget *parent, Qt::WFlags flags)
 	//disable parts of UI
 	ui.comboBox_level->setDisabled(true);
 	ui.pushButton_addLevel->setDisabled(true);
-	ui.radioButton_point->setDisabled(true);
-	ui.radioButton_orientation->setDisabled(true);
-	ui.actionSetConstraint->setDisabled(true);
 
 	ui.radioButton_Server->setDisabled(true);
 	ui.radioButton_Client->setDisabled(true);
@@ -227,10 +224,6 @@ void joint_deformation::startSimulation()
 		ui.renderWidget->flag_simulating = true;
 		simulation_timer.start(0);
 
-		ui.actionSetConstraint->setEnabled(true);
-		ui.radioButton_point->setEnabled(true);
-		ui.radioButton_point->setChecked(true);
-		ui.radioButton_orientation->setEnabled(true);
 	}
 }
 
@@ -561,16 +554,54 @@ void joint_deformation::showConstraint(bool a)
 	}
 	ui.renderWidget->updateGL();
 }
-
+void joint_deformation::setCubeOperation(bool a)
+{
+	ui.renderWidget->flag_cube_operation = a;
+	ui.renderWidget->updateGL();
+}
+void joint_deformation::setCubeStaticConstraint(bool a)
+{
+	ui.renderWidget->flag_show_cube_static_constraints = a;
+	if(a && ui.renderWidget->flag_show_cube_active_constraints)
+	{
+		ui.renderWidget->flag_show_cube_active_constraints = false;
+		ui.actionSetCubeActiveConstraint->setChecked(false);
+	}
+	if(!a)
+	{
+		ui.renderWidget->bottom_right_x = -1.0;
+		ui.renderWidget->bottom_right_y = -1.0;
+		ui.renderWidget->upper_left_x   = -1.0;
+		ui.renderWidget->upper_left_y = -1.0;
+	}
+	ui.renderWidget->updateGL();
+}
+void joint_deformation::setCubeActiveConstraint(bool a)
+{
+	ui.renderWidget->flag_show_cube_active_constraints = a;
+	if(a && ui.renderWidget->flag_show_cube_static_constraints)
+	{
+		ui.renderWidget->flag_show_cube_static_constraints = false;
+		ui.actionSetCubeStaticConstraint->setChecked(false);
+	}
+	if(!a)
+	{
+		ui.renderWidget->bottom_right_x = -1.0;
+		ui.renderWidget->bottom_right_y = -1.0;
+		ui.renderWidget->upper_left_x   = -1.0;
+		ui.renderWidget->upper_left_y = -1.0;
+	}
+	ui.renderWidget->updateGL();
+}
 void joint_deformation::setPositionConstraint(bool a)
 {
-	ui.renderWidget->flag_position_constraint = a;
+	p_kernel->constraintType = Kernel::POSITION_CONSTRAINT;
 	ui.renderWidget->updateGL();
 }
 
 void joint_deformation::setOrientationConstraint(bool a)
 {
-	ui.renderWidget->flag_position_constraint = !a;
+	p_kernel->constraintType = Kernel::ORIENTATION_CONSTRAINT;
 	ui.renderWidget->updateGL();
 }
 
@@ -670,14 +701,14 @@ void joint_deformation::setCaptureSubScreen(bool a)
 	flag_captureSubScreen = a;
 }
 
-void joint_deformation::setConstraintNode(bool a)
-{
-	p_kernel->flag_forceNode = !a;
-}
 
-void joint_deformation::setForceNode(bool a)
+void joint_deformation::setForceConstraint(bool a)
 {
-	p_kernel->flag_forceNode = a;
+	if(a)
+	{
+		p_kernel->constraintType = Kernel::FORCE_CONSTRAINT;
+		//ui.radioButton_setPositionConstraint->setChecked(false);
+	}
 }
 
 void joint_deformation::setNetwork(bool a)
