@@ -31,6 +31,8 @@ Renderer::Renderer(QWidget *parent)
 	anchor_node_color[0] = 1.0; anchor_node_color[1] = 0.5; anchor_node_color[2] = 0.25;
 	active_node_color[0] = 0.0; active_node_color[1] = 0.0; active_node_color[2] = 1.0;
 	node_color[0] = 112.0/255.0; node_color[1] = 146.0/255.0; node_color[2] = 190.0/255.0;
+	anchor_cube_color[0] = 1.0; anchor_cube_color[1] = 1.0; anchor_cube_color[2] = 0.0;
+	active_cube_color[0] = 0.0; active_cube_color[1] = 1.0; active_cube_color[2] = 1.0;
 	
 	flag_initialized = false;
 	flag_show_grid = false;
@@ -169,6 +171,13 @@ void Renderer::paintGL()
 	switch (current_render_mode)
 	{
 	case REGULAR:
+		
+		if (flag_cube_operation)
+		{
+			tool->setVisible(true);
+			tool->setPosBegin(0.3, 0.0, 0.0);
+			tool->render();
+		}
 
 		if (flag_show_mesh && p_kernel->flag_mesh_ready)
 		{
@@ -181,7 +190,7 @@ void Renderer::paintGL()
 			//renderClusterHierarchy(p_kernel->p_vox_mesh);
 		}
 
-		if(flag_show_vox || flag_show_target || flag_show_mass)
+		if(flag_show_vox || flag_show_target)
 		{
 			renderSelectSquare(upper_left_x, upper_left_y, bottom_right_x, bottom_right_y);
 			if (flag_show_vox)
@@ -189,7 +198,6 @@ void Renderer::paintGL()
 				//renderVoxMesh(p_kernel->p_vox_mesh);
 				
 				//level detail for the vox mesh
-				////current level(0-)
 				Level * plevel = p_kernel->level_list[p_kernel->level_display];
 				renderLevelVoxMesh(plevel);
 			}
@@ -246,12 +254,7 @@ void Renderer::paintGL()
 		
 		}
 
-		if (flag_cube_operation)
-		{
-			tool->setVisible(true);
-			tool->setPosBegin(0.3, 0.0, 0.0);
-			tool->render();
-		}
+
 
 		break;
 
@@ -1209,7 +1212,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 	if (current_mouse_button == Qt::RightButton)
 	{
-		if (flag_show_selection || flag_show_constraints || flag_show_mass)
+		if (flag_show_selection || flag_show_constraints || flag_show_mass || flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 		{
 			bottom_right_x = -1.0;
 			bottom_right_y = -1.0;
@@ -1430,7 +1433,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 	if (last_mouse_button == Qt::RightButton)
 	{
 		// defining a selection square with right button movement
-		if (flag_show_selection || flag_show_constraints || flag_show_mass)
+		if (flag_show_selection || flag_show_constraints || flag_show_mass || flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 		{
 			// before simulation
 			if (last_mouse_button == Qt::RightButton)
@@ -1441,271 +1444,278 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 			//after simulation
 		}
 
-		if (flag_simulating && !flag_show_selection && !flag_show_constraints && !flag_show_mass)
+		if (flag_simulating && !flag_show_selection && !flag_show_constraints && !flag_show_mass && !flag_show_cube_static_constraints && !flag_show_cube_active_constraints)
 		{
-			switch (p_kernel->used_simulator)
+			if(!flag_cube_operation)
 			{
-			case Kernel::SHAPE_MATCHING:
-			case Kernel::SINGLE_GRID:
-			case Kernel::HIERARCHY_SHAPE_MATCHING:
-			case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
-				//single point
-				if (p_kernel->p_vox_mesh->active_node)
+				switch (p_kernel->used_simulator)
 				{
-					Vector3d force_arrow_begin = p_kernel->p_vox_mesh->active_node->coordinate + p_kernel->p_vox_mesh->active_node->displacement;
-
-					double wx, wy, wz;
-
-					gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
-						currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-					wx = current_mouse_x;
-					wy = win_height - current_mouse_y;
-
-					gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-						&force_arrow[0], &force_arrow[1], &force_arrow[2]);
-
-					p_kernel->p_vox_mesh->active_node->force = force_arrow - force_arrow_begin;
-					for(int i=0; i<p_kernel->p_vox_mesh->active_node->duplicates.size(); ++i)
+				case Kernel::SHAPE_MATCHING:
+				case Kernel::SINGLE_GRID:
+				case Kernel::HIERARCHY_SHAPE_MATCHING:
+				case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
+					//single point
+					if (p_kernel->p_vox_mesh->active_node)
 					{
-						p_kernel->p_vox_mesh->active_node->duplicates[i]->force = p_kernel->p_vox_mesh->active_node->force;
-					}
-				}
-				//many constraints
-				for(int j = 0; j < p_kernel->level_list.size(); j ++)
-				{
-					if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
-					{	
-						if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
-						{
-							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-							//put center to be the same, using the same force, set bottom level center.
-							Vector3d force_arrow_begin = p_kernel->level_list[p_kernel->level_list.size()-1]->voxmesh_level->constraint_center;
-							for(int k = 0; k < size_k; k ++)
-							{
-
-								double wx, wy, wz;
-
-								gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
-									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-								wx = current_mouse_x;
-								wy = win_height - current_mouse_y;
-
-								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-									&force_arrow[0], &force_arrow[1], &force_arrow[2]);
-							
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->force =  force_arrow - force_arrow_begin;
-
-								//revised here 0204
-								for(int i=0; i<p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
-								{
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = force_arrow - force_arrow_begin;
-								}
-							}
-						}
-						else if(p_kernel->constraintType == Kernel::ORIENTATION_CONSTRAINT)
-						{
-							double degree = ((current_mouse_xd - last_mouse_xd) +  (current_mouse_yd - last_mouse_yd)) *90;
-
-							//rotate(degree, axis_x, p_kernel->level_list[0]->voxmesh_level->constraint_center);
-							//rotate(degree, axis_x, LCS_x);
-
-							Matrix3d r;
-							Vector3d angular_velocity;
-							if(flag_axis == 1)
-							{
-								r = rotate(degree, LCS_x);
-								angular_velocity = getAngularVelocity(degree, LCS_x);
-							}
-							else if(flag_axis == 2)
-							{
-								r = rotate(degree, LCS_y);
-								angular_velocity = getAngularVelocity(degree, LCS_y);
-							}
-							else
-							{
-								r = rotate(degree, LCS_z);
-								angular_velocity = getAngularVelocity(degree, LCS_z);
-							}
-
-							LCS_rotation = r * LCS_rotation;
-							LCS_x = r * LCS_x;
-							LCS_y = r * LCS_y;
-							LCS_z = r * LCS_z;
-
-							//rotation
-							for(int j = 0; j < p_kernel->level_list.size(); j ++)
-							{
-								//p_kernel->level_list[j]->voxmesh_level->constraint_center = r * p_kernel->level_list[j]->voxmesh_level->constraint_center;
-								if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
-								{
-									int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-									for(int k = 0; k < size_k; k ++)
-									{
-										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = p_kernel->level_list[j]->voxmesh_level->constraint_center + LCS_translation + LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k];
-										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation = r * p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation;
-									}
-								}
-							}
-
-						}
-						else if (p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
-						{
-							if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
-							{
-							Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
-
-							double wx, wy, wz;
-
-							gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
-								currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-							wx = current_mouse_x;
-							wy = win_height - current_mouse_y;
-
-							Vector3d disp_center_after;
-							gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-								&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
-
-							
-							LCS_translation = disp_center_after - disp_center_before;
-
-							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-							for(int k = 0; k < size_k; k ++)
-							{
-								Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
-							}
-							}
-						}
-					}
-				}
-				break;
-			case Kernel::VELOCITY_MATCHING:
-			case Kernel::MULTIPLE_VELOCITY_MATCHING:
-				//single point
-				for(int j = 0; j < p_kernel->level_list.size(); j ++)
-				{
-					if (p_kernel->level_list[j]->voxmesh_level->constraint_node)
-					{
-						Node* p_node = p_kernel->level_list[j]->voxmesh_level->constraint_node;
-
-						Vector3d disp_arrow_begin = p_node->coordinate + p_node->displacement;
+						Vector3d force_arrow_begin = p_kernel->p_vox_mesh->active_node->coordinate + p_kernel->p_vox_mesh->active_node->displacement;
 
 						double wx, wy, wz;
 
-						gluProject(disp_arrow_begin[0], disp_arrow_begin[1], disp_arrow_begin[2], 
+						gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
 							currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
 
 						wx = current_mouse_x;
 						wy = win_height - current_mouse_y;
 
 						gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-							&p_node->prescribed_position[0], &p_node->prescribed_position[1], &p_node->prescribed_position[2]);
+							&force_arrow[0], &force_arrow[1], &force_arrow[2]);
 
-						//for(int i=0; i<p_node->duplicates.size(); ++i)
-						//{
-						//	p_node->duplicates[i]->target_position = p_node->prescribed_position;
-						//}
-						if(p_node)
-							force_arrow = p_node->prescribed_position;
-						else
-							force_arrow = Vector3d::Zero();
+						p_kernel->p_vox_mesh->active_node->force = force_arrow - force_arrow_begin;
+						for(int i=0; i<p_kernel->p_vox_mesh->active_node->duplicates.size(); ++i)
+						{
+							p_kernel->p_vox_mesh->active_node->duplicates[i]->force = p_kernel->p_vox_mesh->active_node->force;
+						}
 					}
-				}
-				//many constraints
-				if(p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
-				{
+					//many constraints
 					for(int j = 0; j < p_kernel->level_list.size(); j ++)
 					{
 						if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+						{	
+							if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
+							{
+								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+								//put center to be the same, using the same force, set bottom level center.
+								Vector3d force_arrow_begin = p_kernel->level_list[p_kernel->level_list.size()-1]->voxmesh_level->constraint_center;
+								for(int k = 0; k < size_k; k ++)
+								{
+
+									double wx, wy, wz;
+
+									gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
+										currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+									wx = current_mouse_x;
+									wy = win_height - current_mouse_y;
+
+									gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+										&force_arrow[0], &force_arrow[1], &force_arrow[2]);
+							
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->force =  force_arrow - force_arrow_begin;
+
+									//revised here 0204
+									for(int i=0; i<p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
+									{
+										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = force_arrow - force_arrow_begin;
+									}
+								}
+							}
+							else if(p_kernel->constraintType == Kernel::ORIENTATION_CONSTRAINT)
+							{
+								double degree = ((current_mouse_xd - last_mouse_xd) +  (current_mouse_yd - last_mouse_yd)) *90;
+
+								//rotate(degree, axis_x, p_kernel->level_list[0]->voxmesh_level->constraint_center);
+								//rotate(degree, axis_x, LCS_x);
+
+								Matrix3d r;
+								Vector3d angular_velocity;
+								if(flag_axis == 1)
+								{
+									r = rotate(degree, LCS_x);
+									angular_velocity = getAngularVelocity(degree, LCS_x);
+								}
+								else if(flag_axis == 2)
+								{
+									r = rotate(degree, LCS_y);
+									angular_velocity = getAngularVelocity(degree, LCS_y);
+								}
+								else
+								{
+									r = rotate(degree, LCS_z);
+									angular_velocity = getAngularVelocity(degree, LCS_z);
+								}
+
+								LCS_rotation = r * LCS_rotation;
+								LCS_x = r * LCS_x;
+								LCS_y = r * LCS_y;
+								LCS_z = r * LCS_z;
+
+								//rotation
+								for(int j = 0; j < p_kernel->level_list.size(); j ++)
+								{
+									//p_kernel->level_list[j]->voxmesh_level->constraint_center = r * p_kernel->level_list[j]->voxmesh_level->constraint_center;
+									if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+									{
+										int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+										for(int k = 0; k < size_k; k ++)
+										{
+											p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = p_kernel->level_list[j]->voxmesh_level->constraint_center + LCS_translation + LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k];
+											p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation = r * p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation;
+										}
+									}
+								}
+
+							}
+							else if (p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
+							{
+								if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+								{
+								Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+
+								double wx, wy, wz;
+
+								gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+								wx = current_mouse_x;
+								wy = win_height - current_mouse_y;
+
+								Vector3d disp_center_after;
+								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+									&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+
+							
+								LCS_translation = disp_center_after - disp_center_before;
+
+								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+								for(int k = 0; k < size_k; k ++)
+								{
+									Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+								}
+								}
+							}
+						}
+					}
+					break;
+				case Kernel::VELOCITY_MATCHING:
+				case Kernel::MULTIPLE_VELOCITY_MATCHING:
+					//single point
+					for(int j = 0; j < p_kernel->level_list.size(); j ++)
+					{
+						if (p_kernel->level_list[j]->voxmesh_level->constraint_node)
 						{
-							Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+							Node* p_node = p_kernel->level_list[j]->voxmesh_level->constraint_node;
+
+							Vector3d disp_arrow_begin = p_node->coordinate + p_node->displacement;
 
 							double wx, wy, wz;
 
-							gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+							gluProject(disp_arrow_begin[0], disp_arrow_begin[1], disp_arrow_begin[2], 
 								currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
 
 							wx = current_mouse_x;
 							wy = win_height - current_mouse_y;
 
-							Vector3d disp_center_after;
 							gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-								&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+								&p_node->prescribed_position[0], &p_node->prescribed_position[1], &p_node->prescribed_position[2]);
 
-							
-							LCS_translation = disp_center_after - disp_center_before;
-
-							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-							for(int k = 0; k < size_k; k ++)
-							{
-								Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
-								Vector3d linear_velocity = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - preposition;
-								//cout << linear_velocity << endl;
-								//Vector3d linear_velocity = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->target_position;
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_linear_velocity = linear_velocity / p_kernel->time_step_size;
-								/*
-								for(int n = 0; n < p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); n ++)
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[n]->prescribed_linear_velocity = 
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[n]->static_position;
-								*/
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->flag_constraint_type = 1;
-							}
+							//for(int i=0; i<p_node->duplicates.size(); ++i)
+							//{
+							//	p_node->duplicates[i]->target_position = p_node->prescribed_position;
+							//}
+							if(p_node)
+								force_arrow = p_node->prescribed_position;
+							else
+								force_arrow = Vector3d::Zero();
 						}
 					}
-				}
-				else
-				{
-					double degree = ((current_mouse_xd - last_mouse_xd) +  (current_mouse_yd - last_mouse_yd)) *90;
-
-					//rotate(degree, axis_x, p_kernel->level_list[0]->voxmesh_level->constraint_center);
-					//rotate(degree, axis_x, LCS_x);
-
-					Matrix3d r;
-					Vector3d angular_velocity;
-					if(flag_axis == 1)
+					//many constraints
+					if(p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
 					{
-						r = rotate(degree, LCS_x);
-						angular_velocity = getAngularVelocity(degree, LCS_x);
-					}
-					else if(flag_axis == 2)
-					{
-						r = rotate(degree, LCS_y);
-						angular_velocity = getAngularVelocity(degree, LCS_y);
+						for(int j = 0; j < p_kernel->level_list.size(); j ++)
+						{
+							if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+							{
+								Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+
+								double wx, wy, wz;
+
+								gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+								wx = current_mouse_x;
+								wy = win_height - current_mouse_y;
+
+								Vector3d disp_center_after;
+								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+									&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+
+							
+								LCS_translation = disp_center_after - disp_center_before;
+
+								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+								for(int k = 0; k < size_k; k ++)
+								{
+									Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+									Vector3d linear_velocity = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - preposition;
+									//cout << linear_velocity << endl;
+									//Vector3d linear_velocity = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->target_position;
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_linear_velocity = linear_velocity / p_kernel->time_step_size;
+									/*
+									for(int n = 0; n < p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates.size(); n ++)
+										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[n]->prescribed_linear_velocity = 
+										p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position - p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->duplicates[n]->static_position;
+									*/
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->flag_constraint_type = 1;
+								}
+							}
+						}
 					}
 					else
 					{
-						r = rotate(degree, LCS_z);
-						angular_velocity = getAngularVelocity(degree, LCS_z);
-					}
+						double degree = ((current_mouse_xd - last_mouse_xd) +  (current_mouse_yd - last_mouse_yd)) *90;
 
-					LCS_rotation = r * LCS_rotation;
-					LCS_x = r * LCS_x;
-					LCS_y = r * LCS_y;
-					LCS_z = r * LCS_z;
+						//rotate(degree, axis_x, p_kernel->level_list[0]->voxmesh_level->constraint_center);
+						//rotate(degree, axis_x, LCS_x);
 
-					//rotation
-					for(int j = 0; j < p_kernel->level_list.size(); j ++)
-					{
-						//p_kernel->level_list[j]->voxmesh_level->constraint_center = r * p_kernel->level_list[j]->voxmesh_level->constraint_center;
-						if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+						Matrix3d r;
+						Vector3d angular_velocity;
+						if(flag_axis == 1)
 						{
-							int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-							for(int k = 0; k < size_k; k ++)
+							r = rotate(degree, LCS_x);
+							angular_velocity = getAngularVelocity(degree, LCS_x);
+						}
+						else if(flag_axis == 2)
+						{
+							r = rotate(degree, LCS_y);
+							angular_velocity = getAngularVelocity(degree, LCS_y);
+						}
+						else
+						{
+							r = rotate(degree, LCS_z);
+							angular_velocity = getAngularVelocity(degree, LCS_z);
+						}
+
+						LCS_rotation = r * LCS_rotation;
+						LCS_x = r * LCS_x;
+						LCS_y = r * LCS_y;
+						LCS_z = r * LCS_z;
+
+						//rotation
+						for(int j = 0; j < p_kernel->level_list.size(); j ++)
+						{
+							//p_kernel->level_list[j]->voxmesh_level->constraint_center = r * p_kernel->level_list[j]->voxmesh_level->constraint_center;
+							if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
 							{
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = p_kernel->level_list[j]->voxmesh_level->constraint_center + LCS_translation + LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k];
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation = r * p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation;
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_angular_velocity = angular_velocity / p_kernel->time_step_size;
-								p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->flag_constraint_type = 2;
+								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+								for(int k = 0; k < size_k; k ++)
+								{
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = p_kernel->level_list[j]->voxmesh_level->constraint_center + LCS_translation + LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k];
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation = r * p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_rotation;
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_angular_velocity = angular_velocity / p_kernel->time_step_size;
+									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->flag_constraint_type = 2;
+								}
 							}
 						}
 					}
-				}
-				break;
-			} // end switch
+					break;
+				} // end switch
+			}
+			else
+			{
+				//cube operation
+			}
 		} // end if simulation
 	}
 	
@@ -1978,15 +1988,16 @@ void Renderer::renderSelectSquare(int x1, int y1, int x2, int y2)
 
 	glDisable(GL_DEPTH_TEST);
 
-	glBegin(GL_QUADS);
 	y1 = win_height-y1;
 	y2 = win_height-y2;
-
+	/*
+	glBegin(GL_QUADS);
 	glVertex2i(x1, y1);
 	glVertex2i(x1, y2);
 	glVertex2i(x2, y2);
 	glVertex2i(x2, y1);
 	glEnd();
+	*/
 
 	glDisable(GL_BLEND);
 	glColor3f(0.1, 0.9, 0.2);
@@ -4030,6 +4041,467 @@ Vector3d Renderer::getAngularVelocity( double degrees, const Vector3d& axe)
 	return angular_velocity;
 }
 
+void Renderer::renderVoxSurfaceBoundary(Vox * pVox, float * pColor)
+{
+	glColor3fv(pColor);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Vector3d p0, p1, p2, p3, n1, n2, n;
+		glBegin(GL_QUADS);
+
+		if (pVox->flag_top_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			*/
+			p0 = pVox->node_0->target_position;
+			p1 = pVox->node_3->target_position;
+			p2 = pVox->node_2->target_position;
+			p3 = pVox->node_1->target_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_bottom_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			*/
+
+			p0 = pVox->node_4->target_position;
+			p1 = pVox->node_5->target_position;
+			p2 = pVox->node_6->target_position;
+			p3 = pVox->node_7->target_position;
+			
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+
+		if (pVox->flag_left_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			*/
+
+			p0 = pVox->node_0->target_position;
+			p1 = pVox->node_4->target_position;
+			p2 = pVox->node_7->target_position;
+			p3 = pVox->node_3->target_position;
+
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_right_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			*/
+
+			p0 = pVox->node_1->target_position;
+			p1 = pVox->node_2->target_position;
+			p2 = pVox->node_6->target_position;
+			p3 = pVox->node_5->target_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_front_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			*/
+			
+			p0 = pVox->node_2->target_position;
+			p1 = pVox->node_3->target_position;
+			p2 = pVox->node_7->target_position;
+			p3 = pVox->node_6->target_position;
+			
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_back_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			*/
+
+			p0 = pVox->node_0->target_position;
+			p1 = pVox->node_1->target_position;
+			p2 = pVox->node_5->target_position;
+			p3 = pVox->node_4->target_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		glEnd();
+}
+void Renderer::renderVoxSurface(Vox * pVox, float * pColor)
+{
+	glColor4f(pColor[0], pColor[1], pColor[2], 0.2);
+	glPolygonMode(GL_FRONT, GL_FILL);
+	Vector3d p0, p1, p2, p3, n1, n2, n;
+	glBegin(GL_QUADS);
+
+	if (pVox->flag_top_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		*/
+		p0 = pVox->node_0->target_position;
+		p1 = pVox->node_3->target_position;
+		p2 = pVox->node_2->target_position;
+		p3 = pVox->node_1->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_bottom_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		*/
+
+		p0 = pVox->node_4->target_position;
+		p1 = pVox->node_5->target_position;
+		p2 = pVox->node_6->target_position;
+		p3 = pVox->node_7->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+
+	if (pVox->flag_left_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		*/
+
+		p0 = pVox->node_0->target_position;
+		p1 = pVox->node_4->target_position;
+		p2 = pVox->node_7->target_position;
+		p3 = pVox->node_3->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_right_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		*/
+		p0 = pVox->node_1->target_position;
+		p1 = pVox->node_2->target_position;
+		p2 = pVox->node_6->target_position;
+		p3 = pVox->node_5->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_front_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		*/
+
+		p0 = pVox->node_2->target_position;
+		p1 = pVox->node_3->target_position;
+		p2 = pVox->node_7->target_position;
+		p3 = pVox->node_6->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_back_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		*/
+		p0 = pVox->node_0->target_position;
+		p1 = pVox->node_1->target_position;
+		p2 = pVox->node_5->target_position;
+		p3 = pVox->node_4->target_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	glEnd();
+}
 void Renderer::renderLevelVoxMesh(const Level * plevel)
 {
 	if(plevel->voxmesh_level == NULL)
@@ -4040,482 +4512,45 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	{
 		return;
 	}
-
 	double v_dim = vm->vox_size * 0.5;
+	double cube_size = v_dim*0.2;
 
-	
-	glColor3fv(vox_mesh_color);
-	
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
 	vector<Vox*>::const_iterator vox_iter = vm->surface_vox_list.begin();
 	//cout << "surface vox number " << vm->surface_vox_list.size() << endl;
 
 	for (; vox_iter!=vm->surface_vox_list.end(); ++vox_iter)
 	{
-		Vector3d p0, p1, p2, p3, n1, n2, n;
-		glBegin(GL_QUADS);
-
-		if ((*vox_iter)->flag_top_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			*/
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_3->target_position;
-			p2 = (*vox_iter)->node_2->target_position;
-			p3 = (*vox_iter)->node_1->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_bottom_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_4->target_position;
-			p1 = (*vox_iter)->node_5->target_position;
-			p2 = (*vox_iter)->node_6->target_position;
-			p3 = (*vox_iter)->node_7->target_position;
-			
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-
-		if ((*vox_iter)->flag_left_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_4->target_position;
-			p2 = (*vox_iter)->node_7->target_position;
-			p3 = (*vox_iter)->node_3->target_position;
-
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_right_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_1->target_position;
-			p1 = (*vox_iter)->node_2->target_position;
-			p2 = (*vox_iter)->node_6->target_position;
-			p3 = (*vox_iter)->node_5->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_front_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			*/
-			
-			p0 = (*vox_iter)->node_2->target_position;
-			p1 = (*vox_iter)->node_3->target_position;
-			p2 = (*vox_iter)->node_7->target_position;
-			p3 = (*vox_iter)->node_6->target_position;
-			
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_back_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_1->target_position;
-			p2 = (*vox_iter)->node_5->target_position;
-			p3 = (*vox_iter)->node_4->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		glEnd();
+		renderVoxSurfaceBoundary((*vox_iter), vox_mesh_color);
 	}
-	
-	glColor4f(vox_mesh_color[0], vox_mesh_color[1], vox_mesh_color[2], 0.2);
 
-	glPolygonMode(GL_FRONT, GL_FILL);
+
 	vox_iter = vm->surface_vox_list.begin();
-
 	for (; vox_iter!=vm->surface_vox_list.end(); ++vox_iter)
 	{
-		Vector3d p0, p1, p2, p3, n1, n2, n;
-		glBegin(GL_QUADS);
-
-		if ((*vox_iter)->flag_top_face)
+		if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			*/
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_3->target_position;
-			p2 = (*vox_iter)->node_2->target_position;
-			p3 = (*vox_iter)->node_1->target_position;
+			double wx, wy, wz;
+			Vector3d p = (*vox_iter)->vox_center;
 
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
+			gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
 
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
+			if (isSelected(wx, wy))
+			{
+				if (flag_show_cube_static_constraints)
+					renderVoxSurface((*vox_iter), anchor_cube_color);
+				else
+					renderVoxSurface((*vox_iter), active_node_color);
+				continue;
+			}
 		}
-
-		if ((*vox_iter)->flag_bottom_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_4->target_position;
-			p1 = (*vox_iter)->node_5->target_position;
-			p2 = (*vox_iter)->node_6->target_position;
-			p3 = (*vox_iter)->node_7->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-
-		if ((*vox_iter)->flag_left_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_4->target_position;
-			p2 = (*vox_iter)->node_7->target_position;
-			p3 = (*vox_iter)->node_3->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_right_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			*/
-			p0 = (*vox_iter)->node_1->target_position;
-			p1 = (*vox_iter)->node_2->target_position;
-			p2 = (*vox_iter)->node_6->target_position;
-			p3 = (*vox_iter)->node_5->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_front_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
-			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
-			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
-			p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
-			*/
-
-			p0 = (*vox_iter)->node_2->target_position;
-			p1 = (*vox_iter)->node_3->target_position;
-			p2 = (*vox_iter)->node_7->target_position;
-			p3 = (*vox_iter)->node_6->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		if ((*vox_iter)->flag_back_face)
-		{
-			/*
-			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
-			p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
-			p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
-			p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
-			*/
-			p0 = (*vox_iter)->node_0->target_position;
-			p1 = (*vox_iter)->node_1->target_position;
-			p2 = (*vox_iter)->node_5->target_position;
-			p3 = (*vox_iter)->node_4->target_position;
-
-			Vector3d p10 = p1 - p1;
-			Vector3d p30 = p3 - p0;
-
-			n1 = p10.cross(p30);
-			n1.normalize();
-
-			Vector3d p12 = p1 - p2;
-			Vector3d p32 = p3 - p2;
-
-			n2 = p12.cross(p32);
-			n2.normalize();
-
-			n = n1 + n2;
-			n.normalize();
-
-			glNormal3d(n[0], n[1], n[2]);
-
-			glVertex3d(p0[0], p0[1], p0[2]);
-			glVertex3d(p1[0], p1[1], p1[2]);
-			glVertex3d(p2[0], p2[1], p2[2]);
-			glVertex3d(p3[0], p3[1], p3[2]);
-		}
-
-		glEnd();
+		renderVoxSurface((*vox_iter), vox_mesh_color);
 	}
 		
-	double cube_size = v_dim*0.2;
 	// need to differentiate selected and none selected (surface) voxel
+
+
 
 	// render selected nodes for anchor nodes
 	glColor3fv(anchor_node_color);

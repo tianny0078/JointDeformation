@@ -86,6 +86,8 @@ public:
 	void renderParentNeighborStaticPosition(const Level * plevel, const Level * plevel_parent, int showNumNeighbor);
 	void renderLevelVertex(const Mesh * m, const Level * plevel, int showVertexIndex);
 	void renderLevelVox(const Level * plevel, int showVoxIdx[]);
+	void renderVoxSurfaceBoundary(Vox * pVox, float * pColor);
+	void renderVoxSurface(Vox * pVox, float * pColor);
 	
 	
 	//void renderMeshForSelectAnchorNode(const Mesh* m);
@@ -201,6 +203,8 @@ public:
 	float grid_color[3];
 	float status_color[3];
 	float render_mesh_color[3];
+	float anchor_cube_color[3];
+	float active_cube_color[3];
 	
 	vector<float*> color_tab;
 		
