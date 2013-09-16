@@ -98,6 +98,9 @@
     <ClCompile Include="include\network\tinyxml2.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cubeTool.cpp">
+      <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="joint_deformation.ui">
@@ -232,6 +235,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\performanceCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cubeTool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

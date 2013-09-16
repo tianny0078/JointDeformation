@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cubeTool.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_joint_deformation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -205,6 +206,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cubeTool.h" />
     <ClInclude Include="GeneratedFiles\ui_joint_deformation.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\HSMReceiver.h" />

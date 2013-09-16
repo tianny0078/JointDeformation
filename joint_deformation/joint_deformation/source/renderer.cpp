@@ -86,6 +86,8 @@ Renderer::Renderer(QWidget *parent)
 	LCS_y(1) = 0.3;
 	LCS_z = Vector3d::Zero();
 	LCS_z(2) = 0.3;
+
+	tool = new cubeTool();
 }
 
 Renderer::~Renderer()
@@ -242,6 +244,13 @@ void Renderer::paintGL()
 			//renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
 			///////////////////////////////////////////////////////////////
 		
+		}
+
+		if (flag_cube_operation)
+		{
+			tool->setVisible(true);
+			tool->setPosBegin(0.3, 0.0, 0.0);
+			tool->render();
 		}
 
 		break;

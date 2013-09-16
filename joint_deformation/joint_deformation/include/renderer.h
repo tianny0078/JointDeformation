@@ -21,6 +21,7 @@
 #include "GL/freeglut.h"
 #include <vector>
 #include <stdio.h>
+#include "cubeTool.h"
 
 
 #define MIN_CUBE_SIZE		0.005
@@ -269,6 +270,7 @@ public:
 
 	Matrix3d LCS_rotation;
 	Vector3d LCS_translation;
+	cubeTool * tool;
 };
 
 #endif
