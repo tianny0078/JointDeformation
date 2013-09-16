@@ -3717,19 +3717,32 @@ void Renderer::renderLevelStaticPosition(const Level * plevel, float * level_col
 	if(plevel->voxmesh_level != NULL)
 	{
 		double cube_size = plevel->voxmesh_level->vox_size*0.5*0.2;
-
-		for(int j = 0; j < plevel->voxmesh_level->num_cluster; j ++)
+		vector<Cluster>::const_iterator c_iter = plevel->voxmesh_level->cluster_list.begin();
+		for(; c_iter != plevel->voxmesh_level->cluster_list.end(); ++c_iter)
 		{
-			renderClusterStaticPosition(&plevel->voxmesh_level->cluster_list[j], level_color);
-			//show one constraint node
-			//if (plevel->voxmesh_level->constraint_node)
-			//{
-			//	//glColor3fv(active_node_color);
-			//	glColor4f(0.0, 0.0, 1.0, 0.4);
-			//	//Vector3d p = plevel->voxmesh_level->constraint_node->coordinate + plevel->voxmesh_level->constraint_node->displacement;
-			//	Vector3d p = plevel->voxmesh_level->constraint_node->prescribed_position;
-			//	renderCube(cube_size, p(0), p(1), p(2));
-			//}
+
+			if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
+			{
+				double wx, wy, wz;
+				Vector3d p = c_iter->original_center;
+
+				gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+				if (isSelected(wx, wy))
+				{
+					if (flag_show_cube_static_constraints)
+						renderClusterStaticPosition(&(*c_iter), anchor_cube_color);
+					else
+						renderClusterStaticPosition(&(*c_iter), active_cube_color);
+				}
+				else
+					renderClusterStaticPosition(&(*c_iter), level_color);
+			}
+			else
+				renderClusterStaticPosition(&(*c_iter), level_color);
+
+
+			//renderClusterStaticPosition(&plevel->voxmesh_level->cluster_list[j], level_color);
 			
 			// show selection while user draging selecting square
 			if (flag_show_constraints )
@@ -4541,11 +4554,13 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 				if (flag_show_cube_static_constraints)
 					renderVoxSurface((*vox_iter), anchor_cube_color);
 				else
-					renderVoxSurface((*vox_iter), active_node_color);
-				continue;
+					renderVoxSurface((*vox_iter), active_cube_color);
 			}
+			else
+				renderVoxSurface((*vox_iter), vox_mesh_color);
 		}
-		renderVoxSurface((*vox_iter), vox_mesh_color);
+		else
+			renderVoxSurface((*vox_iter), vox_mesh_color);
 	}
 		
 	// need to differentiate selected and none selected (surface) voxel
