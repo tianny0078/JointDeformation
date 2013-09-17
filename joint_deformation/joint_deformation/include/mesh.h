@@ -216,6 +216,7 @@ struct Face: public HNPacketLockedMarshallHandler
 	int index;
 	double area;
 	Node *node0, *node1, *node2;
+	Vector3d normal;
 	
 	void updateArea();
 	
@@ -431,6 +432,8 @@ struct Cluster
 
 	bool flag_inverted;
 	bool flag_constrained;
+	bool flag_cube_constrained;
+	bool flag_cube_anchored;
 
 	//penalty term
 	double inertial_penalty;
@@ -610,6 +613,8 @@ struct VoxMesh
 	vector<Node*> constraint_node_list;                                 // for more than one constraint
 	vector<Vector3d> constraint_displacement;
 	Vector3d constraint_center;
+	vector<Cluster *> static_cube_list;
+	vector<Cluster *> active_cube_list;
 	
 	tree<Cluster> cluster_hierarchy;									// the hierarchy of cluster
 	tree<Cluster>::fixed_depth_iterator current_parent_cluster;			// this is used for append a sub-cluster to a cluster

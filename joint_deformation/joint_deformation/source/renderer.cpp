@@ -174,8 +174,6 @@ void Renderer::paintGL()
 		
 		if (flag_cube_operation)
 		{
-			tool->setVisible(true);
-			tool->setPosBegin(0.3, 0.0, 0.0);
 			tool->render();
 		}
 
@@ -1172,7 +1170,112 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 			QMessageBox::information(NULL, tr("success"), tr(msg));
 		}
-		
+		if (flag_show_cube_static_constraints && last_mouse_button == Qt::RightButton && current_render_mode == REGULAR)
+		{
+			char msg[1024];
+			int cx = 0;		
+
+			for (int i = 0; i < p_kernel->level_list.size(); i++)
+			{
+				vector<Cluster>::iterator c_iter = p_kernel->level_list[i]->voxmesh_level->cluster_list.begin();
+
+
+				for (; c_iter!=p_kernel->level_list[i]->voxmesh_level->cluster_list.end(); ++c_iter)
+				{
+					if (i == 0)
+					{
+						double wx, wy, wz;
+						Vector3d p = c_iter->current_center;
+
+						gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+						if (isSelected(wx, wy))
+						{
+							if (!c_iter->flag_cube_anchored)
+							{
+								c_iter->flag_cube_anchored = true;
+								p_kernel->level_list[i]->voxmesh_level->static_cube_list.push_back(&(*c_iter));
+								vector<DuplicatedNode>::iterator d_iter = c_iter->node_list.begin();
+								for (; d_iter != c_iter->node_list.end(); ++ d_iter)
+								{
+									d_iter->mapped_node->flag_anchor_node = true;
+								}
+							}
+						}
+					}
+					else
+					{
+						if (c_iter->parent_cluster->flag_cube_anchored)
+						{
+							c_iter->flag_cube_anchored = true;
+							p_kernel->level_list[i]->voxmesh_level->static_cube_list.push_back(&(*c_iter));
+							vector<DuplicatedNode>::iterator d_iter = c_iter->node_list.begin();
+							for (; d_iter != c_iter->node_list.end(); ++ d_iter)
+							{
+								d_iter->mapped_node->flag_anchor_node = true;
+							}
+						}
+					}
+				}
+				cx += sprintf(msg+cx, "Level %d:  %d cube clusters have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->static_cube_list.size());
+			}
+
+			QMessageBox::information(NULL, tr("success"), tr(msg));
+		}
+		if (flag_show_cube_active_constraints && last_mouse_button == Qt::RightButton && current_render_mode == REGULAR)
+		{
+			char msg[1024];
+			int cx = 0;		
+
+			for (int i = 0; i < p_kernel->level_list.size(); i++)
+			{
+				vector<Cluster>::iterator c_iter = p_kernel->level_list[i]->voxmesh_level->cluster_list.begin();
+
+
+				for (; c_iter!=p_kernel->level_list[i]->voxmesh_level->cluster_list.end(); ++c_iter)
+				{
+					if(i == 0)
+					{
+						double wx, wy, wz;
+						Vector3d p = c_iter->current_center;
+
+
+						gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+						if (isSelected(wx, wy))
+						{
+							if (!c_iter->flag_cube_constrained)
+							{
+								c_iter->flag_cube_constrained = true;
+								p_kernel->level_list[i]->voxmesh_level->active_cube_list.push_back(&(*c_iter));
+								vector<DuplicatedNode>::iterator d_iter = c_iter->node_list.begin();
+								for (; d_iter != c_iter->node_list.end(); ++ d_iter)
+								{
+									d_iter->mapped_node->flag_constraint_node = true;
+								}
+							}
+						}
+
+					}
+					else
+					{
+						if (c_iter->parent_cluster->flag_cube_constrained)
+						{
+							c_iter->flag_cube_constrained = true;
+							p_kernel->level_list[i]->voxmesh_level->active_cube_list.push_back(&(*c_iter));
+							vector<DuplicatedNode>::iterator d_iter = c_iter->node_list.begin();
+							for (; d_iter != c_iter->node_list.end(); ++ d_iter)
+							{
+								d_iter->mapped_node->flag_constraint_node = true;
+							}
+						}
+					}
+				}
+				cx += sprintf(msg+cx, "Level %d:  %d cube clusters have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->active_cube_list.size());
+			}
+
+			QMessageBox::information(NULL, tr("success"), tr(msg));
+		}
 		if (current_render_mode == TREE_SETTING && last_mouse_button == Qt::RightButton)
 		{
 			 vector <Vox*> selected_vox_list;
@@ -1233,6 +1336,16 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 {
 	current_mouse_button = e->button();
+
+	current_mouse_x = e->x();
+	current_mouse_y = e->y();
+
+	// truncate if over win boundary
+	current_mouse_x = current_mouse_x > int(win_width) ? int(win_width) : current_mouse_x;
+	current_mouse_x = current_mouse_x < 1 ? 1 : current_mouse_x;
+
+	current_mouse_y = current_mouse_y > int(win_height) ? int(win_height) : current_mouse_y;
+	current_mouse_y = current_mouse_y < 1 ? 1 : current_mouse_y;	
 	
 	if (current_mouse_button == Qt::LeftButton)
 	{
@@ -1256,7 +1369,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 					(*n_iter)->flag_anchor_node = false;
 				}
 				p_kernel->level_list[i]->voxmesh_level->anchor_node_list.clear();
-
+				/*
 				//all targets set to be rest shape
 				vector<Cluster>::iterator ci;
 				for (ci = p_kernel->level_list[i]->voxmesh_level->cluster_list.begin(); ci!=p_kernel->level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
@@ -1266,9 +1379,31 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 						ci->node_list[j].target_position = ci->node_list[j].mapped_node->coordinate;
 					}
 				}
+				*/
 			}
 
 			QMessageBox::information(NULL, "success", "all anchor nodes are removed");
+		}
+		else if (flag_show_cube_static_constraints)
+		{
+
+			// clear anchor nodes for all level
+			for (int i = 0; i < p_kernel->level_list.size(); i++)
+			{
+				vector<Cluster *>::iterator c_iter = p_kernel->level_list[i]->voxmesh_level->static_cube_list.begin();
+				for (; c_iter!=p_kernel->level_list[i]->voxmesh_level->static_cube_list.end(); ++c_iter)
+				{
+					(*c_iter)->flag_cube_anchored = false;
+					vector<DuplicatedNode>::iterator d_iter = (*c_iter)->node_list.begin();
+					for (; d_iter != (*c_iter)->node_list.end(); ++d_iter)
+					{
+						d_iter->mapped_node->flag_anchor_node = false;
+					}
+				}
+				p_kernel->level_list[i]->voxmesh_level->static_cube_list.clear();
+			}
+
+			QMessageBox::information(NULL, "success", "all anchor cubes are removed");
 		}
 		else if (flag_show_constraints)
 		{
@@ -1308,7 +1443,88 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			LCS_z.setZero();
 			QMessageBox::information(NULL, "success", "all constraint nodes are removed");
 		}
+		else if (flag_show_cube_active_constraints)
+		{
+			// clear anchor nodes for all level
+			for (int i = 0; i < p_kernel->level_list.size(); i++)
+			{
+				vector<Cluster *>::iterator c_iter = p_kernel->level_list[i]->voxmesh_level->active_cube_list.begin();
+				for (; c_iter!=p_kernel->level_list[i]->voxmesh_level->active_cube_list.end(); ++c_iter)
+				{
+					(*c_iter)->flag_cube_constrained = false;
+					vector<DuplicatedNode>::iterator d_iter = (*c_iter)->node_list.begin();
+					for (; d_iter != (*c_iter)->node_list.end(); ++d_iter)
+					{
+						d_iter->mapped_node->flag_constraint_node = false;
+					}
+				}
+				p_kernel->level_list[i]->voxmesh_level->active_cube_list.clear();
+			}
+			QMessageBox::information(NULL, "success", "all constraint cubes are removed");
+		}
+		else if (flag_cube_operation)
+		{
+			double x, y, z;
+			Vector3d p, q, l, m;
+			x = current_mouse_x;
+			y = win_height - current_mouse_y;
+			z = 0;
+			gluUnProject(x, y, z, currentmodelview, currentprojection, currentviewport, 
+				&p[0], &p[1], &p[2]);
+			z = 1;
+			gluUnProject(x, y, z, currentmodelview, currentprojection, currentviewport, 
+				&q[0], &q[1], &q[2]);
+			l = q - p;
+			vector<Face>::iterator fi = p_kernel->p_mesh->face_list.begin();
+			for (; fi!=p_kernel->p_mesh->face_list.end(); ++fi)
+			{
+				Vector3d n0, n1, n2, n01, n02, n03, n;
 
+				n0 = fi->node0->coordinate + fi->node0->displacement;
+				n1 = fi->node1->coordinate + fi->node1->displacement;
+				n2 = fi->node2->coordinate + fi->node2->displacement;
+
+				n = (-1)*fi->normal;
+				float nDotL = n.dot(l);
+
+				if (nDotL <= 0.0)
+					continue;
+
+				float d = n.dot(n0 - p) / nDotL;
+
+				if (d < 0.0f || d > 1.0f) // plane is beyond the ray we consider
+					continue;
+
+				m = p + d * l;
+
+				n01 = (n0 - n1).cross(m - n0);
+				n02 = (n1 - n2).cross(m - n1);
+				n03 = (n2 - n0).cross(m - n2);
+
+				if (n.dot(n01) >= 0.0f &&
+					n.dot(n02) >= 0.0f &&
+					n.dot(n03) >= 0.0f)
+				{
+					tool->setVisible(true);
+					tool->setPosBegin(m[0], m[1], m[2]);
+					tool->setPosEnd(m[0]+fi->normal[0], m[1]+fi->normal[1], m[2]+fi->normal[2]);
+					//break; // to break loop for nodes
+				}
+				//else
+					//tool->setVisible(false);
+				/*
+				if (isPicked4Cube(x, y))
+				{
+					tool->setVisible(true);
+					tool->setPosBegin(p[0], p[1], p[2]);
+					tool->setPosEnd(p[0]+fi->normal[0], p[1]+fi->normal[1], p[2]+fi->normal[2]);
+					break; // to break loop for nodes
+				}
+				else
+					tool->setVisible(false);
+					*/
+			}
+		}
 		if (flag_simulating)
 		{
 			vector<Node*>::iterator ni = p_kernel->p_vox_mesh->surface_node_list.begin();
@@ -1423,6 +1639,24 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 			break;
 
 		case Camera::IDLING:
+			if (flag_cube_operation)
+			{
+				Vector3d p = tool->getPosEnd();
+
+				double wx, wy, wz;
+
+				gluProject(p[0], p[1], p[2], 
+					currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+				wx = current_mouse_x;
+				wy = win_height - current_mouse_y;
+
+				Vector3d np;
+				gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+					&np[0], &np[1], &np[2]);
+
+				tool->setPosEnd(np[0], np[1],np[2]);
+			}
 			break;
 
 		default:
@@ -1719,6 +1953,8 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 		} // end if simulation
 	}
 	
+
+
 	last_mouse_xd = current_mouse_xd;
 	last_mouse_yd = current_mouse_yd;
 
@@ -2292,6 +2528,7 @@ void Renderer::renderMesh(const Mesh* m)
 
 		n = n01.cross(n02);
 		n.normalize();
+		fi->normal = n;
 		
 		//display a line mesh
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
@@ -3520,7 +3757,18 @@ bool Renderer::isPicked(double x, double y)
 		return false;
 	}
 }
-
+bool Renderer::isPicked4Cube(double x, double y)
+{
+	y = win_height - y;
+	if ((current_mouse_x-x)*(current_mouse_x-x) + (current_mouse_y-y)*(current_mouse_y-y) <= 50.0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 void Renderer::renderForce()
 {
 	//one constraint
@@ -3720,29 +3968,33 @@ void Renderer::renderLevelStaticPosition(const Level * plevel, float * level_col
 		vector<Cluster>::const_iterator c_iter = plevel->voxmesh_level->cluster_list.begin();
 		for(; c_iter != plevel->voxmesh_level->cluster_list.end(); ++c_iter)
 		{
-
-			if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
+			if (c_iter->flag_cube_constrained)
+				renderClusterStaticPosition(&(*c_iter), active_cube_color);
+			else if (c_iter->flag_cube_anchored)
+				renderClusterStaticPosition(&(*c_iter), anchor_cube_color);
+			else
 			{
-				double wx, wy, wz;
-				Vector3d p = c_iter->original_center;
-
-				gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-				if (isSelected(wx, wy))
+				if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 				{
-					if (flag_show_cube_static_constraints)
-						renderClusterStaticPosition(&(*c_iter), anchor_cube_color);
+					double wx, wy, wz;
+					Vector3d p = c_iter->current_center;
+
+					gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+					if (isSelected(wx, wy))
+					{
+						if (flag_show_cube_static_constraints)
+							renderClusterStaticPosition(&(*c_iter), anchor_cube_color);
+						else
+							renderClusterStaticPosition(&(*c_iter), active_cube_color);
+					}
 					else
-						renderClusterStaticPosition(&(*c_iter), active_cube_color);
+						renderClusterStaticPosition(&(*c_iter), level_color);
 				}
 				else
 					renderClusterStaticPosition(&(*c_iter), level_color);
+
 			}
-			else
-				renderClusterStaticPosition(&(*c_iter), level_color);
-
-
-			//renderClusterStaticPosition(&plevel->voxmesh_level->cluster_list[j], level_color);
 			
 			// show selection while user draging selecting square
 			if (flag_show_constraints )
@@ -4542,25 +4794,32 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	vox_iter = vm->surface_vox_list.begin();
 	for (; vox_iter!=vm->surface_vox_list.end(); ++vox_iter)
 	{
-		if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
+		if (vm->cluster_list[(*vox_iter)->clusterid].flag_cube_constrained)
+			renderVoxSurface((*vox_iter), active_cube_color);
+		else if (vm->cluster_list[(*vox_iter)->clusterid].flag_cube_anchored)
+			renderVoxSurface((*vox_iter), anchor_cube_color);
+		else
 		{
-			double wx, wy, wz;
-			Vector3d p = (*vox_iter)->vox_center;
-
-			gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-			if (isSelected(wx, wy))
+			if(flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 			{
-				if (flag_show_cube_static_constraints)
-					renderVoxSurface((*vox_iter), anchor_cube_color);
+				double wx, wy, wz;
+				Vector3d p = (*vox_iter)->vox_center;
+
+				gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+				if (isSelected(wx, wy))
+				{
+					if (flag_show_cube_static_constraints)
+						renderVoxSurface((*vox_iter), anchor_cube_color);
+					else
+						renderVoxSurface((*vox_iter), active_cube_color);
+				}
 				else
-					renderVoxSurface((*vox_iter), active_cube_color);
+					renderVoxSurface((*vox_iter), vox_mesh_color);
 			}
 			else
 				renderVoxSurface((*vox_iter), vox_mesh_color);
 		}
-		else
-			renderVoxSurface((*vox_iter), vox_mesh_color);
 	}
 		
 	// need to differentiate selected and none selected (surface) voxel

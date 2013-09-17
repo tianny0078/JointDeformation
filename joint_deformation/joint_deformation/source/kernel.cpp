@@ -5,6 +5,7 @@
 /************************************************************************/
 
 #include "kernel.h"
+ 
 Kernel::Kernel()
 {
 	used_simulator = UNDEFINED;
@@ -1959,6 +1960,7 @@ void Kernel::initializeSimulator()
 		for (ci=p_vox_mesh->cluster_list.begin(); ci!=p_vox_mesh->cluster_list.end(); ++ci)
 		{
 			ci->computeRestMassCentroid();
+			ci->current_center = ci->original_center;
 			ci->computeAQQ();
 		}
 
@@ -1999,6 +2001,7 @@ void Kernel::initializeSimulator()
 			for (ci=level_list[i]->voxmesh_level->cluster_list.begin(); ci!=level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
 			{
 				ci->computeRestMassCentroid();
+				ci->current_center = ci->original_center;
 				ci->computeAQQ();
 
 				//ci->velocity_matrix.resize(3*ci->num_node, 6);
@@ -2180,6 +2183,7 @@ void Kernel::initializeSimulator()
 			for (ci=level_list[i]->voxmesh_level->cluster_list.begin(); ci!=level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
 			{
 				ci->computeRestMassCentroid();
+				ci->current_center = ci->original_center;
 				ci->computeAQQ();
 
 				//ci->velocity_matrix.resize(3*ci->num_node, 6);
@@ -3203,6 +3207,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 						list_q.push_back(temp);
 						
 						p_temp->computeCurrentMassCentroid4Target();
+						//p_temp->computeCurrentMassCentroid4Static();
 						//list_v.push_back((p_temp->current_center - p_temp->r * p_temp->original_center));
 						list_v.push_back(p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center);
 						
@@ -3509,12 +3514,14 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				double t_add = 0.0;
 				int count = 1;
 				m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
+				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Static();
 				////Vector3d t = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
 				Vector3d t = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
 				translation = (m_pcluster->leaf_parameter[0] / m_pcluster->term_normlize) * t;
 				while(count < sizeLeaf)
 				{
 					m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Target();
+					//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Static();
 					Quaterniond q2(m_pcluster->leaf_list[count]->r);
 					t_add += (m_pcluster->leaf_parameter[count-1] / m_pcluster->term_normlize);
 					//double temp = (t_add * t_add) /(t_add * t_add + interpolation * interpolation);
@@ -3737,7 +3744,7 @@ bool Kernel::simulateNextStep4Experimental()
 				vector<double> t;
 				double t_add = 0.0;
 				Vector3d t_ci = Vector3d::Zero();
-
+				
 				for(int p = 0; p < 8; p++)
 				{
 					if(ci->vox_list[0]->list_near_parentVox[p])
@@ -3747,7 +3754,7 @@ bool Kernel::simulateNextStep4Experimental()
 						Quaterniond temp(p_temp->r);
 						list_q.push_back(temp);
 						
-						p_temp->computeCurrentMassCentroid4Target();
+						//p_temp->computeCurrentMassCentroid4Target();
 						//list_v.push_back((p_temp->current_center - p_temp->r * p_temp->original_center));
 						list_v.push_back(p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center);
 						
@@ -3836,15 +3843,33 @@ bool Kernel::simulateNextStep4Experimental()
 			{
 				for( int i = 0; i < iteration; i ++)
 				{
+					int numC = 0;
 					vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
 					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
 					{
+
 						vector<DuplicatedNode>::const_iterator const_ni;
 
 						ci->a_pq = Matrix3d::Zero();
 						Vector3d p, q;
-						ci->computeCurrentMassCentroid4Target();
+						//ci->computeCurrentMassCentroid4Target();
 
+						ci->r = Matrix3d::Identity();
+						ci->current_center = ci->original_center;
+						if(numC == 2)
+						{
+							ci->r = Matrix3d::Zero();
+							ci->r(0, 1) = -1;
+							ci->r(1, 0) = 1;
+							ci->r(2, 2) = 1;
+							//ci->r = Matrix3d::Identity();
+							//cout << ci->r << endl;
+							//ci->current_center[0] = ci->original_center[0] + 1.0/12;
+							ci->current_center[1] = ci->original_center[1] + 1.0/3;
+							//cout << ci->current_center << endl;
+						}
+
+						/*
 						for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
 						{
 							p = const_ni->target_position - ci->current_center;
@@ -3862,17 +3887,17 @@ bool Kernel::simulateNextStep4Experimental()
 						num_PE_perTimeStep++;
 
 						double det_a = det33(ci->a);
-
+						*/
 						vector<DuplicatedNode>::iterator dni;
 						for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
 						{
-							dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->original_center) + ci->current_center;
+							dni->static_position = (1.0-ci->beta)*ci->r*(dni->coordinate - ci->original_center) + ci->current_center;
 						
 							if (!dni->mapped_node->flag_anchor_node)
 							{
 								Vector3d _force = dni->force + force_gravity + force_wind;
 
-								if (n == idx_bottom)
+								if (n == idx_bottom && n > 0)
 								{
 									if(flag_dynamics)
 									{
@@ -3892,7 +3917,7 @@ bool Kernel::simulateNextStep4Experimental()
 							}
 						}
 
-
+						numC ++;
 					}//for
 
 					// updating displacement
@@ -3959,7 +3984,8 @@ bool Kernel::simulateNextStep4Experimental()
 							}
 
 						}
-					}//update for
+						}//update for
+						
 				}
 			}//
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -4,17 +4,19 @@ void cubeTool::render()
 {
 	if (_isVisible)
 	{
-		glColor3f(0.0, 0.0, 1.0);
+		glColor3f(0.0, 1.0, 0.0);
 		glPushMatrix();
 		glTranslatef(_posBegin[0],_posBegin[1],_posBegin[2]);
 		glutSolidSphere(0.03, 16, 16);
 		glPopMatrix();
 
+		glColor3f(1.0, 0.0, 0.0);
 		glPushMatrix();
 		glTranslatef(_posEnd[0], _posEnd[1], _posEnd[2]);
 		glutSolidSphere(0.03, 16, 16);
 		glPopMatrix();
 
+		glColor3f(0.8, 0.8, 0.8);
 		glPushMatrix();
 		GLUquadricObj *quadratic;
 		quadratic = gluNewQuadric();

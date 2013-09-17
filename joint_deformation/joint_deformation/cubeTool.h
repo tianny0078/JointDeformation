@@ -16,6 +16,8 @@ public:
 	void render();
 	void setPosBegin(float x, float y, float z);
 	void setPosEnd(float x, float y, float z);
+	Vector3d getPosBegin(){return _posBegin;}
+	Vector3d getPosEnd(){return _posEnd;}
 	void setVisible(bool a){_isVisible = a;}
 };
 

@@ -125,6 +125,7 @@ public:
 
 	// return whether a position is picked
 	bool isPicked(double x, double y);
+	bool isPicked4Cube(double x, double y);
 	
 	// get current selected nodes
 	//bool GetCurrentSelectedNodes(vector<int> &onodeList, 

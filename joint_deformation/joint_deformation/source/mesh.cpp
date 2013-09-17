@@ -232,6 +232,8 @@ Cluster::Cluster()
 	location_in_hierarchy = NULL;
 	flag_inverted = false;
 	flag_constrained = false;
+	flag_cube_constrained = false;
+	flag_cube_anchored = false;
 
 	//penalty
 	inertial_penalty = 1.0;
