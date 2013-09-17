@@ -419,13 +419,8 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 	double voxel_dim = 1.0/double(d * d_parent);
 	double vox_cube = voxel_dim * voxel_dim * voxel_dim;
 	//save index of voxel for each node in original mesh
-	int np = 0;
 	for (node_iterator ni = m->node_list.begin(); ni < m->node_list.end(); ++ni)
 	{
-		if (np == 12584 || np == 15980 || np == 16002 || np == 18563 || np == 20253 || np == 33916 || np == 52810)
-		{
-			np = np;
-		}
 		int xp = floor((ni->coordinate.x() + 0.5) * d * d_parent);
 		int yp = floor((ni->coordinate.y() + 0.5) * d * d_parent);
 		int zp = floor((ni->coordinate.z() + 0.5) * d * d_parent);
@@ -512,8 +507,7 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 		}
 		else
 			ni->incident_cluster.clear();
-		
-		np ++;
+	
 	}
 }
 
@@ -3122,7 +3116,6 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 	//const_force(1) = 0.5;
 	//const_force(2) = 0.0;
 	
-	time_counter->StartCounter();
 
 	double mass_sum = 0.0;
 	num_PE_perTimeStep = 0;
@@ -3176,6 +3169,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				}
 			}
 		}
+		time_counter->StartCounter();
 		//if level > 0, needs to inherit R, T from parent_level
 		if(n > 0)
 		{
@@ -3260,6 +3254,9 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				}
 				//ci->original_center = ci->current_center;
 			}
+			time_counter->StopCounter();
+			cout << time_counter->GetElapsedTime() << endl;
+			time_counter->StartCounter();
 
 			// updating target position
 			for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
@@ -3285,6 +3282,9 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			}//for
 			
 		}
+		time_counter->StopCounter();
+		cout << time_counter->GetElapsedTime() << endl;
+
 		//else//if n == 0
 		{
 			//////////////////////////////////////////////////////////////////////////////////
@@ -3295,6 +3295,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			{
 				for( int i = 0; i < iteration; i ++)
 				{
+					time_counter->StartCounter();
 					vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
 					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
 					{
@@ -3354,6 +3355,9 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 
 					}//for
 
+					time_counter->StopCounter();
+					cout << time_counter->GetElapsedTime() << endl;
+					time_counter->StartCounter();
 					// updating displacement
 					for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
 					{
@@ -3419,19 +3423,20 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 
 						}
 					}//update for
+					time_counter->StopCounter();
+					cout << time_counter->GetElapsedTime() << endl;
 				}
 			}//
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			
 		}//else
-		
+
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	//level 0 update by the last level, multigrid
 	///////////////////////////////////////////////////////////////////////////
-	
 	if(level_list.size() > 1 && flag_multigrid)
 	{
 
@@ -3443,7 +3448,8 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 		//	ci->computeCurrentMassCentroid();
 		//}
 		///////////////////////////////////////////////////////////////////////////////////////
-		
+
+		time_counter->StartCounter();
 		int size_c = level_list[0]->voxmesh_level->cluster_list.size();
 		for(int i_c = 0; i_c < size_c; i_c ++)
 		{
@@ -3563,7 +3569,10 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				}
 			}
 		}
-		
+
+		time_counter->StopCounter();
+		cout << time_counter->GetElapsedTime() << endl;
+		time_counter->StartCounter();
 		// updating displacement
 		for (node_iterator ni=level_list[0]->voxmesh_level->node_list.begin(); ni!=level_list[0]->voxmesh_level->node_list.end(); ++ni)
 		{
@@ -3592,24 +3601,23 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			}
 		}//cluster for
 	}
-	int np = 0;
+
+	time_counter->StopCounter();
+	cout << time_counter->GetElapsedTime() << endl;
+	time_counter->StartCounter();
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
-		if (np == 12584 || np == 15980 || np == 16002 || np == 18563 || np == 20253 || np == 33916 || np == 52810)
-		{
-			np = np;
-		}
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
 			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
 		}
-		np++;
 	}
-	test_findPointOutside();
 
 	time_counter->StopCounter();
-	//cout << time_counter->GetElapsedTime() << endl;
+	cout << time_counter->GetElapsedTime() << endl;
+	cout << endl;
+	cout << endl;
 
 	//networking
 	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
