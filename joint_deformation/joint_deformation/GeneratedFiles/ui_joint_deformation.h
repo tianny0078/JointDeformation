@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon Sep 16 23:15:55 2013
+** Created: Wed Sep 18 15:25:31 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -1213,7 +1213,7 @@ public:
         pushButton_resetSimulation->setText(QString());
         comboBox_chooseSimulator->clear();
         comboBox_chooseSimulator->insertItems(0, QStringList()
-         << QApplication::translate("joint_deformationClass", "NONE", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "New Item", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Native Shape Matching", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Velocity Matching", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Single Grid", 0, QApplication::UnicodeUTF8)
@@ -1223,6 +1223,7 @@ public:
          << QApplication::translate("joint_deformationClass", "Simulation through Network", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Experimental HSM", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "Experimental HSM2", 0, QApplication::UnicodeUTF8)
         );
         groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | PosConstraint | OrientationConstraint", 0, QApplication::UnicodeUTF8));
         radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));
