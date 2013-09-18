@@ -403,6 +403,8 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+
+
 		}
 		else
 			ni->incident_cluster.clear();
@@ -3679,6 +3681,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 
 bool Kernel::simulateNextStep4Experimental()
 {	
+	
 	time_counter->StartCounter();
 
 	double mass_sum = 0.0;
@@ -3762,16 +3765,20 @@ bool Kernel::simulateNextStep4Experimental()
 						Quaterniond temp(p_temp->r);
 						list_q.push_back(temp);
 						
-						//p_temp->computeCurrentMassCentroid4Target();
-						//list_v.push_back((p_temp->current_center - p_temp->r * p_temp->original_center));
+						p_temp->computeCurrentMassCentroid4Target();
+						//1
+						//list_v.push_back(p_temp->current_center - p_temp->r * p_temp->original_center);
+						//2
 						list_v.push_back(p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center);
 						
-
 						t.push_back(ci->vox_list[0]->para_interpolate[p]);
 						
 						ci->r = level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid].r;
+						//1
 						//t_ci = p_temp->current_center - p_temp->r * p_temp->original_center;
+						//2
 						t_ci = p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center;
+						
 					}
 				}
 				if(list_q.size() > 1)
@@ -3795,18 +3802,20 @@ bool Kernel::simulateNextStep4Experimental()
 					ci->r = q_ci.toRotationMatrix();
 				}
 
-
 				double det_a = det33(ci->a);
-				//ci->current_center = ci->parent_cluster->r * (ci->original_center - ci->parent_cluster->original_center) + ci->parent_cluster->current_center;
 				ci->current_center = t_ci;
+				//3
+				//ci->parent_cluster->computeCurrentMassCentroid4Target();
+				//ci->current_center = ci->parent_cluster->r * (ci->original_center - ci->parent_cluster->original_center) + ci->parent_cluster->current_center;
 				vector<DuplicatedNode>::iterator dni;
 				for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
 				{
 					Vector3d _force = dni->force + force_gravity + force_wind;;
-
+					//1
 					//dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)* dni->coordinate + t_ci;//ci->current_center;
 					//dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->parent_cluster->original_center) + ci->parent_cluster->original_center + t_ci;
 					
+					//2
 					dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->original_center) + ci->current_center; // + t_ci;//ci->current_center;
 					if (!dni->mapped_node->flag_anchor_node)
 					{
@@ -3860,7 +3869,7 @@ bool Kernel::simulateNextStep4Experimental()
 
 						ci->a_pq = Matrix3d::Zero();
 						Vector3d p, q;
-						//ci->computeCurrentMassCentroid4Target();
+						ci->computeCurrentMassCentroid4Target();
 
 						ci->r = Matrix3d::Identity();
 						ci->current_center = ci->original_center;
@@ -3876,26 +3885,6 @@ bool Kernel::simulateNextStep4Experimental()
 							ci->current_center[1] = ci->original_center[1] + 1.0/3;
 							//cout << ci->current_center << endl;
 						}
-
-						/*
-						for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
-						{
-							p = const_ni->target_position - ci->current_center;
-							q = const_ni->coordinate - ci->original_center;
-							ci->a_pq += const_ni->mass * p * q.transpose();
-						}
-
-
-						ci->a = ci->a_pq * ci->a_qq;
-		
-
-						JacobiSVD<Matrix3d> jacobi(ci->a_pq, ComputeFullU|ComputeFullV);
-						ci->r = jacobi.matrixU() * jacobi.matrixV().transpose();
-		
-						num_PE_perTimeStep++;
-
-						double det_a = det33(ci->a);
-						*/
 						vector<DuplicatedNode>::iterator dni;
 						for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
 						{
@@ -3972,26 +3961,6 @@ bool Kernel::simulateNextStep4Experimental()
 								ni->displacement = ni->target_position - ni->coordinate;
 							}
 						}
-
-						dn = ni->duplicates.begin();
-						for (;dn!=ni->duplicates.end();++dn)
-						{
-							(*dn)->target_position = ni->target_position;
-
-							if (n == idx_bottom)
-							{
-								if(flag_dynamics)
-								{
-									(*dn)->displacement = ni->displacement;
-									(*dn)->velocity = ni->velocity;
-								}			
-								else
-								{
-									(*dn)->displacement = ni->displacement;
-								}
-							}
-
-						}
 						}//update for
 						
 				}
@@ -4025,63 +3994,7 @@ bool Kernel::simulateNextStep4Experimental()
 			Cluster * m_pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
 			Vector3d translation = Vector3d::Zero();
 			int sizeLeaf = m_pcluster->leaf_list.size() ;
-			/*
-			vector<Matrix3d> R_all;
-			vector<Vector3d> T_all;
-			vector<double> m_Interpolation;
-			double sum = 0.0;
-
-			//compute interpolation params
-			int i_l = 0;
-			for (i_l = 0; i_l < sizeLeaf; i_l++)
-			{
-				double para = 0.0;
-				para += pow((m_pcluster->current_center(0) - m_pcluster->leaf_list[i_l]->current_center(0)), 2);
-				para += pow((m_pcluster->current_center(1) - m_pcluster->leaf_list[i_l]->current_center(1)), 2);
-				para += pow((m_pcluster->current_center(2) - m_pcluster->leaf_list[i_l]->current_center(2)), 2);
-
-				if(para == 0.0)
-					para = 0.0000001;
-
-				para = 1.0 / para;
-
-				m_Interpolation.push_back(para);
-				sum += para;
-
-				R_all.push_back(m_pcluster->leaf_list[i_l]->r);
-				Vector3d t = m_pcluster->leaf_list[i_l]->current_center - m_pcluster->leaf_list[i_l]->r * m_pcluster->leaf_list[i_l]->original_center;
-				T_all.push_back(t);
-			}
 			
-			//sum = sqrt(sum);
-			if(R_all.size() > 1)
-			{
-				Quaterniond q(R_all[0]);
-				double t_add = 0.0;
-				int count = 1;
-				//translation = (sqrt(m_Interpolation[0]) / sum) * T_all[0];
-				translation = (m_Interpolation[0] / sum) * T_all[0];
-				while(count < R_all.size())
-				{
-					Quaterniond q2(R_all[count]);
-					t_add += (m_Interpolation[count-1] / sum);
-					//double temp = (t_add * t_add) /(t_add * t_add + interpolation * interpolation);
-					double temp = t_add / (t_add + (m_Interpolation[count] / sum));
-					Quaterniond qtemp = q2.slerp(temp, q);
-					q = qtemp;
-
-					translation += (m_Interpolation[count] / sum) * T_all[count];
-					
-					count ++;
-				}
-				level_list[0]->voxmesh_level->cluster_list[i_c].r = q.toRotationMatrix();
-			}
-			else
-			{
-				level_list[0]->voxmesh_level->cluster_list[i_c].r = R_all[0];
-				translation = T_all[0];
-			}
-			*/
 
 			if (sizeLeaf > 1)
 			{
@@ -4240,6 +4153,9 @@ bool Kernel::simulateNextStep4Experimental()
 	}
 	++time_step_index;
 	return true;
+	
+
+
 }
 
 bool Kernel::simulateNextStep4PairMatching()
@@ -5761,7 +5677,55 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 							v_mesh->vox_list.back().para_interpolate[1] = 0.0;
 						}
 					}
+					//6 neighbors
+					v_mesh->vox_list.back().list_near_parentVox[0] = v_mesh->vox_list.back().parent_vox;
+					v_mesh->vox_list.back().list_near_parentVox[1] = v_mesh->vox_list.back().parent_vox->top_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[2] = v_mesh->vox_list.back().parent_vox->bottom_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[3] = v_mesh->vox_list.back().parent_vox->front_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[4] = v_mesh->vox_list.back().parent_vox->back_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[5] = v_mesh->vox_list.back().parent_vox->left_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[6] = v_mesh->vox_list.back().parent_vox->right_neighbor;
+					v_mesh->vox_list.back().list_near_parentVox[7] = NULL;
+					d_cluster.clear();
+					int i_vox = 0;
+					double product = 1.0;
+					while (i_vox < 7)
+					{
+						if( v_mesh->vox_list.back().list_near_parentVox[i_vox])
+						{
+							double temp = 0.0;
+							temp += pow((v_mesh->vox_list.back().list_near_parentVox[i_vox]->vox_center(0) - v_mesh->vox_list.back().vox_center(0)),2);
+							temp += pow((v_mesh->vox_list.back().list_near_parentVox[i_vox]->vox_center(1) - v_mesh->vox_list.back().vox_center(1)),2);
+							temp += pow((v_mesh->vox_list.back().list_near_parentVox[i_vox]->vox_center(2) - v_mesh->vox_list.back().vox_center(2)),2);
+							temp += 0.00001;
+							d_cluster.push_back(temp);
+							product *= temp;
+						}
+						i_vox++;
+					}
+					if(d_cluster.size() == 1)
+						v_mesh->vox_list.back().para_interpolate[0] = 1.0;
+					else
+					{
+						double sum = 0.0;
+						for(i_vox = 0; i_vox < d_cluster.size(); i_vox++)
+						{
+							d_cluster[i_vox] = product / d_cluster[i_vox];
+							sum += d_cluster[i_vox];
+						}
+						for(i_vox = 0; i_vox < 8; i_vox++)
+						{
+							if(v_mesh->vox_list.back().list_near_parentVox[i_vox])
+							{
+								v_mesh->vox_list.back().para_interpolate[i_vox] = d_cluster.front() / sum;
+								d_cluster.erase(d_cluster.begin());
+							}
+						}
+					}
+					//////////////////////////////////////////////////////////////////////
 					}// for if
+
+
 				}//for x
 			}//for y
 		}//for z
