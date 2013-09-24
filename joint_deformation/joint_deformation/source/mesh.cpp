@@ -787,7 +787,7 @@ VoxMesh::VoxMesh()
 	inverted_cluster = NULL;
 	neighbor_flag = NULL;
 
-	old_energy = 0.0;
+	old_energy = 0.000001;
 	new_energy = 0.0;
 }
 
@@ -807,6 +807,7 @@ void VoxMesh::clear()
 	num_vox = 0;
 	num_surface_vox = 0;
 	num_cluster = 0;
+	num_pair = 0;
 
 	current_parent_cluster = NULL;
 	current_sibling_index = -1;

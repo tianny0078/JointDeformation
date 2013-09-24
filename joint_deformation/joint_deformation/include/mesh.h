@@ -634,6 +634,7 @@ struct VoxMesh
 	int num_surface_node;
 	int num_cluster;
 	double vox_size;
+	int num_pair;
 
 	int current_sibling_index;											// used for visualized cluster sibling
 	int current_cluster_level;

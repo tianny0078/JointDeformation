@@ -1540,6 +1540,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			case Kernel::MULTIPLE_VELOCITY_MATCHING:
 			case Kernel::HIERARCHY_SHAPE_MATCHING:
 			case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
+			case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1688,6 +1689,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::SINGLE_GRID:
 				case Kernel::HIERARCHY_SHAPE_MATCHING:
 				case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
+				case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{
@@ -2100,6 +2102,8 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 	case Qt::Key_3:
 		flag_axis = 3;
 		break;
+	case Qt::Key_A:
+		p_kernel->flag_converge = true;
 	default:
 		theCamera.status = Camera::IDLING;
 		break;
