@@ -1541,6 +1541,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			case Kernel::HIERARCHY_SHAPE_MATCHING:
 			case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
 			case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
+			case Kernel::EXPERIMENTAL_SHAPE_MATCHING3:
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1690,6 +1691,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::HIERARCHY_SHAPE_MATCHING:
 				case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
 				case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
+				case Kernel::EXPERIMENTAL_SHAPE_MATCHING3:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{

@@ -40,7 +40,7 @@ class Kernel
 
 public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
-		HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, EXPERIMENTAL_SHAPE_MATCHING, EXPERIMENTAL_SHAPE_MATCHING2} Simulator;
+		HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, EXPERIMENTAL_SHAPE_MATCHING, EXPERIMENTAL_SHAPE_MATCHING2, EXPERIMENTAL_SHAPE_MATCHING3} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -87,6 +87,7 @@ public:
 	bool simulateNextStep4HierarchyShapeMatching();
 	bool simulateNextStep4Experimental();
 	bool simulateNextStep4Experimental2();
+	bool simulateNextStep4Experimental3();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();
@@ -113,6 +114,7 @@ public:
 	void linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in);
 	void linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &parent_mesh, int d, int d_parent, int level_index_parent);
 	void resetMass4Level();
+	double getEnergyRatio(VoxMesh * vm);
 
 	// file i/o
 	void saveOutputData(vector<double>& data, const char* filename);
@@ -216,6 +218,7 @@ public:
 	bool flag_compressData;
 
 	int timeSleep;
+	double energyThreshold;
 };
 
 #endif

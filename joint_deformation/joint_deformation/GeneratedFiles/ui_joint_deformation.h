@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Sat Sep 21 15:22:54 2013
+** Created: Wed Sep 25 14:17:56 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -138,6 +138,11 @@ public:
     QLineEdit *lineEdit_mass;
     QPushButton *pushButton_setMass;
     QPushButton *pushButton_resetMass;
+    QWidget *horizontalLayoutWidget_23;
+    QHBoxLayout *horizontalLayout_23;
+    QLabel *label_21;
+    QLineEdit *lineEdit_energyThreshold;
+    QPushButton *pushButton_setEnergyThreshold;
     QWidget *tab_3;
     QWidget *horizontalLayoutWidget_12;
     QHBoxLayout *horizontalLayout_12;
@@ -722,6 +727,29 @@ public:
 
         horizontalLayout_20->addWidget(pushButton_resetMass);
 
+        horizontalLayoutWidget_23 = new QWidget(tab_2);
+        horizontalLayoutWidget_23->setObjectName(QString::fromUtf8("horizontalLayoutWidget_23"));
+        horizontalLayoutWidget_23->setGeometry(QRect(0, 220, 301, 31));
+        horizontalLayout_23 = new QHBoxLayout(horizontalLayoutWidget_23);
+        horizontalLayout_23->setSpacing(6);
+        horizontalLayout_23->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_23->setObjectName(QString::fromUtf8("horizontalLayout_23"));
+        horizontalLayout_23->setContentsMargins(0, 0, 0, 0);
+        label_21 = new QLabel(horizontalLayoutWidget_23);
+        label_21->setObjectName(QString::fromUtf8("label_21"));
+
+        horizontalLayout_23->addWidget(label_21);
+
+        lineEdit_energyThreshold = new QLineEdit(horizontalLayoutWidget_23);
+        lineEdit_energyThreshold->setObjectName(QString::fromUtf8("lineEdit_energyThreshold"));
+
+        horizontalLayout_23->addWidget(lineEdit_energyThreshold);
+
+        pushButton_setEnergyThreshold = new QPushButton(horizontalLayoutWidget_23);
+        pushButton_setEnergyThreshold->setObjectName(QString::fromUtf8("pushButton_setEnergyThreshold"));
+
+        horizontalLayout_23->addWidget(pushButton_setEnergyThreshold);
+
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
@@ -1099,8 +1127,9 @@ public:
         QObject::connect(actionCubeOperation, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeOperation(bool)));
         QObject::connect(actionSetCubeStaticConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeStaticConstraint(bool)));
         QObject::connect(actionSetCubeActiveConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeActiveConstraint(bool)));
+        QObject::connect(pushButton_setEnergyThreshold, SIGNAL(clicked()), joint_deformationClass, SLOT(setEnergyThreshold()));
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);
@@ -1108,7 +1137,7 @@ public:
 
     void retranslateUi(QMainWindow *joint_deformationClass)
     {
-        joint_deformationClass->setWindowTitle(QApplication::translate("joint_deformationClass", "joint_deformation", 0, QApplication::UnicodeUTF8));
+        joint_deformationClass->setWindowTitle(QApplication::translate("joint_deformationClass", "Deformation", 0, QApplication::UnicodeUTF8));
         actionLoadMesh->setText(QApplication::translate("joint_deformationClass", "loadMesh", 0, QApplication::UnicodeUTF8));
         actionLoadMesh->setShortcut(QApplication::translate("joint_deformationClass", "Ctrl+O", 0, QApplication::UnicodeUTF8));
         actionScaleMesh->setText(QApplication::translate("joint_deformationClass", "scaleMesh", 0, QApplication::UnicodeUTF8));
@@ -1182,6 +1211,9 @@ public:
         lineEdit_mass->setText(QApplication::translate("joint_deformationClass", "1.0", 0, QApplication::UnicodeUTF8));
         pushButton_setMass->setText(QApplication::translate("joint_deformationClass", "SetMass", 0, QApplication::UnicodeUTF8));
         pushButton_resetMass->setText(QApplication::translate("joint_deformationClass", "ResetMass", 0, QApplication::UnicodeUTF8));
+        label_21->setText(QApplication::translate("joint_deformationClass", "EnergyThreshold", 0, QApplication::UnicodeUTF8));
+        lineEdit_energyThreshold->setText(QApplication::translate("joint_deformationClass", "0.001", 0, QApplication::UnicodeUTF8));
+        pushButton_setEnergyThreshold->setText(QApplication::translate("joint_deformationClass", "Set", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("joint_deformationClass", "Shape matching", 0, QApplication::UnicodeUTF8));
         checkBox_Network->setText(QApplication::translate("joint_deformationClass", "Network", 0, QApplication::UnicodeUTF8));
         radioButton_Server->setText(QApplication::translate("joint_deformationClass", "Server", 0, QApplication::UnicodeUTF8));
@@ -1224,6 +1256,7 @@ public:
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Experimental HSM", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Experimental HSM2", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "Experimental HSM3", 0, QApplication::UnicodeUTF8)
         );
         groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | PosConstraint | OrientationConstraint", 0, QApplication::UnicodeUTF8));
         radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));

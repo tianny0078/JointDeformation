@@ -93,6 +93,8 @@ Kernel::Kernel()
 	timeSleep = 10;
 
 	time_counter = new PerformanceCounter;
+
+	energyThreshold = 0.03;
 }
 
 Kernel::~Kernel()
@@ -2236,9 +2238,49 @@ void Kernel::initializeSimulator()
 
 		flag_simulator_ready = true;
 		break;
+	case EXPERIMENTAL_SHAPE_MATCHING3:
+		for(int i = 0; i < level_list.size(); i++)
+		{
+			for (node_iter = level_list[i]->voxmesh_level->node_list.begin(); node_iter != level_list[i]->voxmesh_level->node_list.end(); ++node_iter)
+			{
+				node_iter->duplicates.clear();
+				node_iter->duplicates.reserve(level_list[0]->voxmesh_level->num_cluster);
+				node_iter->static_position = node_iter->coordinate;
+				node_iter->target_position = node_iter->coordinate;
+			}
 
+			for (ci=level_list[i]->voxmesh_level->cluster_list.begin(); ci!=level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
+			{
+				ci->computeRestMassCentroid();
+				ci->current_center = ci->original_center;
+				ci->computeAQQ();
+
+				//ci->velocity_matrix.resize(3*ci->num_node, 6);
+
+				vector<DuplicatedNode>::iterator dn_iter = ci->node_list.begin();
+				for (; dn_iter!=ci->node_list.end(); ++dn_iter)
+				{
+					dn_iter->mapped_node->duplicates.push_back(&(*dn_iter));
+					dn_iter->static_position = dn_iter->coordinate;
+					dn_iter->target_position = dn_iter->coordinate;
+				}
+
+			}
+		}
+
+		flag_simulator_ready = true;
+		break;
 		break;
 	}
+}
+
+double Kernel::getEnergyRatio(VoxMesh * vm)
+{
+	double ratio = 0.0;
+	if(vm->old_energy != 0)
+		//ratio = abs((vm->new_energy - vm->old_energy)/ (vm->num_pair * vm->vox_size));
+		ratio = abs((vm->new_energy - vm->old_energy)/ vm->old_energy);
+	return ratio;
 }
 
 bool Kernel::simulateNextStep4ShapeMatching()
@@ -2433,7 +2475,9 @@ bool Kernel::simulateNextStep4ShapeMatching()
 			{
 				(*dn)->displacement = ni->displacement;
 			}
-			p_vox_mesh->new_energy += ((*dn)->static_position - (*dn)->target_position).norm();
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 		}
 	}
 
@@ -2464,47 +2508,9 @@ bool Kernel::simulateNextStep4ShapeMatching()
 	
 	if(flag_setForce && !flag_setWindForce)
 	{
-		// compute the energy
-		//double match_energy = 0.0;
-		//for (int i=0; i<p_vox_mesh->num_cluster; ++i)
-		//{
-		//	for (int j=0; j<p_vox_mesh->cluster_list[i].num_node; ++j)
-		//	{
-		//		match_energy += (p_vox_mesh->cluster_list[i].node_list[j].static_position - p_vox_mesh->cluster_list[i].node_list[j].target_position).norm();
-		//	}
-		//}
-		//p_vox_mesh->old_energy = p_vox_mesh->new_energy;
-		//p_vox_mesh->new_energy = match_energy;
-		//if(p_vox_mesh->old_energy != 0)
-		//{
-		//	double threshold = (p_vox_mesh->new_energy - p_vox_mesh->old_energy)/ p_vox_mesh->old_energy;
-		//	if(threshold < 0 && abs(threshold) < 0.01 && !flag_converge)
-		//	{
-		//		timestep_converge = time_step_index;
-		//		flag_converge = true;
-		//		cout << "TimeStep:" << time_step_index << " Converge!" << endl;
-		//		cout << "Begin TimeStep: " << timestep_begin << endl;
-		//		cout << "Converge TimeStep: " << timestep_converge << endl;
-		//		cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
-		//		cout << "PE # per Iteration:" << num_PE_perTimeStep << endl;
-		//	}
-		//	myEnergy << match_energy << endl;
-		//}
-		//cout << ratio << endl;
-		//if (p_vox_mesh->old_energy > p_vox_mesh->new_energy && ratio < 0.001 && !flag_converge)
-		//{
-		//	timestep_converge = time_step_index;
-		//	flag_converge = true;
-		//	cout << "converge!" << endl;
-		//}
-		//if (!flag_converge)
-		//{
-		//	myEnergy << ratio << endl;
-		//}
 		double ratio, threshold = 0.0;
-		if(p_vox_mesh->old_energy != 0)
-			ratio = abs((p_vox_mesh->new_energy - p_vox_mesh->old_energy)/ (p_vox_mesh->num_pair * p_vox_mesh->vox_size));
-		    threshold = abs(p_vox_mesh->new_energy - p_vox_mesh->old_energy);
+		ratio = getEnergyRatio(p_vox_mesh);
+		threshold = abs(p_vox_mesh->new_energy - p_vox_mesh->old_energy);
 		if (!flag_converge)
 		{
 			time_counter->StopCounter();
@@ -3348,7 +3354,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				//ci->original_center = ci->current_center;
 			}
 			time_counter->StopCounter();
-			cout << time_counter->GetElapsedTime() << endl;
+			//cout << time_counter->GetElapsedTime() << endl;
 			time_counter->StartCounter();
 
 			// updating target position
@@ -3376,7 +3382,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			
 		}
 		time_counter->StopCounter();
-		cout << time_counter->GetElapsedTime() << endl;
+		//cout << time_counter->GetElapsedTime() << endl;
 
 		//else//if n == 0
 		{
@@ -3449,7 +3455,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 					}//for
 
 					time_counter->StopCounter();
-					cout << time_counter->GetElapsedTime() << endl;
+					//cout << time_counter->GetElapsedTime() << endl;
 					time_counter->StartCounter();
 					// updating displacement
 					for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
@@ -3520,7 +3526,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
 						ci->computeCurrentMassCentroid4Target();
 					time_counter->StopCounter();
-					cout << time_counter->GetElapsedTime() << endl;
+					//cout << time_counter->GetElapsedTime() << endl;
 				}
 			}//
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3667,7 +3673,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 		}
 
 		time_counter->StopCounter();
-		cout << time_counter->GetElapsedTime() << endl;
+		//cout << time_counter->GetElapsedTime() << endl;
 		time_counter->StartCounter();
 		// updating displacement
 		for (node_iterator ni=level_list[0]->voxmesh_level->node_list.begin(); ni!=level_list[0]->voxmesh_level->node_list.end(); ++ni)
@@ -3699,7 +3705,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 	}
 
 	time_counter->StopCounter();
-	cout << time_counter->GetElapsedTime() << endl;
+	//cout << time_counter->GetElapsedTime() << endl;
 	time_counter->StartCounter();
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
@@ -3711,9 +3717,9 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 	}
 
 	time_counter->StopCounter();
-	cout << time_counter->GetElapsedTime() << endl;
-	cout << endl;
-	cout << endl;
+	//cout << time_counter->GetElapsedTime() << endl;
+	//cout << endl;
+	//cout << endl;
 
 	//networking
 	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
@@ -3836,7 +3842,9 @@ bool Kernel::simulateNextStep4Experimental2()
 			// level 0 to bottom+1, directly implementing shape matching
 			//////////////////////////////////////////////////////////////////////////////////
 			int iteration = level_list[n]->times_ShapeMatching;
-			if(n == 0 || n < level_list.size())
+			//if (n == idx_bottom)
+				iteration = 1;
+			if(n < level_list.size())
 			{
 				for( int i = 0; i < iteration; i ++)
 				{
@@ -3961,7 +3969,9 @@ bool Kernel::simulateNextStep4Experimental2()
 								}
 							}
 
-							level_list[n]->voxmesh_level->new_energy += ((*dn)->static_position - (*dn)->target_position).norm();
+							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 
 						}
 					}//update for
@@ -3974,14 +3984,13 @@ bool Kernel::simulateNextStep4Experimental2()
 
 
 		}//else
-
+		
+		VoxMesh * pVM = level_list[n]->voxmesh_level;
+			double threshold = 0.0;
+		ratio = getEnergyRatio(pVM);
+		threshold = abs(pVM->new_energy - pVM->old_energy);
 		if(flag_setForce && !flag_setWindForce)
 		{
-			double threshold = 0.0;
-			VoxMesh * pVM = level_list[n]->voxmesh_level;
-			if(pVM->old_energy != 0)
-				ratio = abs((pVM->new_energy - pVM->old_energy)/ (pVM->num_pair * pVM->vox_size));
-			threshold = abs(pVM->new_energy - pVM->old_energy);
 			//cout << ratio << endl;
 			if (!flag_converge)
 			{
@@ -3996,17 +4005,13 @@ bool Kernel::simulateNextStep4Experimental2()
 			//	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
 			//	cout << "converge!" << endl;
 			//}
-			pVM->old_energy = pVM->new_energy;
-
 		}
-
-
-		//if(level_list[n]->voxmesh_level->old_energy != 0 && level_list[n]->voxmesh_level->new_energy != 0)
-			//ratio = abs((level_list[n]->voxmesh_level->new_energy - level_list[n]->voxmesh_level->old_energy)/ level_list[n]->voxmesh_level->old_energy);
-		//level_list[n]->voxmesh_level->old_energy = level_list[n]->voxmesh_level->new_energy;
+		pVM->old_energy = pVM->new_energy;
+		double temp = pVM->num_pair * pVM->vox_size * 0.01;
+		//cout << ratio << endl;
 		
 		//if level > 0, needs to inherit R, T from parent_level
-		if(n < level_list.size() - 1 && ratio < 0.001 && level_list[n]->voxmesh_level->new_energy > 0.1)
+		if(n < level_list.size() - 1 && ratio < energyThreshold && level_list[n]->voxmesh_level->new_energy > temp)
 		{
 			cout << "next!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 			n += 1;
@@ -4017,7 +4022,6 @@ bool Kernel::simulateNextStep4Experimental2()
 				///////////////////////////////////////////////////////////////////////////////////////
 				////compute current position
 				//ci->computeCurrentMassCentroid4Target();
-				
 				////////////////////////////////////////////////////////////////////////////////////////
 				//slerp to interpolate rotation q_c
 				//linear interpolate translation t_ci(which is not used, so deleted)
@@ -4036,6 +4040,7 @@ bool Kernel::simulateNextStep4Experimental2()
 						Cluster * p_temp = &level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid];
 
 						Quaterniond temp(p_temp->r);
+						cout << temp.w() << " " << temp.x() << " " << temp.y() << " " << temp.z() << endl;
 						list_q.push_back(temp);
 						
 						//p_temp->computeCurrentMassCentroid4Target();
@@ -4128,122 +4133,118 @@ bool Kernel::simulateNextStep4Experimental2()
 		}
 
 
-	//}//n
-	/*
 	///////////////////////////////////////////////////////////////////////////
 	//level 0 update by the last level, multigrid
 	///////////////////////////////////////////////////////////////////////////
-	if(level_list.size() > 1 && flag_multigrid)
+		// && ratio < energyThreshold 
+		/*
+	else if(n == level_list.size() - 1)
 	{
-
-		///////////////////////////////////////////////////////////////////////////////////////
-		//compute current position
-		//vector<Cluster>::iterator ci = level_list[idx_bottom]->voxmesh_level->cluster_list.begin();
-		//for (; ci != level_list[idx_bottom]->voxmesh_level->cluster_list.end(); ++ci)
-		//{
-		//	ci->computeCurrentMassCentroid();
-		//}
-		///////////////////////////////////////////////////////////////////////////////////////
-
-		time_counter->StartCounter();
-		int size_c = level_list[0]->voxmesh_level->cluster_list.size();
-		for(int i_c = 0; i_c < size_c; i_c ++)
+		if(level_list.size() > 1 && flag_multigrid)
 		{
-			Cluster * m_pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
-			Vector3d translation = Vector3d::Zero();
-			int sizeLeaf = m_pcluster->leaf_list.size() ;
+			///////////////////////////////////////////////////////////////////////////////////////
+			//compute current position
+			//vector<Cluster>::iterator ci = level_list[idx_bottom]->voxmesh_level->cluster_list.begin();
+			//for (; ci != level_list[idx_bottom]->voxmesh_level->cluster_list.end(); ++ci)
+			//{
+			//	ci->computeCurrentMassCentroid();
+			//}
+			///////////////////////////////////////////////////////////////////////////////////////
 
-			if (sizeLeaf > 1)
+			int size_c = level_list[0]->voxmesh_level->cluster_list.size();
+			for(int i_c = 0; i_c < size_c; i_c ++)
 			{
-				Quaterniond q(m_pcluster->leaf_list[0]->r);
-				double t_add = 0.0;
-				int count = 1;
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Static();
-				////Vector3d t = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
-				Vector3d t = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
-				translation = (m_pcluster->leaf_parameter[0] / m_pcluster->term_normlize) * t;
-				while(count < sizeLeaf)
+				Cluster * m_pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
+				Vector3d translation = Vector3d::Zero();
+				int sizeLeaf = m_pcluster->leaf_list.size() ;
+
+				if (sizeLeaf > 1)
 				{
-					//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Target();
-					//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Static();
-					Quaterniond q2(m_pcluster->leaf_list[count]->r);
-					t_add += (m_pcluster->leaf_parameter[count-1] / m_pcluster->term_normlize);
-					//double temp = (t_add * t_add) /(t_add * t_add + interpolation * interpolation);
-					double temp = t_add / (t_add + (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize));
-					Quaterniond qtemp = q2.slerp(temp, q);
-					q = qtemp;
+					Quaterniond q(m_pcluster->leaf_list[0]->r);
+					double t_add = 0.0;
+					int count = 1;
+					//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
+					//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Static();
+					////Vector3d t = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
+					Vector3d t = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
+					translation = (m_pcluster->leaf_parameter[0] / m_pcluster->term_normlize) * t;
+					while(count < sizeLeaf)
+					{
+						//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Target();
+						//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Static();
+						Quaterniond q2(m_pcluster->leaf_list[count]->r);
+						t_add += (m_pcluster->leaf_parameter[count-1] / m_pcluster->term_normlize);
+						//double temp = (t_add * t_add) /(t_add * t_add + interpolation * interpolation);
+						double temp = t_add / (t_add + (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize));
+						Quaterniond qtemp = q2.slerp(temp, q);
+						q = qtemp;
 
-					////t =  m_pcluster->leaf_list[count]->current_center - m_pcluster->leaf_list[count]->r * m_pcluster->leaf_list[count]->original_center;
-					t = m_pcluster->leaf_list[count]->current_center + m_pcluster->leaf_list[count]->r * (m_pcluster->original_center - m_pcluster->leaf_list[count]->original_center);
-					translation += (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize) * t;
+						////t =  m_pcluster->leaf_list[count]->current_center - m_pcluster->leaf_list[count]->r * m_pcluster->leaf_list[count]->original_center;
+						t = m_pcluster->leaf_list[count]->current_center + m_pcluster->leaf_list[count]->r * (m_pcluster->original_center - m_pcluster->leaf_list[count]->original_center);
+						translation += (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize) * t;
 
-					count ++;
+						count ++;
+					}
+					level_list[0]->voxmesh_level->cluster_list[i_c].r = q.toRotationMatrix();
 				}
-				level_list[0]->voxmesh_level->cluster_list[i_c].r = q.toRotationMatrix();
-			}
-			else
-			{
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
-				level_list[0]->voxmesh_level->cluster_list[i_c].r = m_pcluster->leaf_list[0]->r;
-				////translation = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
-				translation = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
-			}
-
-
-			//update static position and target position for this cluster
-			//Cluster * pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
-
-			double det_a = det33(m_pcluster->a);
-			m_pcluster->current_center = translation;
-			vector<DuplicatedNode>::iterator dni;
-			for (dni=m_pcluster->node_list.begin(); dni!=m_pcluster->node_list.end(); ++dni)
-			{
-				////dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*dni->coordinate + translation;
-				dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*(dni->coordinate - m_pcluster->original_center) + m_pcluster->current_center;
-				if (!dni->mapped_node->flag_anchor_node)
+				else
 				{
-					Vector3d _force = dni->force + force_gravity + force_wind;
-					dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+					//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
+					level_list[0]->voxmesh_level->cluster_list[i_c].r = m_pcluster->leaf_list[0]->r;
+					////translation = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
+					translation = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
+				}
+
+
+				//update static position and target position for this cluster
+				//Cluster * pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
+
+				double det_a = det33(m_pcluster->a);
+				m_pcluster->current_center = translation;
+				vector<DuplicatedNode>::iterator dni;
+				for (dni=m_pcluster->node_list.begin(); dni!=m_pcluster->node_list.end(); ++dni)
+				{
+					////dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*dni->coordinate + translation;
+					dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*(dni->coordinate - m_pcluster->original_center) + m_pcluster->current_center;
+					if (!dni->mapped_node->flag_anchor_node)
+					{
+						Vector3d _force = dni->force + force_gravity + force_wind;
+						dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+					}
 				}
 			}
+
+			// updating displacement
+			for (node_iterator ni=level_list[0]->voxmesh_level->node_list.begin(); ni!=level_list[0]->voxmesh_level->node_list.end(); ++ni)
+			{
+				//ni->static_position.setZero();
+				ni->target_position.setZero();
+
+				vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+				for (;dn!=ni->duplicates.end();++dn)
+				{
+					//ni->static_position += (*dn)->static_position;
+					ni->target_position += (*dn)->target_position;
+				}
+
+				//ni->static_position /= double(ni->duplicates.size());
+				ni->target_position /= double(ni->duplicates.size());
+				if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
+					ni->target_position = ni->prescribed_position;
+
+				dn = ni->duplicates.begin();
+				for (;dn!=ni->duplicates.end();++dn)
+				{
+					//if(!ni->flag_anchor_node)
+						(*dn)->target_position = ni->target_position;
+					//else
+						//(*dn)->target_position = ni->coordinate;
+				}
+			}//cluster for
 		}
-
-		time_counter->StopCounter();
-		cout << time_counter->GetElapsedTime() << endl;
-		time_counter->StartCounter();
-		// updating displacement
-		for (node_iterator ni=level_list[0]->voxmesh_level->node_list.begin(); ni!=level_list[0]->voxmesh_level->node_list.end(); ++ni)
-		{
-			//ni->static_position.setZero();
-			ni->target_position.setZero();
-
-			vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
-			for (;dn!=ni->duplicates.end();++dn)
-			{
-				//ni->static_position += (*dn)->static_position;
-				ni->target_position += (*dn)->target_position;
-			}
-
-			//ni->static_position /= double(ni->duplicates.size());
-			ni->target_position /= double(ni->duplicates.size());
-			if(constraintType != FORCE_CONSTRAINT && ni->flag_constraint_node)
-				ni->target_position = ni->prescribed_position;
-
-			dn = ni->duplicates.begin();
-			for (;dn!=ni->duplicates.end();++dn)
-			{
-				//if(!ni->flag_anchor_node)
-					(*dn)->target_position = ni->target_position;
-				//else
-					//(*dn)->target_position = ni->coordinate;
-			}
-		}//cluster for
+		n = 0;
+		level_display = 0;
 	}
-	
-	time_counter->StopCounter();
-	cout << time_counter->GetElapsedTime() << endl;
-	time_counter->StartCounter();
 	*/
 /*
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
@@ -4618,7 +4619,11 @@ bool Kernel::simulateNextStep4Experimental()
 								}
 							}
 							if(n == idx_bottom)
-								level_list[n]->voxmesh_level->new_energy += ((*dn)->static_position - (*dn)->target_position).norm();
+							{
+								level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+								level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+								level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
+							}
 
 						}
 					}//update for
@@ -4832,8 +4837,406 @@ bool Kernel::simulateNextStep4Experimental()
 	{
 		double ratio, threshold = 0.0;
 		VoxMesh * pVM = level_list[idx_bottom]->voxmesh_level;
-		if(pVM->old_energy != 0)
-			ratio = abs((pVM->new_energy - pVM->old_energy)/ (pVM->num_pair * pVM->vox_size));
+		ratio = getEnergyRatio(pVM);
+		threshold = abs(pVM->new_energy - pVM->old_energy);
+		if (!flag_converge)
+		{
+			time_counter->StopCounter();
+			testoutput << time_counter->GetElapsedTime() << endl;
+			myEnergy << ratio << endl;
+			myHEnergy << pVM->new_energy << endl;
+		}
+		//cout << pVM->new_energy << endl;
+		//if (pVM->old_energy >= pVM->new_energy && threshold < 0.0001 && !flag_converge)
+		//{
+		//	timestep_converge = time_step_index;
+		//	flag_converge = true;
+		//	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
+		//	cout << "converge!" << endl;
+		//}
+		pVM->old_energy = pVM->new_energy;
+
+	}
+	if(flag_exportTxt)
+	{
+		vector<Node>::iterator ni;
+		for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
+		{
+			testoutput << "v " << ni->coordinate(0) + ni->displacement(0) 
+				<< " " << ni->coordinate(1) + ni->displacement(1) 
+				<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
+		}
+	}
+	++time_step_index;
+	return true;
+}
+
+bool Kernel::simulateNextStep4Experimental3()
+{
+		double mass_sum = 0.0;
+	num_PE_perTimeStep = 0;
+	Vector3d force_gravity = Vector3d::Zero();
+	Vector3d force_wind = Vector3d::Zero();
+	//set gravity
+	if(flag_gravity)
+	{
+		force_gravity(1) = gravity_magnitude;
+	}
+	if(flag_setWindForce)
+	{
+		srand(time(NULL));
+		//wind_magnitude = (rand() % 100) * 0.01;
+		wind_magnitude = 1;
+		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
+	}
+
+	time_counter->StartCounter();
+
+	double PI = 3.14159265;
+	int idx_bottom = level_list.size() - 1;
+
+	for (int n = 0; n < level_list.size(); n++)
+	{
+		//force constraint
+		if(flag_setForce && constraintType == Kernel::FORCE_CONSTRAINT)
+		{
+			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
+			{
+				int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
+				for(int k = 0; k < size_k; k ++)
+				{
+					level_list[n]->voxmesh_level->constraint_node_list[k]->force = const_force;
+
+					for(int i=0; i < level_list[n]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
+					{
+						level_list[n]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = const_force;
+					}
+				}
+			}
+		}
+		//position constraint
+		if(flag_setForce && constraintType != Kernel::FORCE_CONSTRAINT)
+		{
+			if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
+			{
+				int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
+				for(int k = 0; k < size_k; k ++)
+				{
+					level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = const_force;
+				}
+			}
+		}
+		//if level > 0, needs to inherit R, T from parent_level
+		if(n > 0)
+		{
+			vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
+			for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
+			{
+				///////////////////////////////////////////////////////////////////////////////////////
+				////compute current position
+				//ci->computeCurrentMassCentroid4Target();
+				
+				////////////////////////////////////////////////////////////////////////////////////////
+				//slerp to interpolate rotation q_c
+				//linear interpolate translation t_ci(which is not used, so deleted)
+				////////////////////////////////////////////////////////////////////////////////////////
+				Quaterniond q_ci;
+				vector<Quaterniond> list_q;
+				vector<Vector3d> list_v;
+				vector<double> t;
+				double t_add = 0.0;
+				Vector3d t_ci = Vector3d::Zero();
+				for(int p = 0; p < 8; p++)
+				{
+					if(ci->vox_list[0]->list_near_parentVox[p])
+					{
+						Cluster * p_temp = &level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid];
+
+						Quaterniond temp(p_temp->r);
+						list_q.push_back(temp);
+						
+						//p_temp->computeCurrentMassCentroid4Target();
+						//p_temp->computeCurrentMassCentroid4Static();
+						//list_v.push_back((p_temp->current_center - p_temp->r * p_temp->original_center));
+						list_v.push_back(p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center);
+						
+
+						t.push_back(ci->vox_list[0]->para_interpolate[p]);
+						
+						ci->r = level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid].r;
+						//t_ci = p_temp->current_center - p_temp->r * p_temp->original_center;
+						t_ci = p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center;
+					}
+				}
+				if(list_q.size() > 1)
+				{
+					q_ci = list_q[0];
+					
+					t_ci = t[0] * list_v[0];
+					
+					while(list_q.size() > 1)
+					{
+						t_add += t[0];
+						double temp = t_add / (t_add + t[1]);
+						Quaterniond qtemp = list_q[1].slerp(temp, q_ci);
+						q_ci = qtemp;
+						t_ci += t[1] * list_v[1];
+
+						list_q.erase(list_q.begin());
+						t.erase(t.begin());
+						list_v.erase(list_v.begin());
+					}
+					ci->r = q_ci.toRotationMatrix();
+				}
+
+
+				double det_a = det33(ci->a);
+				//ci->current_center = ci->parent_cluster->r * (ci->original_center - ci->parent_cluster->original_center) + ci->parent_cluster->current_center;
+				ci->current_center = t_ci;
+				vector<DuplicatedNode>::iterator dni;
+				for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
+				{
+					Vector3d _force = dni->force + force_gravity + force_wind;;
+
+					//dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)* dni->coordinate + t_ci;//ci->current_center;
+					//dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->parent_cluster->original_center) + ci->parent_cluster->original_center + t_ci;
+					
+					dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->original_center) + ci->current_center; // + t_ci;//ci->current_center;
+					if (!dni->mapped_node->flag_anchor_node)
+					{
+						dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+					}
+				}
+				//ci->original_center = ci->current_center;
+			}
+
+			// updating target position
+			for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
+			{
+				ni->target_position.setZero();
+
+				vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+				for (;dn!=ni->duplicates.end();++dn)
+				{
+					ni->target_position += (*dn)->target_position;
+				}
+				
+				ni->target_position /= double(ni->duplicates.size());
+				if(constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
+					ni->target_position = ni->prescribed_position;
+
+				dn = ni->duplicates.begin();
+				for (;dn!=ni->duplicates.end();++dn)
+				{
+					(*dn)->target_position = ni->target_position;
+				}
+				
+			}//for
+		}
+		//else//if n == 0
+		{
+			//////////////////////////////////////////////////////////////////////////////////
+			// level 0 to bottom+1, directly implementing shape matching
+			//////////////////////////////////////////////////////////////////////////////////
+			if(n == 0 || n < level_list.size())
+			{
+				while(true)
+				{
+					vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
+					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
+					{
+						vector<DuplicatedNode>::const_iterator const_ni;
+
+						ci->a_pq = Matrix3d::Zero();
+						Vector3d p, q;
+						ci->computeCurrentMassCentroid4Target();
+
+						for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
+						{
+							p = const_ni->target_position - ci->current_center;
+							q = const_ni->coordinate - ci->original_center;
+							ci->a_pq += const_ni->mass * p * q.transpose();
+						}
+
+
+						ci->a = ci->a_pq * ci->a_qq;
+		
+
+						JacobiSVD<Matrix3d> jacobi(ci->a_pq, ComputeFullU|ComputeFullV);
+						ci->r = jacobi.matrixU() * jacobi.matrixV().transpose();
+		
+						num_PE_perTimeStep++;
+
+						double det_a = det33(ci->a);
+
+						vector<DuplicatedNode>::iterator dni;
+						for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
+						{
+							dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->original_center) + ci->current_center;
+						
+							if (!dni->mapped_node->flag_anchor_node)
+							{
+								Vector3d _force = dni->force + force_gravity + force_wind;
+
+								if (n == idx_bottom)
+								{
+									if(flag_dynamics)
+									{
+										dni->velocity = (1.0-ci->kappa)*dni->velocity + ci->alpha*(dni->static_position - dni->coordinate - dni->displacement) / time_step_size
+											+ time_step_size*_force*force_scalar;
+										dni->displacement += time_step_size*dni->velocity;
+										dni->target_position = dni->coordinate + dni->displacement;
+									}
+									else
+									{
+										dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+										dni->displacement = dni->target_position - dni->coordinate;
+									}
+								}
+								else
+									dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+							}
+						}
+
+
+					}//for
+					level_list[n]->voxmesh_level->new_energy = 0.0;
+					// updating displacement
+					for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
+					{
+						if (n == idx_bottom)
+						{
+							if(flag_dynamics)
+							{
+								ni->displacement.setZero();
+								ni->velocity.setZero();
+							}
+						}
+						ni->target_position.setZero();
+
+						vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+						for (;dn!=ni->duplicates.end();++dn)
+						{
+							if (n == idx_bottom)
+							{
+								if(flag_dynamics)
+								{
+									ni->displacement += (*dn)->displacement;
+									ni->velocity += (*dn)->velocity;
+								}
+							}
+
+							ni->target_position += (*dn)->target_position;
+						}
+
+						ni->target_position /= double(ni->duplicates.size());
+						if( constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
+							ni->target_position = ni->prescribed_position;
+
+						if (n == idx_bottom)
+						{
+							if(flag_dynamics)
+							{
+								ni->displacement /= double(ni->duplicates.size());
+								ni->velocity /= double(ni->duplicates.size());
+							}
+							else
+							{
+								ni->displacement = ni->target_position - ni->coordinate;
+							}
+						}
+
+						dn = ni->duplicates.begin();
+						for (;dn!=ni->duplicates.end();++dn)
+						{
+							(*dn)->target_position = ni->target_position;
+
+							if (n == idx_bottom)
+							{
+								if(flag_dynamics)
+								{
+									(*dn)->displacement = ni->displacement;
+									(*dn)->velocity = ni->velocity;
+								}			
+								else
+								{
+									(*dn)->displacement = ni->displacement;
+								}
+							}
+							level_list[n]->voxmesh_level->new_energy += ((*dn)->static_position - (*dn)->target_position).norm();
+
+						}
+					}//update for
+					if (idx_bottom == n)
+					{
+						break;
+					}
+					double ratio = getEnergyRatio(level_list[n]->voxmesh_level);
+					cout << ratio << endl;
+					double threshold = abs(level_list[n]->voxmesh_level->new_energy - level_list[n]->voxmesh_level->old_energy);
+					//if (!flag_converge)
+					//{
+					//	myEnergy << ratio << endl;
+					//	myHEnergy << pVM->new_energy << endl;
+					//}
+
+					//cout << pVM->new_energy << endl;
+					//if (pVM->old_energy >= pVM->new_energy && threshold < 0.0001 && !flag_converge)
+					//{
+					//	timestep_converge = time_step_index;
+					//	flag_converge = true;
+					//	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
+					//	cout << "converge!" << endl;
+					//}
+					level_list[n]->voxmesh_level->old_energy = level_list[n]->voxmesh_level->new_energy;
+
+					//if level > 0, needs to inherit R, T from parent_level
+					// && level_list[n]->voxmesh_level->new_energy > 0.1
+					if(n < idx_bottom && ratio < energyThreshold && level_list[n]->voxmesh_level->new_energy > 0.1)
+					{
+						ci = level_list[n]->voxmesh_level->cluster_list.begin();
+						for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
+							ci->computeCurrentMassCentroid4Target();
+						break;
+					}	
+				}
+			}//
+		}//else
+	}
+	
+	//time_counter->StopCounter();
+	//cout << time_counter->GetElapsedTime() << endl;
+	//time_counter->StartCounter();
+	//for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	//{
+	//	nmi->displacement.setZero();
+	//	for(int i = 0; i < 8; i++)
+	//	{
+	//		nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+	//	}
+	//}
+
+
+	//networking
+	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
+	{
+		for(int i = 0; i < pTransmitter.size(); i++)
+		{
+			if(pTransmitter[i]->_type == HN_TRANSMITTER_TYPE_PC && pTransmitter[i]->isClientReady)
+				pTransmitter[i]->HSMupdate(data4PC);
+			else if(pTransmitter[i]->_type == HN_TRANSMITTER_TYPE_MOBILE)
+				pTransmitter[i]->HSMupdate(data4Mobile);
+		}
+		
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	if(flag_setForce && !flag_setWindForce)
+	{
+		double ratio, threshold = 0.0;
+		VoxMesh * pVM = level_list[idx_bottom]->voxmesh_level;
+		ratio = getEnergyRatio(pVM);
 		threshold = abs(pVM->new_energy - pVM->old_energy);
 		if (!flag_converge)
 		{
@@ -5251,6 +5654,8 @@ bool Kernel::simulateNextStep()
 		return simulateNextStep4Experimental();
 	case EXPERIMENTAL_SHAPE_MATCHING2:
 		return simulateNextStep4Experimental2();
+	case EXPERIMENTAL_SHAPE_MATCHING3:
+		return simulateNextStep4Experimental3();
 	default:
 		return false;
 		break;

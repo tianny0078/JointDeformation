@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>joint_deformation</string>
+   <string>Deformation</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="Renderer" name="renderWidget" native="true">
@@ -49,7 +49,7 @@
      <enum>QTabWidget::East</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -799,6 +799,39 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_23">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>220</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_23">
+       <item>
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>EnergyThreshold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_energyThreshold">
+         <property name="text">
+          <string>0.001</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setEnergyThreshold">
+         <property name="text">
+          <string>Set</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
@@ -1495,6 +1528,11 @@
     <item>
      <property name="text">
       <string>Experimental HSM2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Experimental HSM3</string>
      </property>
     </item>
    </widget>
@@ -2792,6 +2830,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_setEnergyThreshold</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setEnergyThreshold()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1301</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1333</x>
+     <y>481</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -2859,5 +2913,6 @@
   <slot>setCubeOperation(bool)</slot>
   <slot>setCubeStaticConstraint(bool)</slot>
   <slot>setCubeActiveConstraint(bool)</slot>
+  <slot>setEnergyThreshold()</slot>
  </slots>
 </ui>

@@ -465,6 +465,17 @@ void joint_deformation::chooseSimulator(int t)
 		ui.comboBox_level->setDisabled(false);
 		ui.pushButton_addLevel->setDisabled(false);
 		break;
+	case 11:
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::EXPERIMENTAL_SHAPE_MATCHING3;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
+		break;
 	default:
 		break;
 	}
@@ -1192,4 +1203,9 @@ void joint_deformation::testVoxConnection()
 		count ++;
 	}
 
+}
+
+void joint_deformation::setEnergyThreshold()
+{
+	p_kernel->energyThreshold = ui.lineEdit_energyThreshold->text().toDouble();
 }
