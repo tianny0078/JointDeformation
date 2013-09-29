@@ -128,6 +128,7 @@ public:
 
 	//test the point outside cube
 	void test_findPointOutside();
+	void test();
 	
 public:
 	Simulator used_simulator;

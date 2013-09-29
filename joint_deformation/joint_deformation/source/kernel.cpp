@@ -3299,7 +3299,7 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 						Quaterniond temp(p_temp->r);
 						list_q.push_back(temp);
 						
-						//p_temp->computeCurrentMassCentroid4Target();
+						p_temp->computeCurrentMassCentroid4Target();
 						//p_temp->computeCurrentMassCentroid4Static();
 						//list_v.push_back((p_temp->current_center - p_temp->r * p_temp->original_center));
 						list_v.push_back(p_temp->r*(ci->original_center - p_temp->original_center) + p_temp->current_center);
@@ -3390,9 +3390,10 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			// level 0 to bottom+1, directly implementing shape matching
 			//////////////////////////////////////////////////////////////////////////////////
 			int iteration = level_list[n]->times_ShapeMatching;
-			if(n == 0 || n < level_list.size())
+			if(n < level_list.size())
 			{
-				for( int i = 0; i < iteration; i ++)
+				//for( int i = 0; i < iteration; i ++)
+				while(true)
 				{
 					time_counter->StartCounter();
 					vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
@@ -3522,16 +3523,19 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 
 						}
 					}//update for
-					ci = level_list[n]->voxmesh_level->cluster_list.begin();
-					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
-						ci->computeCurrentMassCentroid4Target();
 					time_counter->StopCounter();
 					//cout << time_counter->GetElapsedTime() << endl;
-				}
-			}//
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			
+					VoxMesh * pVM = level_list[n]->voxmesh_level;
+					double threshold = 0.0;
+					double ratio = 0.0;
+					ratio = getEnergyRatio(pVM);
+					threshold = abs(pVM->new_energy - pVM->old_energy);
+					pVM->old_energy = pVM->new_energy;
+					double temp = pVM->num_pair * pVM->vox_size * pVM->vox_size;
+				}//iteration
+			}//if(n < size)
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}//else
 
 	}
@@ -3621,23 +3625,18 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 				Quaterniond q(m_pcluster->leaf_list[0]->r);
 				double t_add = 0.0;
 				int count = 1;
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Static();
-				////Vector3d t = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
+				m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
 				Vector3d t = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
 				translation = (m_pcluster->leaf_parameter[0] / m_pcluster->term_normlize) * t;
 				while(count < sizeLeaf)
 				{
-					//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Target();
-					//m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Static();
+					m_pcluster->leaf_list[count]->computeCurrentMassCentroid4Target();
 					Quaterniond q2(m_pcluster->leaf_list[count]->r);
 					t_add += (m_pcluster->leaf_parameter[count-1] / m_pcluster->term_normlize);
-					//double temp = (t_add * t_add) /(t_add * t_add + interpolation * interpolation);
 					double temp = t_add / (t_add + (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize));
 					Quaterniond qtemp = q2.slerp(temp, q);
 					q = qtemp;
 
-					////t =  m_pcluster->leaf_list[count]->current_center - m_pcluster->leaf_list[count]->r * m_pcluster->leaf_list[count]->original_center;
 					t = m_pcluster->leaf_list[count]->current_center + m_pcluster->leaf_list[count]->r * (m_pcluster->original_center - m_pcluster->leaf_list[count]->original_center);
 					translation += (m_pcluster->leaf_parameter[count] / m_pcluster->term_normlize) * t;
 
@@ -3647,9 +3646,8 @@ bool Kernel::simulateNextStep4HierarchyShapeMatching()
 			}
 			else
 			{
-				//m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
+				m_pcluster->leaf_list[0]->computeCurrentMassCentroid4Target();
 				level_list[0]->voxmesh_level->cluster_list[i_c].r = m_pcluster->leaf_list[0]->r;
-				////translation = m_pcluster->leaf_list[0]->current_center - m_pcluster->leaf_list[0]->r * m_pcluster->leaf_list[0]->original_center;
 				translation = m_pcluster->leaf_list[0]->current_center + m_pcluster->leaf_list[0]->r * (m_pcluster->original_center - m_pcluster->leaf_list[0]->original_center);
 			}
 
@@ -10090,4 +10088,53 @@ void Kernel::test_findPointOutside()
 		//	cout << "count max: "<< count << endl;
 		count ++;
 	}
+}
+
+void Kernel::test()
+{
+	Matrix3d r1 = Matrix3d::Identity();
+	Matrix3d r2 = Matrix3d::Zero();
+	r2(0, 0) = 1;
+	r2(1, 1) = pow(3.0, 0.5)/2.0;
+	r2(1, 2) = -0.5;
+	r2(2, 1) = 0.5;
+	r2(2, 2) = pow(3.0, 0.5)/2.0;
+	Matrix3d r3 = Matrix3d::Zero();
+	r3(0, 0) = 1;
+	r3(1, 2) = -1;
+	r3(2, 1) = 1;
+	Matrix3d r4 = Matrix3d::Zero();
+	r4(0, 0) = 1;
+	r4(1, 1) = -0.5;
+	r4(1, 2) = (-1.0) * pow(3.0, 0.5)/2.0;
+	r4(2, 1) = pow(3.0, 0.5)/2;
+	r4(2, 2) = 0.5;
+	Quaterniond d1(r1);
+	Quaterniond d2(r2);
+	Quaterniond d3(r3);
+	Quaterniond d4(r4);
+	Quaterniond t1 = d1.slerp(0.5, d2);
+	Quaterniond t2 = t1.slerp(1.0/3.0, d3);
+	Quaterniond t3 = t2.slerp(0.25, d4);
+	cout << t3.w() << endl;
+
+	double q0 = exp(0.5 * log(d1.w()) + 0.5* log(d2.w()));
+	double q1 = exp(0.5 * log(d2.x()));
+	double q2 = exp(0.5 * log(d1.y()) + 0.5* log(d2.y()));
+	double q3 = exp(0.5 * log(d1.z()) + 0.5* log(d2.z()));
+	//double q0 = exp(0.25 * (log(d1.w()* d2.w()*d3.w()*d4.w())));
+	//double q1 = exp(0.25 * (log(d1.x()* d2.x()*d3.x()*d4.x())));
+	//double q2 = exp(0.25 * (log( d1.y()* d2.y()*d3.y()*d4.y())));
+	//double q3 = exp(0.25 * (log( d1.z()* d2.z()*d3.z()*d4.z())));
+	cout << r3 << endl;
+	cout << log(0.0) << endl;
+	cout << d1.w() << " " << d1.x() << " " << d1.y() << " " << d1.z() << endl;
+	cout << d3.w() << " " << d3.x() << " " << d3.y() << " " << d3.z() << endl;
+	cout << d2.w() << " " << d2.x() << " " << d2.y() << " " << d2.z() << endl;
+	cout << endl;
+	cout << q0 << endl;
+	cout << q1 << endl;
+	cout << q2 << endl;
+	cout << q3 << endl;
+
 }

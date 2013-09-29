@@ -891,19 +891,20 @@ void joint_deformation::testSleepTime()
 
 void joint_deformation::testFunction()
 {
-	if(!p_kernel->p_voxel)
-	{
-		delete []p_kernel->p_voxel;
-		p_kernel->p_voxel = NULL;
-	}
+	//if(!p_kernel->p_voxel)
+	//{
+	//	delete []p_kernel->p_voxel;
+	//	p_kernel->p_voxel = NULL;
+	//}
 
-	p_kernel->p_voxel = new unsigned int[729];
+	//p_kernel->p_voxel = new unsigned int[729];
 
-	memset(p_kernel->p_voxel, 0, sizeof(unsigned int)*729);
-	p_kernel->mark_fillInterior4VoxelLevel(p_kernel->p_voxel, 3, 3);
-	for(int i = 0; i < 729; i++)
-		cout << i << ": " << p_kernel->p_voxel[i] << " ";
-	cout << endl;
+	//memset(p_kernel->p_voxel, 0, sizeof(unsigned int)*729);
+	//p_kernel->mark_fillInterior4VoxelLevel(p_kernel->p_voxel, 3, 3);
+	//for(int i = 0; i < 729; i++)
+	//	cout << i << ": " << p_kernel->p_voxel[i] << " ";
+	//cout << endl;
+	p_kernel->test();
 }
 
 void joint_deformation::setMass()
