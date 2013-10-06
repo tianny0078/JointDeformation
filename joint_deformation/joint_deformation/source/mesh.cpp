@@ -38,6 +38,7 @@ Node::Node()
 	prescribed_angular_velocity = Vector3d::Zero();
 
 	child_node = NULL;
+	parent_node = NULL;
 
 	//interpolation realted
 	int i = 0;
@@ -219,7 +220,7 @@ Cluster::Cluster()
 
 	alpha = 1.0;
 	beta = 0.0;
-	kappa = 0.01;
+	kappa = 0.0;
 
 	max_x = -1e10;
 	max_y = -1e10;
@@ -787,7 +788,7 @@ VoxMesh::VoxMesh()
 	inverted_cluster = NULL;
 	neighbor_flag = NULL;
 
-	old_energy = 0.000001;
+	old_energy = 0.0;
 	new_energy = 0.0;
 }
 

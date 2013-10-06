@@ -1893,8 +1893,8 @@
    <slot>setGridDensity()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>174</y>
+     <x>1131</x>
+     <y>171</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2037,8 +2037,8 @@
    <slot>lastSameLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1176</x>
-     <y>219</y>
+     <x>1091</x>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2053,8 +2053,8 @@
    <slot>nextSameLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1216</x>
-     <y>219</y>
+     <x>1091</x>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2117,8 +2117,8 @@
    <slot>addLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1270</x>
-     <y>133</y>
+     <x>1161</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>1318</x>
@@ -2133,8 +2133,8 @@
    <slot>chooseLevelDisplay(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1189</x>
-     <y>131</y>
+     <x>1161</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>1086</x>
@@ -2277,8 +2277,8 @@
    <slot>setDampParameter()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>264</y>
+     <x>1131</x>
+     <y>261</y>
     </hint>
     <hint type="destinationlabel">
      <x>1386</x>
@@ -2309,8 +2309,8 @@
    <slot>setTimesShapeMatching()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>304</y>
+     <x>1131</x>
+     <y>301</y>
     </hint>
     <hint type="destinationlabel">
      <x>1382</x>
@@ -2373,8 +2373,8 @@
    <slot>setDynamics(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1312</x>
-     <y>340</y>
+     <x>1161</x>
+     <y>346</y>
     </hint>
     <hint type="destinationlabel">
      <x>1384</x>
@@ -2405,8 +2405,8 @@
    <slot>setGravityMagnitude()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>383</y>
+     <x>1161</x>
+     <y>386</y>
     </hint>
     <hint type="destinationlabel">
      <x>1381</x>
@@ -2469,8 +2469,8 @@
    <slot>setServer(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1253</x>
-     <y>140</y>
+     <x>1161</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>1159</x>
@@ -2485,8 +2485,8 @@
    <slot>setClient(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>140</y>
+     <x>1161</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>1250</x>
@@ -2501,8 +2501,8 @@
    <slot>setNumOfClients()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1253</x>
-     <y>223</y>
+     <x>1161</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>1302</x>
@@ -2517,8 +2517,8 @@
    <slot>configNetwork()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>223</y>
+     <x>1161</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>1392</x>
@@ -2533,8 +2533,8 @@
    <slot>setCaptureScreen(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1237</x>
-     <y>460</y>
+     <x>1161</x>
+     <y>466</y>
     </hint>
     <hint type="destinationlabel">
      <x>1373</x>
@@ -2549,8 +2549,8 @@
    <slot>setCaptureSubScreen(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1345</x>
-     <y>460</y>
+     <x>1161</x>
+     <y>466</y>
     </hint>
     <hint type="destinationlabel">
      <x>1394</x>
@@ -2709,8 +2709,8 @@
    <slot>clearLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1351</x>
-     <y>133</y>
+     <x>1161</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>1388</x>
@@ -2846,6 +2846,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_nextStep</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>simulateNextStep()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1212</x>
+     <y>793</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1230</x>
+     <y>694</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -2914,5 +2930,6 @@
   <slot>setCubeStaticConstraint(bool)</slot>
   <slot>setCubeActiveConstraint(bool)</slot>
   <slot>setEnergyThreshold()</slot>
+  <slot>simulateNextStep()</slot>
  </slots>
 </ui>

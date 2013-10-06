@@ -1125,24 +1125,74 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 					if (isSelected(wx, wy))
 					{
-						if (!n_iter->flag_constraint_node)
+						
+						if (p_kernel->used_simulator == Kernel::EXPERIMENTAL_SHAPE_MATCHING3)
 						{
-							n_iter->flag_constraint_node = true;
-							p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
-
-							for(int j=0; j < n_iter->incident_cluster.size(); ++j)
+							if(i > 0 && n_iter->parent_node != NULL)
 							{
-								n_iter->incident_cluster[j]->flag_constrained = true;
-								n_iter->incident_cluster[j]->constraint_node = NULL;
+								if (!n_iter->flag_constraint_node && n_iter->parent_node->flag_constraint_node)
+								{
+									n_iter->flag_constraint_node = true;
+									p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
+
+									for(int j=0; j < n_iter->incident_cluster.size(); ++j)
+									{
+										n_iter->incident_cluster[j]->flag_constrained = true;
+										n_iter->incident_cluster[j]->constraint_node = NULL;
+									}
+
+									for (int k=0; k < n_iter->duplicates.size(); ++k)
+									{
+										n_iter->duplicates[k]->flag_constraint_node = true;
+										n_iter->prescribed_position = n_iter->target_position;
+										n_iter->prescribed_preposition = n_iter->target_position;
+									}
+								}
 							}
-
-							for (int k=0; k < n_iter->duplicates.size(); ++k)
+							else if(i == 0)
 							{
-								n_iter->duplicates[k]->flag_constraint_node = true;
-								n_iter->prescribed_position = n_iter->target_position;
-								n_iter->prescribed_preposition = n_iter->target_position;
+								if (!n_iter->flag_constraint_node )
+								{
+									n_iter->flag_constraint_node = true;
+									p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
+
+									for(int j=0; j < n_iter->incident_cluster.size(); ++j)
+									{
+										n_iter->incident_cluster[j]->flag_constrained = true;
+										n_iter->incident_cluster[j]->constraint_node = NULL;
+									}
+
+									for (int k=0; k < n_iter->duplicates.size(); ++k)
+									{
+										n_iter->duplicates[k]->flag_constraint_node = true;
+										n_iter->prescribed_position = n_iter->target_position;
+										n_iter->prescribed_preposition = n_iter->target_position;
+									}
+								}
 							}
 						}
+						else{
+						
+							if (!n_iter->flag_constraint_node)
+							{
+								n_iter->flag_constraint_node = true;
+								p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
+
+								for(int j=0; j < n_iter->incident_cluster.size(); ++j)
+								{
+									n_iter->incident_cluster[j]->flag_constrained = true;
+									n_iter->incident_cluster[j]->constraint_node = NULL;
+								}
+
+								for (int k=0; k < n_iter->duplicates.size(); ++k)
+								{
+									n_iter->duplicates[k]->flag_constraint_node = true;
+									n_iter->prescribed_position = n_iter->target_position;
+									n_iter->prescribed_preposition = n_iter->target_position;
+								}
+							}
+						}
+
 					}
 					if(n_iter->flag_constraint_node)
 					{

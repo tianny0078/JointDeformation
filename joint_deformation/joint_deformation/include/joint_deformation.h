@@ -92,6 +92,8 @@ public slots:
 	void resetMass();
 	void setEnableMass(bool);
 	void setEnergyThreshold();
+
+	void simulateNextStep();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;

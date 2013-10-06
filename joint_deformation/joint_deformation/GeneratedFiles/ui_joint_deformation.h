@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Wed Sep 25 14:17:56 2013
+** Created: Sun Sep 29 14:13:48 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -1128,6 +1128,7 @@ public:
         QObject::connect(actionSetCubeStaticConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeStaticConstraint(bool)));
         QObject::connect(actionSetCubeActiveConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeActiveConstraint(bool)));
         QObject::connect(pushButton_setEnergyThreshold, SIGNAL(clicked()), joint_deformationClass, SLOT(setEnergyThreshold()));
+        QObject::connect(pushButton_nextStep, SIGNAL(clicked()), joint_deformationClass, SLOT(simulateNextStep()));
 
         tabWidget->setCurrentIndex(1);
 

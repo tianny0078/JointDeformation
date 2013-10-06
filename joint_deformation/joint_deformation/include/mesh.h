@@ -134,6 +134,7 @@ struct Node: public HNPacketLockedMarshallHandler
 
 	// child node with same pos in next level
 	Node* child_node;
+	Node* parent_node;
 
 	//interpolations using barycentric coordinates
 	Node * list_interpolation_nodes[8];
@@ -187,6 +188,7 @@ struct DuplicatedNode
 	Vector3d cur_normal;
 	Vector3d velocity;
 	Vector3d static_position;
+	Vector3d static_position_timestep;
 	Vector3d target_position;
 	Vector3d force;
 	//new

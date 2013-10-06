@@ -241,7 +241,6 @@ void joint_deformation::pauseSimulation()
 
 void joint_deformation::simulate()
 {
-	double start = GetTickCount();
 	if (!p_kernel->simulateNextStep())
 	{
 		pauseSimulation();
@@ -255,9 +254,6 @@ void joint_deformation::simulate()
 			p_kernel->flag_mesh_ready = false;
 	}
 	ui.renderWidget->updateGL();
-	double end = GetTickCount() - start;
-	if(end != 0)
-		p_kernel->fps = 1000/end;
 
 	if (flag_captureScreen)
 	{
@@ -284,6 +280,20 @@ void joint_deformation::simulate()
 		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->time_step_index);
 		p_kernel->exportToOBJ(filenames);
 	}
+}
+
+void joint_deformation::simulateNextStep()
+{
+	if (!p_kernel->flag_simulator_ready)
+	{
+		QMessageBox::warning(NULL, "warning", "initialize simulator first");
+		return;
+	}
+	if (!p_kernel->simulateNextStep())
+	{
+		pauseSimulation();
+	}
+	ui.renderWidget->updateGL();
 }
 
 void joint_deformation::initializeSimulator()
