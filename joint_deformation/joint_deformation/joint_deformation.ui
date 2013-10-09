@@ -1482,6 +1482,31 @@
     </item>
     <item>
      <property name="text">
+      <string>HSM Force4Iteration</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>HSM Original</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>HSM OneStep</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>HSM Force4Step</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>HSM AdaptiveStep</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>Native Shape Matching</string>
      </property>
     </item>
@@ -1493,11 +1518,6 @@
     <item>
      <property name="text">
       <string>Single Grid</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Hierarchical Shape Matching</string>
      </property>
     </item>
     <item>
@@ -1518,21 +1538,6 @@
     <item>
      <property name="text">
       <string>Simulation for Mobile</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Experimental HSM</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Experimental HSM2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Experimental HSM3</string>
      </property>
     </item>
    </widget>

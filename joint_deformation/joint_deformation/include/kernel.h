@@ -40,7 +40,8 @@ class Kernel
 
 public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
-		HIERARCHY_SHAPE_MATCHING, MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, EXPERIMENTAL_SHAPE_MATCHING, EXPERIMENTAL_SHAPE_MATCHING2, EXPERIMENTAL_SHAPE_MATCHING3} Simulator;
+		MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, 
+		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -84,10 +85,11 @@ public:
 	//newly
 	bool simulateNextStepForMobile();
 	bool simulateNextStep4MultipleVelocityMatching();
-	bool simulateNextStep4HierarchyShapeMatching();
-	bool simulateNextStep4Experimental();
-	bool simulateNextStep4Experimental2();
-	bool simulateNextStep4Experimental3();
+	bool simulateNextStep4HSMForce4Iteration();
+	bool simulateNextStep4HSMOriginal();
+	bool simulateNextStep4HSMOneStep();
+	bool simulateNextStep4HSMForce4Step();
+	bool simulateNextStep4HSMAdaptiveStep();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();

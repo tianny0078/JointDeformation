@@ -401,21 +401,53 @@ void joint_deformation::chooseSimulator(int t)
 	case 0:
 		p_kernel->used_simulator = Kernel::UNDEFINED;
 		break;
-
 	case 1:
-		p_kernel->used_simulator = Kernel::SHAPE_MATCHING;
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::HSM_FORCE4ITERATION;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
 		break;
 	case 2:
-		p_kernel->used_simulator = Kernel::VELOCITY_MATCHING;
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::HSM_ORIGINAL;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
 		break;
-
 	case 3:
-		p_kernel->used_simulator = Kernel::SINGLE_GRID;
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::HSM_ONE_STEP;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
 		break;
-
 	case 4:
 		//p_kernel->used_simulator = Kernel::HIERARCHY;
-		p_kernel->used_simulator = Kernel::HIERARCHY_SHAPE_MATCHING;
+		p_kernel->used_simulator = Kernel::HSM_FORCE4STEP;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
+		break;
+	case 5:
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::HSM_ADAPTIVE_STEP;
 		// keep Level 0, dicard other Levels
 		p_kernel->clearAllLevel();
 		//enable some parts of UI.
@@ -425,6 +457,19 @@ void joint_deformation::chooseSimulator(int t)
 		ui.pushButton_addLevel->setDisabled(false);
 		break;
 	case 6:
+		p_kernel->used_simulator = Kernel::SHAPE_MATCHING;
+		break;
+	case 7:
+		p_kernel->used_simulator = Kernel::VELOCITY_MATCHING;
+		break;
+
+	case 8:
+		p_kernel->used_simulator = Kernel::SINGLE_GRID;
+		break;
+	case 9:
+		p_kernel->used_simulator = Kernel::PAIR_MATCHING;
+		break;
+	case 10:
 		p_kernel->used_simulator = Kernel::MULTIPLE_VELOCITY_MATCHING;
 		// keep Level 0, dicard other Levels
 		p_kernel->clearAllLevel();
@@ -434,7 +479,7 @@ void joint_deformation::chooseSimulator(int t)
 		ui.comboBox_level->setDisabled(false);
 		ui.pushButton_addLevel->setDisabled(false);
 		break;
-	case 7:
+	case 11:
 		p_kernel->used_simulator = Kernel::SIMULATION_NETWORKING;
 		ui.renderWidget->flag_show_mesh = true;
 		ui.actionShowMesh->setChecked(true);
@@ -442,7 +487,7 @@ void joint_deformation::chooseSimulator(int t)
 		ui.comboBox_selectTreeDepth->setEnabled(true);
 		ui.renderWidget->updateGL();
 		break;
-	case 8:
+	case 12:
 		p_kernel->used_simulator = Kernel::SIMULATION_MOBILE;
 		ui.renderWidget->flag_show_mesh = true;
 		ui.actionShowMesh->setChecked(true);
@@ -453,39 +498,7 @@ void joint_deformation::chooseSimulator(int t)
 		if(p_kernel->myMobile.fail())
 			return;
 		break;
-	case 9:
-		//p_kernel->used_simulator = Kernel::HIERARCHY;
-		p_kernel->used_simulator = Kernel::EXPERIMENTAL_SHAPE_MATCHING;
-		// keep Level 0, dicard other Levels
-		p_kernel->clearAllLevel();
-		//enable some parts of UI.
-		ui.comboBox_level->clear();
-		ui.comboBox_level->addItem("Level 0");
-		ui.comboBox_level->setDisabled(false);
-		ui.pushButton_addLevel->setDisabled(false);
-		break;
-	case 10:
-		//p_kernel->used_simulator = Kernel::HIERARCHY;
-		p_kernel->used_simulator = Kernel::EXPERIMENTAL_SHAPE_MATCHING2;
-		// keep Level 0, dicard other Levels
-		p_kernel->clearAllLevel();
-		//enable some parts of UI.
-		ui.comboBox_level->clear();
-		ui.comboBox_level->addItem("Level 0");
-		ui.comboBox_level->setDisabled(false);
-		ui.pushButton_addLevel->setDisabled(false);
-		break;
-	case 11:
-		//p_kernel->used_simulator = Kernel::HIERARCHY;
-		p_kernel->used_simulator = Kernel::EXPERIMENTAL_SHAPE_MATCHING3;
-		// keep Level 0, dicard other Levels
-		p_kernel->clearAllLevel();
-		//enable some parts of UI.
-		ui.comboBox_level->clear();
-		ui.comboBox_level->addItem("Level 0");
-		ui.comboBox_level->setDisabled(false);
-		ui.pushButton_addLevel->setDisabled(false);
-		break;
+
 	default:
 		break;
 	}

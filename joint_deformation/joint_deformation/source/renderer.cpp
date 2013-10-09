@@ -1126,7 +1126,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 					if (isSelected(wx, wy))
 					{
 						
-						if (p_kernel->used_simulator == Kernel::EXPERIMENTAL_SHAPE_MATCHING3)
+						if (p_kernel->used_simulator == Kernel::HSM_FORCE4STEP)
 						{
 							if(i > 0 && n_iter->parent_node != NULL)
 							{
@@ -1588,10 +1588,11 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			{
 			case Kernel::VELOCITY_MATCHING:
 			case Kernel::MULTIPLE_VELOCITY_MATCHING:
-			case Kernel::HIERARCHY_SHAPE_MATCHING:
-			case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
-			case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
-			case Kernel::EXPERIMENTAL_SHAPE_MATCHING3:
+			case Kernel::HSM_ORIGINAL:
+			case Kernel::HSM_FORCE4ITERATION:
+			case Kernel::HSM_FORCE4STEP:
+			case Kernel::HSM_ONE_STEP:
+			case Kernel::HSM_ADAPTIVE_STEP:
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1738,10 +1739,11 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				{
 				case Kernel::SHAPE_MATCHING:
 				case Kernel::SINGLE_GRID:
-				case Kernel::HIERARCHY_SHAPE_MATCHING:
-				case Kernel::EXPERIMENTAL_SHAPE_MATCHING:
-				case Kernel::EXPERIMENTAL_SHAPE_MATCHING2:
-				case Kernel::EXPERIMENTAL_SHAPE_MATCHING3:
+				case Kernel::HSM_ADAPTIVE_STEP:
+				case Kernel::HSM_FORCE4ITERATION:
+				case Kernel::HSM_FORCE4STEP:
+				case Kernel::HSM_ONE_STEP:
+				case Kernel::HSM_ORIGINAL:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{
