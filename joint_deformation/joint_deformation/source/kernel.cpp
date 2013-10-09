@@ -3269,7 +3269,7 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 
 	double PI = 3.14159265;
 	int idx_bottom = level_list.size() - 1;
-
+	int num_timestep = 0;
 	for (int n = 0; n < level_list.size(); n++)
 	{
 		//position constraint
@@ -3479,9 +3479,10 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 								{
 									if(flag_dynamics)
 									{
-										dni->velocity = (1.0-ci->kappa)*dni->velocity + ci->alpha*(dni->static_position - dni->coordinate - dni->displacement) / time_step_size
-											+ time_step_size*_force*force_scalar;
-										dni->displacement += time_step_size*dni->velocity;
+										dni->velocity = (1.0-ci->kappa)*dni->velocity + ci->alpha*(dni->static_position - dni->coordinate - dni->displacement) / ((num_timestep + 1 )* time_step_size);
+											+ time_step_size*_force*force_scalar/(num_timestep + 1);
+										dni->displacement += (num_timestep + 1)*time_step_size*dni->velocity;
+
 										dni->target_position = dni->coordinate + dni->displacement;
 									}
 									else
@@ -3502,7 +3503,7 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 						}
 
 					}//for
-					cout << "before sm: " <<  tempEnergy2<< endl;
+					cout << "before sm: " <<  tempEnergy2 << endl;
 					cout << "after sm:" << level_list[n]->voxmesh_level->new_energy << endl;
 					cout << "last step energy" << level_list[n]->voxmesh_level->old_energy << endl;
 					cout << "force: " << tempEnergy << endl;
@@ -3616,7 +3617,6 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 		}//else
 
 	}
-	cout << endl;
 	///////////////////////////////////////////////////////////////////////////
 	//level 0 update by the last level, multigrid
 	///////////////////////////////////////////////////////////////////////////
@@ -3634,6 +3634,7 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 
 		time_counter->StartCounter();
 		int size_c = level_list[0]->voxmesh_level->cluster_list.size();
+		level_list[0]->voxmesh_level->old_energy = 0.0;
 		for(int i_c = 0; i_c < size_c; i_c ++)
 		{
 			Cluster * m_pcluster = &level_list[0]->voxmesh_level->cluster_list[i_c];
@@ -3739,6 +3740,11 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 			{
 				////dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*dni->coordinate + translation;
 				dni->static_position = (m_pcluster->beta*m_pcluster->a/det_a + (1.0-m_pcluster->beta)*m_pcluster->r)*(dni->coordinate - m_pcluster->original_center) + m_pcluster->current_center;
+
+				level_list[0]->voxmesh_level->old_energy += pow((dni->static_position(0) - dni->target_position(0)), 2);
+				level_list[0]->voxmesh_level->old_energy += pow((dni->static_position(1) - dni->target_position(1)), 2);
+				level_list[0]->voxmesh_level->old_energy += pow((dni->static_position(2) - dni->target_position(2)), 2);
+
 				if (!dni->mapped_node->flag_anchor_node)
 				{
 					Vector3d _force = dni->force + force_gravity + force_wind;
@@ -3747,11 +3753,12 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 			}
 		}
 
+		cout << "feedback energy" << level_list[0]->voxmesh_level->old_energy << endl; 
+
 		time_counter->StopCounter();
 		//cout << time_counter->GetElapsedTime() << endl;
 		time_counter->StartCounter();
 		// updating displacement
-		level_list[0]->voxmesh_level->old_energy = 0.0;
 		for (node_iterator ni=level_list[0]->voxmesh_level->node_list.begin(); ni!=level_list[0]->voxmesh_level->node_list.end(); ++ni)
 		{
 			//ni->static_position.setZero();
@@ -3775,9 +3782,6 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 				//if(!ni->flag_anchor_node)
 					(*dn)->target_position = ni->target_position;
 
-					level_list[0]->voxmesh_level->old_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
-					level_list[0]->voxmesh_level->old_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
-					level_list[0]->voxmesh_level->old_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 				//else
 					//(*dn)->target_position = ni->coordinate;
 			}
@@ -3799,7 +3803,7 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	//cout << endl;
-	//cout << endl;
+	cout << endl;
 
 	//networking
 	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
