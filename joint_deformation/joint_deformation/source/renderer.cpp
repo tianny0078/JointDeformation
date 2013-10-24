@@ -1125,7 +1125,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 					if (isSelected(wx, wy))
 					{
-						
+						/*
 						if (p_kernel->used_simulator == Kernel::HSM_FORCE4STEP)
 						{
 							if(i > 0 && n_iter->parent_node != NULL)
@@ -1172,7 +1172,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 							}
 						}
 						else{
-						
+						*/
 							if (!n_iter->flag_constraint_node)
 							{
 								n_iter->flag_constraint_node = true;
@@ -1191,7 +1191,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									n_iter->prescribed_preposition = n_iter->target_position;
 								}
 							}
-						}
+						/*}*/
 
 					}
 					if(n_iter->flag_constraint_node)
@@ -1593,6 +1593,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			case Kernel::HSM_FORCE4STEP:
 			case Kernel::HSM_ONE_STEP:
 			case Kernel::HSM_ADAPTIVE_STEP:
+			case Kernel::HSM_FORCE4STEP_FIRST:
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1744,6 +1745,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::HSM_FORCE4STEP:
 				case Kernel::HSM_ONE_STEP:
 				case Kernel::HSM_ORIGINAL:
+				case Kernel::HSM_FORCE4STEP_FIRST:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{

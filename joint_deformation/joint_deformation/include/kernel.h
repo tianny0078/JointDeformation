@@ -41,7 +41,7 @@ class Kernel
 public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
 		MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, 
-		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP} Simulator;
+		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP, HSM_FORCE4STEP_FIRST} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -90,6 +90,7 @@ public:
 	bool simulateNextStep4HSMOneStep();
 	bool simulateNextStep4HSMForce4Step();
 	bool simulateNextStep4HSMAdaptiveStep();
+	bool simulateNextStep4HSMForce4StepFirst();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();
@@ -116,7 +117,7 @@ public:
 	void linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in);
 	void linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &parent_mesh, int d, int d_parent, int level_index_parent);
 	void resetMass4Level();
-	double getEnergyRatio(VoxMesh * vm);
+	double getEnergyRatio(VoxMesh * vm, double & speed);
 
 	// file i/o
 	void saveOutputData(vector<double>& data, const char* filename);

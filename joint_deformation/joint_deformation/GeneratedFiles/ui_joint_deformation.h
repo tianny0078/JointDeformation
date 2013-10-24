@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Sun Oct 6 21:26:10 2013
+** Created: Wed Oct 23 13:39:44 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -459,7 +459,7 @@ public:
         spinBox_TimesShapeMatching->setMinimumSize(QSize(0, 25));
         spinBox_TimesShapeMatching->setMaximumSize(QSize(16777215, 25));
         spinBox_TimesShapeMatching->setMinimum(1);
-        spinBox_TimesShapeMatching->setMaximum(300);
+        spinBox_TimesShapeMatching->setMaximum(10000);
         spinBox_TimesShapeMatching->setValue(1);
 
         horizontalLayout_6->addWidget(spinBox_TimesShapeMatching);
@@ -1130,7 +1130,7 @@ public:
         QObject::connect(pushButton_setEnergyThreshold, SIGNAL(clicked()), joint_deformationClass, SLOT(setEnergyThreshold()));
         QObject::connect(pushButton_nextStep, SIGNAL(clicked()), joint_deformationClass, SLOT(simulateNextStep()));
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);
@@ -1259,6 +1259,7 @@ public:
          << QApplication::translate("joint_deformationClass", "Multiple Velocity Matching", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Simulation through Network", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "HSM Force4StepFirst", 0, QApplication::UnicodeUTF8)
         );
         groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | PosConstraint | OrientationConstraint", 0, QApplication::UnicodeUTF8));
         radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));

@@ -498,7 +498,17 @@ void joint_deformation::chooseSimulator(int t)
 		if(p_kernel->myMobile.fail())
 			return;
 		break;
-
+	case 13:
+		//p_kernel->used_simulator = Kernel::HIERARCHY;
+		p_kernel->used_simulator = Kernel::HSM_FORCE4STEP_FIRST;
+		// keep Level 0, dicard other Levels
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
+		ui.pushButton_addLevel->setDisabled(false);
+		break;
 	default:
 		break;
 	}
