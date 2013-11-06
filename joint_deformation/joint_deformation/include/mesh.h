@@ -613,6 +613,7 @@ struct VoxMesh
 	vector<Cluster> cluster_list;										// cluster is linear, for native shape matching
 	//vector<Node*> active_node_list;										// for more than one active (external force)
 	vector<Node*> constraint_node_list;                                 // for more than one constraint
+	vector<Cluster *>constraint_cluster_list;                           //clusters which have constraints
 	vector<Vector3d> constraint_displacement;
 	Vector3d constraint_center;
 	vector<Cluster *> static_cube_list;

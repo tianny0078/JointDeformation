@@ -1545,6 +1545,11 @@
       <string>HSM Force4StepFirst</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>HSM Force4StepFirst1</string>
+     </property>
+    </item>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">

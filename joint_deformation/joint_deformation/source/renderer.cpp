@@ -1182,6 +1182,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 								{
 									n_iter->incident_cluster[j]->flag_constrained = true;
 									n_iter->incident_cluster[j]->constraint_node = NULL;
+									p_kernel->level_list[i]->voxmesh_level->constraint_cluster_list.push_back(n_iter->incident_cluster[j]);
 								}
 
 								for (int k=0; k < n_iter->duplicates.size(); ++k)
@@ -1467,6 +1468,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 					(*n_iter)->flag_constraint_node = false;
 				}
 				p_kernel->level_list[i]->voxmesh_level->constraint_node_list.clear();
+				p_kernel->level_list[i]->voxmesh_level->constraint_cluster_list.clear();
 				p_kernel->level_list[i]->voxmesh_level->constraint_center.setZero();
 
 				//all targets set to be rest shape
@@ -1594,6 +1596,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			case Kernel::HSM_ONE_STEP:
 			case Kernel::HSM_ADAPTIVE_STEP:
 			case Kernel::HSM_FORCE4STEP_FIRST:
+			case Kernel::HSM_FORCE4STEP_FIRST1:
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1746,6 +1749,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::HSM_ONE_STEP:
 				case Kernel::HSM_ORIGINAL:
 				case Kernel::HSM_FORCE4STEP_FIRST:
+				case Kernel::HSM_FORCE4STEP_FIRST1:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{
