@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon Nov 4 21:33:12 2013
+** Created: Wed Nov 6 19:35:22 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -1261,6 +1261,7 @@ public:
          << QApplication::translate("joint_deformationClass", "Simulation for Mobile", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "HSM Force4StepFirst", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("joint_deformationClass", "HSM Force4StepFirst1", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("joint_deformationClass", "HSM Force4StepFirst2", 0, QApplication::UnicodeUTF8)
         );
         groupBox_3->setTitle(QApplication::translate("joint_deformationClass", "Force | PosConstraint | OrientationConstraint", 0, QApplication::UnicodeUTF8));
         radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));

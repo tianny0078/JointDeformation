@@ -1597,6 +1597,8 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 			case Kernel::HSM_ADAPTIVE_STEP:
 			case Kernel::HSM_FORCE4STEP_FIRST:
 			case Kernel::HSM_FORCE4STEP_FIRST1:
+			case Kernel::HSM_FORCE4STEP_FIRST2:
+
 				if(p_kernel->p_vox_mesh->constraint_node_list.empty())
 				{
 					for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
@@ -1750,6 +1752,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::HSM_ORIGINAL:
 				case Kernel::HSM_FORCE4STEP_FIRST:
 				case Kernel::HSM_FORCE4STEP_FIRST1:
+				case Kernel::HSM_FORCE4STEP_FIRST2:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{
@@ -2078,6 +2081,7 @@ void Renderer::mouseReleaseEvent(QMouseEvent *e)
 							}
 						}
 						p_kernel->level_list[j]->voxmesh_level->constraint_node_list.clear();
+						p_kernel->level_list[j]->voxmesh_level->constraint_cluster_list.clear();
 					}
 					force_arrow.setZero();
 				}
