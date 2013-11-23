@@ -219,6 +219,8 @@ public:
 	int num_PE_perTimeStep;
 
 	bool flag_exportTxt;
+	bool flag_exportObj;
+	int num_obj;
 	
 	double fps;
 	bool flag_compressData;

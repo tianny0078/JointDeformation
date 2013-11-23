@@ -85,6 +85,7 @@ Kernel::Kernel()
 	num_PE_perTimeStep = 0;
 
 	flag_exportTxt = false;
+	flag_exportObj = false;
 
 	fps = 0;
 
@@ -95,6 +96,8 @@ Kernel::Kernel()
 	time_counter = new PerformanceCounter;
 
 	energyThreshold = 0.005;
+
+	num_obj = 1;
 }
 
 Kernel::~Kernel()
@@ -346,7 +349,7 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 		{
 		int cluster_idx = vm->vox_locator[vox_idx]->clusterid;
 		//cout << "cluster id:" << cluster_idx << endl;
-		ni->incident_cluster.clear();
+		ni->clearPara();
 		ni->incident_cluster.push_back(&vm->cluster_list[cluster_idx]);
 
 		//also, calculate parameters for vertex interpolation
@@ -362,18 +365,19 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 		//	v_mesh->vox_list.back().para_interpolate[7] = ((line_cube - x_cube) * y_cube * z_cube) / vol_cube;
 		//}		
 
-		ni->list_interpolation_nodes[0] = vm->vox_locator[vox_idx]->node_0;
-		ni->list_interpolation_nodes[1] = vm->vox_locator[vox_idx]->node_1;
-		ni->list_interpolation_nodes[2] = vm->vox_locator[vox_idx]->node_2;
-		ni->list_interpolation_nodes[3] = vm->vox_locator[vox_idx]->node_3;
-		ni->list_interpolation_nodes[4] = vm->vox_locator[vox_idx]->node_4;
-		ni->list_interpolation_nodes[5] = vm->vox_locator[vox_idx]->node_5;
-		ni->list_interpolation_nodes[6] = vm->vox_locator[vox_idx]->node_6;
-		ni->list_interpolation_nodes[7] = vm->vox_locator[vox_idx]->node_7;
+		ni->list_interpolation_nodes[0].push_back(vm->vox_locator[vox_idx]->node_0);
+		ni->list_interpolation_nodes[1].push_back(vm->vox_locator[vox_idx]->node_1);
+		ni->list_interpolation_nodes[2].push_back(vm->vox_locator[vox_idx]->node_2);
+		ni->list_interpolation_nodes[3].push_back(vm->vox_locator[vox_idx]->node_3);
+		ni->list_interpolation_nodes[4].push_back(vm->vox_locator[vox_idx]->node_4);
+		ni->list_interpolation_nodes[5].push_back(vm->vox_locator[vox_idx]->node_5);
+		ni->list_interpolation_nodes[6].push_back(vm->vox_locator[vox_idx]->node_6);
+		ni->list_interpolation_nodes[7].push_back(vm->vox_locator[vox_idx]->node_7);
 
 		//cout << vox_line << endl;
 		
-		
+		ni->computePara(vox_cube, 0);
+		/*
 		ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
@@ -405,11 +409,13 @@ void Kernel::linkMesh_VolMesh(Mesh* &m, VoxMesh* &vm, int grid_density_in)
 		ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
 			* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
-
+*/
 
 		}
 		else
-			ni->incident_cluster.clear();
+		{
+			ni->clearPara();
+		}
 			//cout << "node inx:" << x1 << " " << y1 << " " << z1 << endl;
 		//double sum = 0.0;
 		//for(int i = 0; i < 8; i++)
@@ -436,7 +442,8 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 			zp --;
 		if(!ni->incident_cluster.empty())//[level_index_parent]->vox_list.size() > 0 && ni->incident_cluster[level_index_parent]->vox_list[0] != NULL)
 		{
-			ni->incident_cluster.erase(ni->incident_cluster.begin()+level_index_parent+1, ni->incident_cluster.end());
+			//ni->incident_cluster.erase(ni->incident_cluster.begin()+level_index_parent+1, ni->incident_cluster.end());
+			ni->clearPara(level_index_parent+1);
 
 			Vox * parentVox = ni->incident_cluster[level_index_parent]->vox_list[0];
 
@@ -462,18 +469,19 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 		
 			ni->incident_cluster.push_back(&vm->cluster_list[cluster_idx]);
 
-			ni->list_interpolation_nodes[0] = vm->vox_locator[vox_idx]->node_0;
-			ni->list_interpolation_nodes[1] = vm->vox_locator[vox_idx]->node_1;
-			ni->list_interpolation_nodes[2] = vm->vox_locator[vox_idx]->node_2;
-			ni->list_interpolation_nodes[3] = vm->vox_locator[vox_idx]->node_3;
-			ni->list_interpolation_nodes[4] = vm->vox_locator[vox_idx]->node_4;
-			ni->list_interpolation_nodes[5] = vm->vox_locator[vox_idx]->node_5;
-			ni->list_interpolation_nodes[6] = vm->vox_locator[vox_idx]->node_6;
-			ni->list_interpolation_nodes[7] = vm->vox_locator[vox_idx]->node_7;
+			ni->list_interpolation_nodes[0].push_back(vm->vox_locator[vox_idx]->node_0);
+			ni->list_interpolation_nodes[1].push_back(vm->vox_locator[vox_idx]->node_1);
+			ni->list_interpolation_nodes[2].push_back(vm->vox_locator[vox_idx]->node_2);
+			ni->list_interpolation_nodes[3].push_back(vm->vox_locator[vox_idx]->node_3);
+			ni->list_interpolation_nodes[4].push_back(vm->vox_locator[vox_idx]->node_4);
+			ni->list_interpolation_nodes[5].push_back(vm->vox_locator[vox_idx]->node_5);
+			ni->list_interpolation_nodes[6].push_back(vm->vox_locator[vox_idx]->node_6);
+			ni->list_interpolation_nodes[7].push_back(vm->vox_locator[vox_idx]->node_7);
 
 			//cout << vox_line << endl;
 		
-
+			ni->computePara(vox_cube, ni->incident_cluster.size()-1);
+			/*
 			ni->para_interpolate[0] = (abs(ni->list_interpolation_nodes[6]->coordinate.x() - ni->coordinate.x()) 
 				* abs(ni->list_interpolation_nodes[6]->coordinate.y() - ni->coordinate.y()) 
 				* abs(ni->list_interpolation_nodes[6]->coordinate.z() - ni->coordinate.z())) / vox_cube;
@@ -505,12 +513,13 @@ void Kernel::linkMesh_VolMeshFromParentMesh(Mesh* &m, VoxMesh* &vm, VoxMesh* &pa
 			ni->para_interpolate[7] = (abs(ni->list_interpolation_nodes[1]->coordinate.x() - ni->coordinate.x()) 
 				* abs(ni->list_interpolation_nodes[1]->coordinate.y() - ni->coordinate.y()) 
 				* abs(ni->list_interpolation_nodes[1]->coordinate.z() - ni->coordinate.z())) / vox_cube;
+				*/
 			}
 			else
-				ni->incident_cluster.clear();
+				ni->clearPara();
 		}
 		else
-			ni->incident_cluster.clear();
+			ni->clearPara();
 	
 	}
 }
@@ -2365,7 +2374,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 			int size_k =p_vox_mesh->constraint_node_list.size();
 			for(int k = 0; k < size_k; k ++)
 			{
-				p_vox_mesh->constraint_node_list[k]->prescribed_position = const_force;
+				p_vox_mesh->constraint_node_list[k]->prescribed_position = p_vox_mesh->constraint_node_list[k]->coordinate + const_force;
 			}
 		}
 		
@@ -2463,7 +2472,9 @@ bool Kernel::simulateNextStep4ShapeMatching()
 		}
 	}
 
-	p_vox_mesh->new_energy = 0.0;
+	//for rendering
+	//p_vox_mesh->new_energy = 0.0;
+	///////////////////////////////
 	for (node_iterator ni=p_vox_mesh->node_list.begin(); ni!=p_vox_mesh->node_list.end(); ++ni)
 	{
 		if(flag_dynamics)
@@ -2486,6 +2497,8 @@ bool Kernel::simulateNextStep4ShapeMatching()
 		}
 
 		ni->target_position /= double(ni->duplicates.size());
+		/*
+		///////////////////////for rendering//////////////////////////////////////////////////////
 		if(constraintType != Kernel::FORCE_CONSTRAINT  && ni->flag_constraint_node)
 			ni->target_position = ni->prescribed_position;
 
@@ -2518,19 +2531,72 @@ bool Kernel::simulateNextStep4ShapeMatching()
 			p_vox_mesh->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
 			p_vox_mesh->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 		}
+		//////////////////////////////////////////////////////////////////////////////////////////
+		*/
 	}
 
 
-	/*
+	///////////////////////////////////////////////////for experiment
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			//nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+			nmi->displacement += (nmi->list_interpolation_nodes[i][level_display]->target_position - nmi->list_interpolation_nodes[i][level_display]->coordinate) * nmi->para_interpolate[i][level_display];
 		}
 	}
-	*/
+	p_vox_mesh->new_energy = 0.0;
+	for (node_iterator ni=p_vox_mesh->node_list.begin(); ni!=p_vox_mesh->node_list.end(); ++ni)
+	{
+		if(constraintType != Kernel::FORCE_CONSTRAINT  && ni->flag_constraint_node)
+			ni->target_position = ni->prescribed_position;
+
+		if(flag_dynamics)
+		{
+			ni->displacement /= double(ni->duplicates.size());
+			ni->velocity /= double(ni->duplicates.size());
+		}
+		else
+		{
+			ni->displacement = ni->target_position - ni->coordinate;
+		}
+
+		vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+		for (;dn!=ni->duplicates.end();++dn)
+		{
+			if(!ni->flag_anchor_node)
+				(*dn)->target_position = ni->target_position;
+
+			if(flag_dynamics)
+			{
+				(*dn)->displacement = ni->displacement;
+				(*dn)->velocity = ni->velocity;
+			}
+			else
+			{
+				(*dn)->displacement = ni->displacement;
+			}
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
+		}
+	}
+	cout << p_vox_mesh->new_energy << endl;
+	myEnergy << p_vox_mesh->new_energy << endl;
+	////////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////for rendering
+	//for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	//{
+	//	nmi->displacement.setZero();
+	//	for(int i = 0; i < 8; i++)
+	//	{
+	//		nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+	//	}
+	//}
+	////////////////////////////////////////////////////////////////////////////////
+
 	//networking
 	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
 	{
@@ -2547,25 +2613,25 @@ bool Kernel::simulateNextStep4ShapeMatching()
 	
 	if(flag_setForce && !flag_setWindForce)
 	{
-		double ratio, speed, threshold = 0.0;
-		ratio = getEnergyRatio(p_vox_mesh, speed);
-		threshold = abs(p_vox_mesh->new_energy - p_vox_mesh->old_energy);
-		if (!flag_converge)
-		{
-			time_counter->StopCounter();
-			testoutput << time_counter->GetElapsedTime() << endl;
-			myEnergy << ratio << endl;
-			myHEnergy << p_vox_mesh->new_energy << endl;
-		}
-		//cout << threshold << endl;
-		//if (p_vox_mesh->old_energy >= p_vox_mesh->new_energy && threshold < 0.0001 && !flag_converge)
+		//double ratio, speed, threshold = 0.0;
+		//ratio = getEnergyRatio(p_vox_mesh, speed);
+		//threshold = abs(p_vox_mesh->new_energy - p_vox_mesh->old_energy);
+		//if (!flag_converge)
 		//{
-		//	timestep_converge = time_step_index;
-		//	flag_converge = true;
-		//	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
-		//	cout << "converge!" << endl;
+		//	time_counter->StopCounter();
+		//	testoutput << time_counter->GetElapsedTime() << endl;
+		//	myEnergy << ratio << endl;
+		//	myHEnergy << p_vox_mesh->new_energy << endl;
 		//}
-		p_vox_mesh->old_energy = p_vox_mesh->new_energy;
+		////cout << threshold << endl;
+		////if (p_vox_mesh->old_energy >= p_vox_mesh->new_energy && threshold < 0.0001 && !flag_converge)
+		////{
+		////	timestep_converge = time_step_index;
+		////	flag_converge = true;
+		////	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
+		////	cout << "converge!" << endl;
+		////}
+		//p_vox_mesh->old_energy = p_vox_mesh->new_energy;
 	}
 	
 	if(flag_exportTxt)
@@ -3751,12 +3817,13 @@ bool Kernel::simulateNextStep4HSMForce4Iteration()
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	time_counter->StartCounter();
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][num_last]->displacement * nmi->para_interpolate[i][num_last];
 		}
 	}
 
@@ -3877,7 +3944,7 @@ bool Kernel::simulateNextStep4HSMOneStep()
 				int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
 				for(int k = 0; k < size_k; k ++)
 				{
-					level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = const_force;
+					level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = level_list[n]->voxmesh_level->constraint_node_list[k]->coordinate + const_force;
 				}
 			}
 		}
@@ -3951,7 +4018,7 @@ bool Kernel::simulateNextStep4HSMOneStep()
 						}
 
 					}//for
-					level_list[n]->voxmesh_level->new_energy = 0.0;
+					//level_list[n]->voxmesh_level->new_energy = 0.0;
 					// updating displacement
 					for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
 					{
@@ -3981,9 +4048,10 @@ bool Kernel::simulateNextStep4HSMOneStep()
 						}
 
 						ni->target_position /= double(ni->duplicates.size());
+						/*
 						if( constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
 							ni->target_position = ni->prescribed_position;
-
+						*/
 						if (n == idx_bottom)
 						{
 							if(flag_dynamics)
@@ -4015,21 +4083,64 @@ bool Kernel::simulateNextStep4HSMOneStep()
 								}
 							}
 
-							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
-							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
-							level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
+							//level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+							//level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+							//level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 
 						}
+						
 					}//update for
-					ci = level_list[n]->voxmesh_level->cluster_list.begin();
-					for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
-						ci->computeCurrentMassCentroid4Target();
 				}
 			}//
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 		}//else
+		
+		for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+		{
+			nmi->displacement.setZero();
+			for(int i = 0; i < 8; i++)
+			{
+				//nmi->displacement += nmi->list_interpolation_nodes[i][level_display]->displacement * nmi->para_interpolate[i][level_display];
+				nmi->displacement += (nmi->list_interpolation_nodes[i][level_display]->target_position - nmi->list_interpolation_nodes[i][level_display]->coordinate) * nmi->para_interpolate[i][level_display];
+				//nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+				//nmi->target_position +=  nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			}
+			//nmi->displacement = nmi->target_position - nmi->coordinate;
+		}
+		
+		// updating displacement
+		level_list[n]->voxmesh_level->new_energy = 0.0;
+		for (node_iterator ni=level_list[n]->voxmesh_level->node_list.begin(); ni!=level_list[n]->voxmesh_level->node_list.end(); ++ni)
+		{
+			if( constraintType != Kernel::FORCE_CONSTRAINT && ni->flag_constraint_node)
+				ni->target_position = ni->prescribed_position;
+			vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin(); 
+			dn = ni->duplicates.begin();
+			for (;dn!=ni->duplicates.end();++dn)
+			{
+				(*dn)->target_position = ni->target_position;
+
+				if (n == idx_bottom)
+				{
+					if(flag_dynamics)
+					{
+						(*dn)->displacement = ni->displacement;
+						(*dn)->velocity = ni->velocity;
+					}			
+					else
+					{
+						(*dn)->displacement = ni->displacement;
+					}
+				}
+
+				level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+				level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+				level_list[n]->voxmesh_level->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
+
+			}
+		}//update for
 		
 		VoxMesh * pVM = level_list[n]->voxmesh_level;
 		double threshold = 0.0;
@@ -4039,11 +4150,11 @@ bool Kernel::simulateNextStep4HSMOneStep()
 		if(flag_setForce && !flag_setWindForce)
 		{
 			//cout << ratio << endl;
-			if (!flag_converge)
-			{
-				myEnergy << ratio << endl;
-				myHEnergy << pVM->new_energy << endl;
-			}
+			//if (!flag_converge)
+			//{
+			//	myEnergy << ratio << endl;
+			//	myHEnergy << pVM->new_energy << endl;
+			//}
 			//cout << pVM->new_energy << endl;
 			//if (pVM->old_energy >= pVM->new_energy && threshold < 0.0001 && !flag_converge)
 			//{
@@ -4057,6 +4168,7 @@ bool Kernel::simulateNextStep4HSMOneStep()
 		pVM->old_energy = pVM->new_energy;
 		//cout << ratio << endl;
 		cout << pVM->new_energy << endl;
+		myEnergy << pVM->new_energy << endl;
 		
 		//if level > 0, needs to inherit R, T from parent_level
 		if(n < level_list.size() - 1 && ratio < energyThreshold && temp > 0.0)
@@ -4072,7 +4184,7 @@ bool Kernel::simulateNextStep4HSMOneStep()
 					int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
 					for(int k = 0; k < size_k; k ++)
 					{
-						level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = const_force;
+						level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = level_list[n]->voxmesh_level->constraint_node_list[k]->coordinate + const_force;
 					}
 				}
 			}
@@ -4309,18 +4421,9 @@ bool Kernel::simulateNextStep4HSMOneStep()
 		level_display = 0;
 	}
 	*/
-/*
-	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
-	{
-		nmi->displacement.setZero();
-		for(int i = 0; i < 8; i++)
-		{
-			//nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
-			nmi->target_position +=  nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
-		}
-		nmi->displacement = nmi->target_position - nmi->coordinate;
-	}
-	*/
+
+
+	
 	/*
 	time_counter->StopCounter();
 	cout << time_counter->GetElapsedTime() << endl;
@@ -4872,12 +4975,13 @@ bool Kernel::simulateNextStep4HSMOriginal()
 	//time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	//time_counter->StartCounter();
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][num_last]->displacement * nmi->para_interpolate[i][num_last];
 		}
 	}
 
@@ -5592,12 +5696,13 @@ bool Kernel::simulateNextStep4HSMForce4Step()
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	time_counter->StartCounter();
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][num_last]->displacement * nmi->para_interpolate[i][num_last];
 		}
 	}
 
@@ -5883,6 +5988,7 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 
 						ci->a_pq = Matrix3d::Zero();
 						Vector3d p, q;
+						//////////////////////////////////////////////////////////////////// only for force
 						if(i == 0)
 						{
 							vector<DuplicatedNode>::iterator f_ni;
@@ -5893,6 +5999,7 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 								f_ni->mapped_node->prescribed_position = f_ni->target_position;
 							}
 						}
+						/////////////////////////////////////////////////////////////////////
 						ci->computeCurrentMassCentroid4Target();
 
 						for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
@@ -6187,12 +6294,13 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	time_counter->StartCounter();
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][num_last]->displacement * nmi->para_interpolate[i][num_last];
 		}
 	}
 
@@ -6846,12 +6954,13 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst1()
 	}
 
 	//surface interpolation
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][level_display]->displacement * nmi->para_interpolate[i][level_display];
 		}
 	}
 
@@ -7533,12 +7642,13 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst2()
 	}
 
 	//surface interpolation
+	int num_last = level_list.size()-1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
 		for(int i = 0; i < 8; i++)
 		{
-			nmi->displacement += nmi->list_interpolation_nodes[i]->displacement * nmi->para_interpolate[i];
+			nmi->displacement += nmi->list_interpolation_nodes[i][num_last]->displacement * nmi->para_interpolate[i][num_last];
 		}
 	}
 
@@ -10322,8 +10432,11 @@ void Kernel::saveOutputData(vector<double>& data, const char* filename)
 
 void Kernel::exportToOBJ(const char *filename)
 {
+	/*
 	ofstream ofs(filename);
 	//ofs << "# timestep " << time_step_index << "OBJ" << endl;
+	ofs << "g " << "object1" << endl;
+	ofs << "o " << "first" << endl;
 	vector<Node>::iterator ni;
 	for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
 	{
@@ -10331,13 +10444,41 @@ void Kernel::exportToOBJ(const char *filename)
 			<< " " << ni->coordinate(1) + ni->displacement(1) 
 			<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
 	}
-	
+
 	vector<Face>::iterator fi;
 	for (fi = p_mesh->face_list.begin(); fi != p_mesh->face_list.end(); ++fi)
 	{
 		ofs << "f " << fi->idx_node0+1 << " " << fi->idx_node1+1 << " " << fi->idx_node2+1 << endl;
 	}
-	
+	ofs << "g " << "object2" << endl;
+	ofs << "o " << "second" << endl;
+	for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
+	{
+		ofs << "v " << ni->coordinate(0) + ni->displacement(0) + 1.0 
+			<< " " << ni->coordinate(1) + ni->displacement(1) + 1.0
+			<< " " << ni->coordinate(2) + ni->displacement(2) + 1.0 << endl;
+	}
+	for (fi = p_mesh->face_list.begin(); fi != p_mesh->face_list.end(); ++fi)
+	{
+		ofs << "f " << p_mesh->number_node+fi->idx_node0+1 << " " << p_mesh->number_node+fi->idx_node1+1 << " " << p_mesh->number_node+fi->idx_node2+1 << endl;
+	}
+
+	ofs.close();
+	*/
+	ofstream ofs(filename);
+	vector<Node>::iterator ni;
+	for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
+	{
+		ofs << "v " << ni->coordinate(0) + ni->displacement(0) 
+			<< " " << ni->coordinate(1) + ni->displacement(1) 
+			<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
+
+	}
+	vector<Face>::iterator fi;
+	for (fi = p_mesh->face_list.begin(); fi != p_mesh->face_list.end(); ++fi)
+	{
+		ofs << "f " << fi->idx_node0+1 << " " << fi->idx_node1+1 << " " << fi->idx_node2+1 << endl;
+	}
 	ofs.close();
 }
 
@@ -12426,13 +12567,13 @@ void Kernel::test_findPointOutside()
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		double maxX, maxY, maxZ, minX, minY, minZ;
-		maxX = minX = nmi->list_interpolation_nodes[0]->displacement.x() + nmi->list_interpolation_nodes[0]->coordinate.x();
-		maxY = minY = nmi->list_interpolation_nodes[0]->displacement.y() + nmi->list_interpolation_nodes[0]->coordinate.y();
-		maxZ = minZ = nmi->list_interpolation_nodes[0]->displacement.z() + nmi->list_interpolation_nodes[0]->coordinate.z();
+		maxX = minX = nmi->list_interpolation_nodes[0][0]->displacement.x() + nmi->list_interpolation_nodes[0][0]->coordinate.x();
+		maxY = minY = nmi->list_interpolation_nodes[0][0]->displacement.y() + nmi->list_interpolation_nodes[0][0]->coordinate.y();
+		maxZ = minZ = nmi->list_interpolation_nodes[0][0]->displacement.z() + nmi->list_interpolation_nodes[0][0]->coordinate.z();
 		for(int i = 1; i < 8; i++)
 		{
 			Vector3d temp;
-			temp = nmi->list_interpolation_nodes[i]->displacement + nmi->list_interpolation_nodes[i]->coordinate;
+			temp = nmi->list_interpolation_nodes[i][0]->displacement + nmi->list_interpolation_nodes[i][0]->coordinate;
 			maxX = temp.x()>maxX?temp.x():maxX;
 			maxY = temp.y()>maxY?temp.y():maxY;
 			maxZ = temp.z()>maxZ?temp.z():maxZ;
@@ -12509,6 +12650,7 @@ void Kernel::test()
 		}
 	}
 	*/
+	/*
 	vector<Node>::iterator ni;
 	for (ni = level_list[0]->voxmesh_level->node_list.begin(); ni!= level_list[0]->voxmesh_level->node_list.end(); ni++)
 	{
@@ -12518,4 +12660,8 @@ void Kernel::test()
 			cout << "good!" << endl;
 		}
 	}
+	*/
+	//test if obj file could include 2 objects.
+	exportToOBJ("test.obj");
+	cout << "export OK! "<<endl;
 }

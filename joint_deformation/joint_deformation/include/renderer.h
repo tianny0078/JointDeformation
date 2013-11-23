@@ -111,6 +111,7 @@ public:
 	void renderArrow(float R, float G, float B, float size);
 	void renderArrow(double x0, double y0, double z0, double x1, double y1, double z1, double size, float R, float G, float B, float A);
 	void renderCylinder(double x0, double y0, double z0, double x1, double y1, double z1, double size, float R, float G, float B, float A);
+	void renderSphere(double r, int lats, int longs);
 
 	//void RenderComponentBoundaryBox();
 	//void RenderComponentBoundaryBox(int c_idx, float R, float G, float B);

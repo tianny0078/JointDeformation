@@ -137,9 +137,87 @@ struct Node: public HNPacketLockedMarshallHandler
 	Node* parent_node;
 
 	//interpolations using barycentric coordinates
-	Node * list_interpolation_nodes[8];
-	double para_interpolate[8];
+	//Node * list_interpolation_nodes[8];
+	//double para_interpolate[8];
+	vector <Node *> list_interpolation_nodes[8];
+	vector <double> para_interpolate[8];
+	void clearPara()
+	{
+		incident_cluster.clear();
 
+		for (int i = 0; i < 8; i++)
+		{
+			list_interpolation_nodes[i].clear();
+			para_interpolate[i].clear();
+		}
+
+	}
+
+	void clearPara(int begin_index)
+	{
+		incident_cluster.erase(incident_cluster.begin() + begin_index, incident_cluster.end());
+
+		for (int i = 0; i < 8; i++)
+		{
+			list_interpolation_nodes[i].erase(list_interpolation_nodes[i].begin() + begin_index, list_interpolation_nodes[i].end());
+			para_interpolate[i].erase(para_interpolate[i].begin() + begin_index, para_interpolate[i].end());
+		}
+
+
+	}
+
+	void computePara(double vox_cube, int index)
+	{
+
+		double temppara = 0.0;
+		temppara = (abs(list_interpolation_nodes[6][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[6][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[6][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_0.push_back(temppara);
+		para_interpolate[0].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[7][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[7][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[7][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_1.push_back(temppara);
+		para_interpolate[1].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[4][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[4][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[4][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_2.push_back(temppara);
+		para_interpolate[2].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[5][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[5][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[5][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_3.push_back(temppara);
+		para_interpolate[3].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[2][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[2][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[2][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_4.push_back(temppara); 
+		para_interpolate[4].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[3][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[3][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[3][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_5.push_back(temppara);
+		para_interpolate[5].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[0][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[0][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[0][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_6.push_back(temppara);
+		para_interpolate[6].push_back(temppara);
+
+		temppara = (abs(list_interpolation_nodes[1][index]->coordinate.x() - coordinate.x()) 
+			* abs(list_interpolation_nodes[1][index]->coordinate.y() - coordinate.y()) 
+			* abs(list_interpolation_nodes[1][index]->coordinate.z() - coordinate.z())) / vox_cube;
+		//para_interpolate_7.push_back(temppara); 
+		para_interpolate[7].push_back(temppara);
+	}
 	//add for networking
 	virtual long marshallData(unsigned char *marshalledData)
 	{

@@ -44,8 +44,9 @@ Node::Node()
 	int i = 0;
 	while(i < 8)
 	{
-		list_interpolation_nodes[i] = NULL;
-		para_interpolate[i] = 0.0;
+		//at most 10 levels
+		list_interpolation_nodes[i].reserve(10);
+		para_interpolate[i].reserve(10);
 		i++;
 	}
 }

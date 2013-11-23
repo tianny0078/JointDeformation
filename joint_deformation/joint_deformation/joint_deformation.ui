@@ -49,7 +49,7 @@
      <enum>QTabWidget::East</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1913,8 +1913,8 @@
    <slot>setGridDensity()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1131</x>
-     <y>171</y>
+     <x>1351</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2057,8 +2057,8 @@
    <slot>lastSameLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>211</y>
+     <x>1176</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2073,8 +2073,8 @@
    <slot>nextSameLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>216</y>
+     <x>1216</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -2137,8 +2137,8 @@
    <slot>addLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>136</y>
+     <x>1270</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
      <x>1318</x>
@@ -2153,8 +2153,8 @@
    <slot>chooseLevelDisplay(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>136</y>
+     <x>1189</x>
+     <y>131</y>
     </hint>
     <hint type="destinationlabel">
      <x>1086</x>
@@ -2297,8 +2297,8 @@
    <slot>setDampParameter()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1131</x>
-     <y>261</y>
+     <x>1351</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>1386</x>
@@ -2329,8 +2329,8 @@
    <slot>setTimesShapeMatching()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1131</x>
-     <y>301</y>
+     <x>1351</x>
+     <y>304</y>
     </hint>
     <hint type="destinationlabel">
      <x>1382</x>
@@ -2393,8 +2393,8 @@
    <slot>setDynamics(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>346</y>
+     <x>1312</x>
+     <y>340</y>
     </hint>
     <hint type="destinationlabel">
      <x>1384</x>
@@ -2425,8 +2425,8 @@
    <slot>setGravityMagnitude()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>386</y>
+     <x>1351</x>
+     <y>383</y>
     </hint>
     <hint type="destinationlabel">
      <x>1381</x>
@@ -2553,8 +2553,8 @@
    <slot>setCaptureScreen(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>466</y>
+     <x>1237</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>1373</x>
@@ -2569,8 +2569,8 @@
    <slot>setCaptureSubScreen(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>466</y>
+     <x>1345</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>1394</x>
@@ -2729,8 +2729,8 @@
    <slot>clearLevel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>136</y>
+     <x>1351</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
      <x>1388</x>
@@ -2882,6 +2882,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_loadConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadConstraints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1150</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1054</x>
+     <y>563</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveConstraints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1252</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1074</x>
+     <y>582</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -2951,5 +2983,7 @@
   <slot>setCubeActiveConstraint(bool)</slot>
   <slot>setEnergyThreshold()</slot>
   <slot>simulateNextStep()</slot>
+  <slot>loadConstraints()</slot>
+  <slot>saveConstraints()</slot>
  </slots>
 </ui>

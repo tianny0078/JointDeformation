@@ -94,6 +94,9 @@ public slots:
 	void setEnergyThreshold();
 
 	void simulateNextStep();
+
+	void loadConstraints();
+	void saveConstraints();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;

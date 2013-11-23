@@ -2168,6 +2168,18 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 		break;
 	case Qt::Key_A:
 		p_kernel->flag_converge = true;
+		break;
+	case Qt::Key_B:
+		p_kernel->flag_exportObj = !p_kernel->flag_exportObj;
+		if (p_kernel->flag_exportObj)
+		{
+			cout << "start exporting obj!" << endl;
+		}	
+		else
+		{
+			cout << "stop exporting obj!" << endl;
+		}
+		break;
 	default:
 		theCamera.status = Camera::IDLING;
 		break;
@@ -2449,6 +2461,32 @@ void Renderer::renderArrow(double x0, double y0, double z0, double x1, double y1
 	glPopMatrix();
 }
 
+void Renderer::renderSphere(double r, int lats, int longs)
+{
+	int i, j;
+	for(i = 0; i <= lats; i++) {
+	   double lat0 = M_PI * (-0.5 + (double) (i - 1) / lats);
+	   double z0  = sin(lat0);
+	   double zr0 =  cos(lat0);
+
+	   double lat1 = M_PI * (-0.5 + (double) i / lats);
+	   double z1 = sin(lat1);
+	   double zr1 = cos(lat1);
+
+	   glBegin(GL_QUAD_STRIP);
+	   for(j = 0; j <= longs; j++) {
+	        double lng = 2 * M_PI * (double) (j - 1) / longs;
+	        double x = cos(lng);
+		    double y = sin(lng);
+
+			glNormal3f(x * zr0, y * zr0, z0);
+			glVertex3f(x * zr0, y * zr0, z0);
+			glNormal3f(x * zr1, y * zr1, z1);
+			glVertex3f(x * zr1, y * zr1, z1);
+	   }
+	   glEnd();
+	}
+}
 
 void Renderer::renderCylinder(double x0, double y0, double z0, double x1, double y1, double z1, double size, float R, float G, float B, float A)
 {
@@ -4847,6 +4885,7 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	}
 	double v_dim = vm->vox_size * 0.5;
 	double cube_size = v_dim*0.2;
+	//double cube_size = (1.0/20.0)*0.1;
 
 
 

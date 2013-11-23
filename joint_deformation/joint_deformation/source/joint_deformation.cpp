@@ -274,11 +274,12 @@ void joint_deformation::simulate()
 		Screenshot.save(filenames, "png", -1);
 	}
 
-	if (flag_exportObj)
+	if (flag_exportObj || p_kernel->flag_exportObj)
 	{
 		char filenames[32];
-		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->time_step_index);
+		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->num_obj);
 		p_kernel->exportToOBJ(filenames);
+		p_kernel->num_obj ++;
 	}
 }
 
@@ -289,10 +290,18 @@ void joint_deformation::simulateNextStep()
 		QMessageBox::warning(NULL, "warning", "initialize simulator first");
 		return;
 	}
-	if (!p_kernel->simulateNextStep())
+	if (!p_kernel->simulateNextStep()) 
 	{
 		pauseSimulation();
 	}
+
+
+	//if (flag_exportObj)
+	//{
+	//	char filenames[32];
+	//	sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->time_step_index);
+	//	p_kernel->exportToOBJ(filenames);
+	//}
 	ui.renderWidget->updateGL();
 }
 
@@ -1264,4 +1273,14 @@ void joint_deformation::testVoxConnection()
 void joint_deformation::setEnergyThreshold()
 {
 	p_kernel->energyThreshold = ui.lineEdit_energyThreshold->text().toDouble();
+}
+
+void joint_deformation::loadConstraints()
+{
+	cout << "load" << endl;
+}
+
+void joint_deformation::saveConstraints()
+{
+	cout << "save" << endl;
 }
