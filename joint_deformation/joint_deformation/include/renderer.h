@@ -22,6 +22,7 @@
 #include <vector>
 #include <stdio.h>
 #include "cubeTool.h"
+#include "arrow.h"
 
 
 #define MIN_CUBE_SIZE		0.005
@@ -170,6 +171,7 @@ public:
 	Vector3d getAngularVelocity( double degrees, const Vector3d& axe);
 
 	void setMass(double massValue);
+	void initArrow(Kernel * p);
 
 
 public:
@@ -194,6 +196,9 @@ public:
 	bool flag_cube_operation;
 	bool flag_show_cube_static_constraints;
 	bool flag_show_cube_active_constraints;
+
+	bool flag_left_surface;
+	bool flag_right_surface;
 	
 	// colors
 	QColor background_color;
@@ -277,6 +282,7 @@ public:
 	Matrix3d LCS_rotation;
 	Vector3d LCS_translation;
 	cubeTool * tool;
+	arrow * myArrow;
 };
 
 #endif

@@ -125,6 +125,7 @@ public:
 	void saveOutputData(vector<double>& data, const char* filename);
 	void printVector3d(Vector3d & value);
 	void exportToOBJ(const char *filename);
+	void exportToOBJ2Haptic(const char *filename);
 
 	//networking
 	void setServerRole(){network_role = NETWORK_ROLE_SERVER;}
@@ -227,6 +228,30 @@ public:
 
 	int timeSleep;
 	double energyThreshold;
+
+	Vector3d surface_point_left;
+	Vector3d surface_point_right;
+	double para[3];
+	Node * paraNode[3];
+	double para2[3];
+	Node * paraNode2[3];
+	int idx_constraint;
+	Mesh * sphere;
+
+	//for arrow
+	Vector3d _posBegin;
+	Vector3d _posEnd;
+	Matrix3d _rotation;
+
+	vector<Vector3d> v_box_list;
+	vector<Vector3i> f_box_list;
+
+	vector<Vector3d> v_cone_list;
+	vector<Vector3i> f_cone_list;
+	bool flag_exportObj4Arrow;
+
 };
+
+
 
 #endif

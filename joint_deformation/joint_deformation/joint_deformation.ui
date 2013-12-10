@@ -1650,6 +1650,8 @@
    <addaction name="actionSetMass"/>
    <addaction name="separator"/>
    <addaction name="actionShowTest"/>
+   <addaction name="actionLeftSurface"/>
+   <addaction name="actionRightSurface"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadMesh">
@@ -1839,6 +1841,30 @@
    </property>
    <property name="text">
     <string>setCubeActiveConstraint</string>
+   </property>
+  </action>
+  <action name="actionLeftSurface">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/2leftarrow.png</normaloff>:/joint_deformation/Resources/2leftarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>leftSurface</string>
+   </property>
+  </action>
+  <action name="actionRightSurface">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="joint_deformation.qrc">
+     <normaloff>:/joint_deformation/Resources/2rightarrow.png</normaloff>:/joint_deformation/Resources/2rightarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>rightSurface</string>
    </property>
   </action>
  </widget>
@@ -2489,8 +2515,8 @@
    <slot>setServer(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>146</y>
+     <x>1253</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>1159</x>
@@ -2505,8 +2531,8 @@
    <slot>setClient(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>146</y>
+     <x>1351</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>1250</x>
@@ -2521,8 +2547,8 @@
    <slot>setNumOfClients()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>226</y>
+     <x>1253</x>
+     <y>223</y>
     </hint>
     <hint type="destinationlabel">
      <x>1302</x>
@@ -2537,8 +2563,8 @@
    <slot>configNetwork()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>226</y>
+     <x>1351</x>
+     <y>223</y>
     </hint>
     <hint type="destinationlabel">
      <x>1392</x>
@@ -2914,6 +2940,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionLeftSurface</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setLeftSurface(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRightSurface</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setRightSurface(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>699</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -2985,5 +3043,7 @@
   <slot>simulateNextStep()</slot>
   <slot>loadConstraints()</slot>
   <slot>saveConstraints()</slot>
+  <slot>setLeftSurface(bool)</slot>
+  <slot>setRightSurface(bool)</slot>
  </slots>
 </ui>

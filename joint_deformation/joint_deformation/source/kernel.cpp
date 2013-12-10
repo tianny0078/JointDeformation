@@ -98,6 +98,155 @@ Kernel::Kernel()
 	energyThreshold = 0.005;
 
 	num_obj = 1;
+
+	surface_point_left = Vector3d::Zero();
+	surface_point_right = Vector3d::Zero();
+	para[0] = para[1] = para[2] = 0.0;
+	para2[0] = para2[1] = para2[2] = 0.0;
+	paraNode[0] = paraNode[1] = paraNode[2] = NULL;
+	paraNode2[0] = paraNode2[1] = paraNode2[2] = NULL;
+
+	idx_constraint = 1;
+
+	sphere = new Mesh;
+	sphere->read("sphere2.obj");
+
+	flag_exportObj4Arrow = false;
+	_posBegin.setZero(); 
+	_posEnd.setZero();
+	Vector3d temp;
+	//box vertex
+	temp(0) = -0.1;
+	temp(1) = 0.0;
+	temp(2) = -0.1;
+	v_box_list.push_back(temp);
+	temp(0) = 0.1;
+	temp(1) = 0.0;
+	temp(2) = -0.1;
+	v_box_list.push_back(temp);
+	temp(0) = 0.1;
+	temp(1) = 0.0;
+	temp(2) = 0.1;
+	v_box_list.push_back(temp);
+	temp(0) = -0.1;
+	temp(1) = 0.0;
+	temp(2) = 0.1;
+	v_box_list.push_back(temp);
+	temp(0) = -0.1;
+	temp(1) = 10.0;
+	temp(2) = -0.1;
+	v_box_list.push_back(temp);
+	temp(0) = 0.1;
+	temp(1) = 10.0;
+	temp(2) = -0.1;
+	v_box_list.push_back(temp);
+	temp(0) = 0.1;
+	temp(1) = 10.0;
+	temp(2) = 0.1;
+	v_box_list.push_back(temp);
+	temp(0) = -0.1;
+	temp(1) = 10.0;
+	temp(2) = 0.1;
+	v_box_list.push_back(temp);
+
+	//box face
+	Vector3i temp2;
+	temp2(0) = 0;
+	temp2(1) = 1;
+	temp2(2) = 2;
+	f_box_list.push_back(temp2);
+	temp2(0) = 0;
+	temp2(1) = 2;
+	temp2(2) = 3;
+	f_box_list.push_back(temp2);
+	temp2(0) = 4;
+	temp2(1) = 6;
+	temp2(2) = 5;
+	f_box_list.push_back(temp2);
+	temp2(0) = 4;
+	temp2(1) = 7;
+	temp2(2) = 6;
+	f_box_list.push_back(temp2);
+	temp2(0) = 5;
+	temp2(1) = 6;
+	temp2(2) = 1;
+	f_box_list.push_back(temp2);
+	temp2(0) = 6;
+	temp2(1) = 2;
+	temp2(2) = 1;
+	f_box_list.push_back(temp2);
+	temp2(0) = 6;
+	temp2(1) = 3;
+	temp2(2) = 2;
+	f_box_list.push_back(temp2);
+	temp2(0) = 6;
+	temp2(1) = 7;
+	temp2(2) = 3;
+	f_box_list.push_back(temp2);
+	temp2(0) = 4;
+	temp2(1) = 3;
+	temp2(2) = 7;
+	f_box_list.push_back(temp2);
+	temp2(0) = 4;
+	temp2(1) = 0;
+	temp2(2) = 3;
+	f_box_list.push_back(temp2);
+	temp2(0) = 4;
+	temp2(1) = 5;
+	temp2(2) = 0;
+	f_box_list.push_back(temp2);
+	temp2(0) = 5;
+	temp2(1) = 1;
+	temp2(2) = 0;
+	f_box_list.push_back(temp2);
+
+	//cone vertex
+	temp(0) = -0.2;
+	temp(1) = 0.0;
+	temp(2) = -0.2;
+	v_cone_list.push_back(temp);
+	temp(0) = 0.2;
+	temp(1) = 0.0;
+	temp(2) = -0.2;
+	v_cone_list.push_back(temp);
+	temp(0) = 0.2;
+	temp(1) = 0.0;
+	temp(2) = 0.2;
+	v_cone_list.push_back(temp);
+	temp(0) = -0.2;
+	temp(1) = 0.0;
+	temp(2) = 0.2;
+	v_cone_list.push_back(temp);
+	temp(0) = 0.0;
+	temp(1) = 0.5;
+	temp(2) = 0.0;
+	v_cone_list.push_back(temp);
+	//cone face
+	temp2(0) = 0;
+	temp2(1) = 1;
+	temp2(2) = 2;
+	f_cone_list.push_back(temp2);
+	temp2(0) = 0;
+	temp2(1) = 2;
+	temp2(2) = 3;
+	f_cone_list.push_back(temp2);
+	temp2(0) = 1;
+	temp2(1) = 4;
+	temp2(2) = 2;
+	f_cone_list.push_back(temp2);
+	temp2(0) = 2;
+	temp2(1) = 4;
+	temp2(2) = 3;
+	f_cone_list.push_back(temp2);
+	temp2(0) = 3;
+	temp2(1) = 4;
+	temp2(2) = 0;
+	f_cone_list.push_back(temp2);
+	temp2(0) = 0;
+	temp2(1) = 4;
+	temp2(2) = 1;
+	f_cone_list.push_back(temp2);
+
 }
 
 Kernel::~Kernel()
@@ -2582,7 +2731,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 			p_vox_mesh->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
 		}
 	}
-	cout << p_vox_mesh->new_energy << endl;
+	//cout << p_vox_mesh->new_energy << endl;
 	myEnergy << p_vox_mesh->new_energy << endl;
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -6112,7 +6261,9 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 							//ni->target_position = ni->prescribed_position;
 						//else if( ni->flag_constraint_node && i == 1)
 						//	ni->prescribed_position = ni->target_position;
-						if( ni->flag_constraint_node && i < iteration - 1)
+						if( ni->flag_constraint_node  && constraintType != Kernel::FORCE_CONSTRAINT)//?? if not including last iteration?
+							ni->target_position = ni->prescribed_position;
+						if( ni->flag_constraint_node  && constraintType == Kernel::FORCE_CONSTRAINT && i < iteration - 1)//?? if not including last iteration?
 							ni->target_position = ni->prescribed_position;
 
 						if (n == idx_bottom && i == iteration - 1)
@@ -10466,6 +10617,8 @@ void Kernel::exportToOBJ(const char *filename)
 	ofs.close();
 	*/
 	ofstream ofs(filename);
+	ofs << "o " << "first" << endl;
+	ofs << "g " << "object1" << endl;
 	vector<Node>::iterator ni;
 	for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
 	{
@@ -10479,7 +10632,85 @@ void Kernel::exportToOBJ(const char *filename)
 	{
 		ofs << "f " << fi->idx_node0+1 << " " << fi->idx_node1+1 << " " << fi->idx_node2+1 << endl;
 	}
+	if(flag_exportObj4Arrow)
+	{
+		ofs << "g " << "object2" << endl;
+		ofs << "o " << "second" << endl;
+		vector<Vector3d>::iterator vi;
+		for (vi = v_box_list.begin(); vi != v_box_list.end(); ++vi)
+		{
+			Vector3d temp = _rotation * (*vi) + _posBegin;
+			ofs << "v " << temp(0) 
+				<< " " << temp(1)
+				<< " " << temp(2) << endl;
+		}
+		for (vi = v_cone_list.begin(); vi != v_cone_list.end(); ++vi)
+		{
+			Vector3d temp = _rotation * (*vi) + _posEnd;
+			ofs << "v " << temp(0) 
+				<< " " << temp(1)
+				<< " " << temp(2) << endl;
+		}
+		int noBefore = p_mesh->number_node;
+		vector<Vector3i>::iterator ii;
+		for (ii = f_box_list.begin(); ii != f_box_list.end(); ++ii)
+		{
+			ofs << "f " << noBefore+(*ii)(0)+1 << " " << noBefore+(*ii)(1)+1 << " " << noBefore+(*ii)(2)+1 << endl;
+		}
+		noBefore += v_box_list.size();
+		for (ii = f_cone_list.begin(); ii != f_cone_list.end(); ++ii)
+		{
+			ofs << "f " << noBefore+(*ii)(0)+1 << " " << noBefore+(*ii)(1)+1 << " " << noBefore+(*ii)(2)+1 << endl;
+		}
+	}
 	ofs.close();
+}
+
+void Kernel::exportToOBJ2Haptic(const char *filename)
+{
+	ofstream ofs(filename);
+	//ofs << "# timestep " << time_step_index << "OBJ" << endl;
+	ofs << "o " << "first" << endl;
+	ofs << "g " << "object1" << endl;
+	vector<Node>::iterator ni;
+	for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
+	{
+		ofs << "v " << ni->coordinate(0) + ni->displacement(0) 
+			<< " " << ni->coordinate(1) + ni->displacement(1) 
+			<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
+	}
+
+	vector<Face>::iterator fi;
+	for (fi = p_mesh->face_list.begin(); fi != p_mesh->face_list.end(); ++fi)
+	{
+		ofs << "f " << fi->idx_node0+1 << " " << fi->idx_node1+1 << " " << fi->idx_node2+1 << endl;
+	}
+	ofs << "g " << "object2" << endl;
+	ofs << "o " << "second" << endl;
+	for (ni = sphere->node_list.begin(); ni != sphere->node_list.end(); ++ni)
+	{
+		ofs << "v " << ni->coordinate(0)/20 + surface_point_left(0) 
+			<< " " << ni->coordinate(1)/20 + surface_point_left(1)
+			<< " " << ni->coordinate(2)/20 + surface_point_left(2) << endl;
+	}
+	for (fi = sphere->face_list.begin(); fi != sphere->face_list.end(); ++fi)
+	{
+		ofs << "f " << p_mesh->number_node+fi->idx_node0+1 << " " << p_mesh->number_node+fi->idx_node1+1 << " " << p_mesh->number_node+fi->idx_node2+1 << endl;
+	}
+
+	ofs << "g " << "object3" << endl;
+	ofs << "o " << "third" << endl;
+	for (ni = sphere->node_list.begin(); ni != sphere->node_list.end(); ++ni)
+	{
+		ofs << "v " << ni->coordinate(0)/20 + surface_point_right(0) 
+			<< " " << ni->coordinate(1)/20 + surface_point_right(1)
+			<< " " << ni->coordinate(2)/20 + surface_point_right(2) << endl;
+	}
+	for (fi = sphere->face_list.begin(); fi != sphere->face_list.end(); ++fi)
+	{
+		ofs << "f " << p_mesh->number_node+sphere->number_node+ fi->idx_node0+1 << " " << p_mesh->number_node+sphere->number_node+fi->idx_node1+1 << " " << p_mesh->number_node+sphere->number_node+fi->idx_node2+1 << endl;
+	}
+
 }
 
 void Kernel::removeConstraintOfAllLevel()
@@ -12662,6 +12893,36 @@ void Kernel::test()
 	}
 	*/
 	//test if obj file could include 2 objects.
-	exportToOBJ("test.obj");
-	cout << "export OK! "<<endl;
+	//exportToOBJ("test.obj");
+	//cout << "export OK! "<<endl;
+
+	Vector3d v1, v2, axis;
+	v1(0) = 1;
+	v1(1) = 0;
+	v1(2) = 0;
+	v1.normalize();
+
+	v2(0) = 0;
+	v2(1) = 1;
+	v2(2) = 0;
+
+	//cout << v1 << endl;
+
+	axis = v1.cross(v2);
+	axis.normalize();
+	double angle = (-1) * acos(0.0);
+
+	Matrix3d _rotation;
+	_rotation.setZero();
+	_rotation(0, 0) = cos(angle) + axis(0) * axis(0) * (1 - cos(angle));
+	_rotation(0, 1) = axis(0) * axis(1) * (1 - cos(angle)) - axis(2) * sin(angle);
+	_rotation(0, 2) = axis(0) * axis(2) * (1 - cos(angle)) + axis(1) * sin(angle);
+	_rotation(1, 0) = axis(1) * axis(0) * (1 - cos(angle)) + axis(2) * sin(angle);
+	_rotation(1, 1) = cos(angle) + axis(1) * axis(1) * (1 - cos(angle));
+	_rotation(1, 2) = axis(1) * axis(2) * (1 - cos(angle)) - axis(0) * sin(angle);
+	_rotation(2, 0) = axis(2) * axis(0) * (1 - cos(angle)) - axis(1) * sin(angle);
+	_rotation(2, 1) = axis(2) * axis(1) * (1 - cos(angle)) + axis(0) * sin(angle);
+	_rotation(2, 2) = cos(angle) + axis(2) * axis(2) * (1 - cos(angle));
+	cout << (_rotation * v2) << endl;
+	cout << (_rotation * v1) << endl;
 }

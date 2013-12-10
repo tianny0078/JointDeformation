@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Wed Nov 20 21:31:34 2013
+** Created: Mon Dec 9 15:55:54 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -52,6 +52,8 @@ public:
     QAction *actionCubeOperation;
     QAction *actionSetCubeStaticConstraint;
     QAction *actionSetCubeActiveConstraint;
+    QAction *actionLeftSurface;
+    QAction *actionRightSurface;
     QWidget *centralWidget;
     Renderer *renderWidget;
     QTabWidget *tabWidget;
@@ -295,6 +297,18 @@ public:
         QIcon icon13;
         icon13.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_missing_image.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionSetCubeActiveConstraint->setIcon(icon13);
+        actionLeftSurface = new QAction(joint_deformationClass);
+        actionLeftSurface->setObjectName(QString::fromUtf8("actionLeftSurface"));
+        actionLeftSurface->setCheckable(true);
+        QIcon icon14;
+        icon14.addFile(QString::fromUtf8(":/joint_deformation/Resources/2leftarrow.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionLeftSurface->setIcon(icon14);
+        actionRightSurface = new QAction(joint_deformationClass);
+        actionRightSurface->setObjectName(QString::fromUtf8("actionRightSurface"));
+        actionRightSurface->setCheckable(true);
+        QIcon icon15;
+        icon15.addFile(QString::fromUtf8(":/joint_deformation/Resources/2rightarrow.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionRightSurface->setIcon(icon15);
         centralWidget = new QWidget(joint_deformationClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         renderWidget = new Renderer(centralWidget);
@@ -975,36 +989,36 @@ public:
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
         pushButton_initSimulator = new QPushButton(horizontalLayoutWidget_2);
         pushButton_initSimulator->setObjectName(QString::fromUtf8("pushButton_initSimulator"));
-        QIcon icon14;
-        icon14.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_initSimulator->setIcon(icon14);
+        QIcon icon16;
+        icon16.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_initSimulator->setIcon(icon16);
         pushButton_initSimulator->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_initSimulator);
 
         pushButton_startSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_startSimulation->setObjectName(QString::fromUtf8("pushButton_startSimulation"));
-        QIcon icon15;
-        icon15.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_startSimulation->setIcon(icon15);
+        QIcon icon17;
+        icon17.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_startSimulation->setIcon(icon17);
         pushButton_startSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_startSimulation);
 
         pushButton_nextStep = new QPushButton(horizontalLayoutWidget_2);
         pushButton_nextStep->setObjectName(QString::fromUtf8("pushButton_nextStep"));
-        QIcon icon16;
-        icon16.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_nextStep->setIcon(icon16);
+        QIcon icon18;
+        icon18.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_nextStep->setIcon(icon18);
         pushButton_nextStep->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_nextStep);
 
         pushButton_pauseSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_pauseSimulation->setObjectName(QString::fromUtf8("pushButton_pauseSimulation"));
-        QIcon icon17;
-        icon17.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_pauseSimulation->setIcon(icon17);
+        QIcon icon19;
+        icon19.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_pauseSimulation->setIcon(icon19);
         pushButton_pauseSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_pauseSimulation);
@@ -1063,6 +1077,8 @@ public:
         mainToolBar->addAction(actionSetMass);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionShowTest);
+        mainToolBar->addAction(actionLeftSurface);
+        mainToolBar->addAction(actionRightSurface);
 
         retranslateUi(joint_deformationClass);
         QObject::connect(actionLoadMesh, SIGNAL(triggered()), joint_deformationClass, SLOT(loadMesh()));
@@ -1131,6 +1147,8 @@ public:
         QObject::connect(pushButton_nextStep, SIGNAL(clicked()), joint_deformationClass, SLOT(simulateNextStep()));
         QObject::connect(pushButton_loadConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints()));
         QObject::connect(pushButton_saveConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints()));
+        QObject::connect(actionLeftSurface, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setLeftSurface(bool)));
+        QObject::connect(actionRightSurface, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setRightSurface(bool)));
 
         tabWidget->setCurrentIndex(1);
 
@@ -1162,6 +1180,8 @@ public:
         actionCubeOperation->setText(QApplication::translate("joint_deformationClass", "cubeOperation", 0, QApplication::UnicodeUTF8));
         actionSetCubeStaticConstraint->setText(QApplication::translate("joint_deformationClass", "setCubeStaticConstraint", 0, QApplication::UnicodeUTF8));
         actionSetCubeActiveConstraint->setText(QApplication::translate("joint_deformationClass", "setCubeActiveConstraint", 0, QApplication::UnicodeUTF8));
+        actionLeftSurface->setText(QApplication::translate("joint_deformationClass", "leftSurface", 0, QApplication::UnicodeUTF8));
+        actionRightSurface->setText(QApplication::translate("joint_deformationClass", "rightSurface", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("joint_deformationClass", "Grid density", 0, QApplication::UnicodeUTF8));
         pushButton_setGridDensity->setText(QApplication::translate("joint_deformationClass", "Apply", 0, QApplication::UnicodeUTF8));
         comboBox_selectTreeDepth->clear();

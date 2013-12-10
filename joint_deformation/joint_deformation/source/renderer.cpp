@@ -90,11 +90,24 @@ Renderer::Renderer(QWidget *parent)
 	LCS_z(2) = 0.3;
 
 	tool = new cubeTool();
+	force_arrow.setZero();
+
+	flag_left_surface = false;
+	flag_right_surface = false;
+
+	myArrow = NULL;
 }
 
 Renderer::~Renderer()
 {
 	
+}
+
+void Renderer::initArrow(Kernel * p)
+{
+	myArrow = new arrow(p);
+	myArrow->setScale(0.1, 0.1);
+	myArrow->setLength(0.2);
 }
 
 QSize Renderer::minimumSizeHint() const
@@ -171,7 +184,7 @@ void Renderer::paintGL()
 	switch (current_render_mode)
 	{
 	case REGULAR:
-		
+
 		if (flag_cube_operation)
 		{
 			tool->render();
@@ -180,6 +193,17 @@ void Renderer::paintGL()
 		if (flag_show_mesh && p_kernel->flag_mesh_ready)
 		{
 			renderMesh(p_kernel->p_mesh);
+
+			glColor3f(0.0, 1.0, 0.0);
+			glPushMatrix();
+			glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
+			glutSolidSphere(0.03, 16, 16);
+			glPopMatrix();
+			glColor3f(1.0, 0.0, 0.0);
+			glPushMatrix();
+			glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
+			glutSolidSphere(0.03, 16, 16);
+			glPopMatrix();
 		}
 
 		if (flag_show_grid)
@@ -1176,7 +1200,10 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 							if (!n_iter->flag_constraint_node)
 							{
 								n_iter->flag_constraint_node = true;
-								p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
+								if(p_kernel->idx_constraint == 1)
+									p_kernel->level_list[i]->voxmesh_level->constraint_node_list.push_back(&*n_iter);
+								else
+									p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.push_back(&*n_iter);
 
 								for(int j=0; j < n_iter->incident_cluster.size(); ++j)
 								{
@@ -1195,28 +1222,56 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 						/*}*/
 
 					}
-					if(n_iter->flag_constraint_node)
-					{
-						if(i == 0)
-							sum += p;
-					}
 				}
-				if(i == 0)
+
+				if(p_kernel->idx_constraint == 1)
 				{
-					sum /= p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size();
+					p_kernel->level_list[i]->voxmesh_level->constraint_center = sum;
+
+
+					int size_k = p_kernel->level_list[0]->voxmesh_level->constraint_node_list.size();
+					Vector3d sum = Vector3d::Zero();
+					for(int k = 0; k < size_k; k ++)
+					{
+						sum += p_kernel->level_list[0]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+					}
+					p_kernel->level_list[i]->voxmesh_level->constraint_center = sum / size_k;
 				}
-				p_kernel->level_list[i]->voxmesh_level->constraint_center = sum;
+				else
+				{
+					int size_k = p_kernel->level_list[0]->voxmesh_level->another_constraint_node_list.size();
+					Vector3d sum = Vector3d::Zero();
+					for(int k = 0; k < size_k; k ++)
+					{
+						sum += p_kernel->level_list[0]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
+					}
+					p_kernel->level_list[i]->voxmesh_level->another_constraint_center = sum / size_k;
+				}
 				//cout << i << "constraint center: ";
 				//p_kernel->printVector3d(p_kernel->level_list[i]->voxmesh_level->constraint_center);
-				
-				p_kernel->level_list[i]->voxmesh_level->constraint_displacement.clear();
-				for(int j = 0; j < p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size(); j++)
+				if(p_kernel->idx_constraint == 1)
 				{
-					Vector3d displacement = p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->coordinate 
-						+ p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->displacement - p_kernel->level_list[i]->voxmesh_level->constraint_center;
-					p_kernel->level_list[i]->voxmesh_level->constraint_displacement.push_back(displacement);
+					p_kernel->level_list[i]->voxmesh_level->constraint_displacement.clear();
+					for(int j = 0; j < p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size(); j++)
+					{
+						Vector3d displacement = p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->coordinate 
+							+ p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->displacement - p_kernel->level_list[i]->voxmesh_level->constraint_center;
+						p_kernel->level_list[i]->voxmesh_level->constraint_displacement.push_back(displacement);
+					}
+					cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size());
 				}
-				cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size());
+				else
+				{
+					p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.clear();
+					for(int j = 0; j < p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size(); j++)
+					{
+						Vector3d displacement = p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list[j]->coordinate 
+							+ p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list[j]->displacement - p_kernel->level_list[i]->voxmesh_level->another_constraint_center;
+						p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.push_back(displacement);
+					}
+					cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size());
+				}
+				
 			}
 
 			QMessageBox::information(NULL, tr("success"), tr(msg));
@@ -1467,9 +1522,16 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				{
 					(*n_iter)->flag_constraint_node = false;
 				}
+				n_iter = p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.begin();
+				for (; n_iter!=p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.end(); ++n_iter)
+				{
+					(*n_iter)->flag_constraint_node = false;
+				}
 				p_kernel->level_list[i]->voxmesh_level->constraint_node_list.clear();
+				p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.clear();
 				p_kernel->level_list[i]->voxmesh_level->constraint_cluster_list.clear();
 				p_kernel->level_list[i]->voxmesh_level->constraint_center.setZero();
+				p_kernel->level_list[i]->voxmesh_level->another_constraint_center.setZero();
 
 				//all targets set to be rest shape
 				vector<Cluster>::iterator ci;
@@ -1575,6 +1637,82 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				else
 					tool->setVisible(false);
 					*/
+			}
+		}
+		else if (flag_left_surface || flag_right_surface)
+		{
+			double x, y, z;
+			Vector3d p, q, l, m;
+			x = current_mouse_x;
+			y = win_height - current_mouse_y;
+			z = 0;
+			gluUnProject(x, y, z, currentmodelview, currentprojection, currentviewport, 
+				&p[0], &p[1], &p[2]);
+			z = 1;
+			gluUnProject(x, y, z, currentmodelview, currentprojection, currentviewport, 
+				&q[0], &q[1], &q[2]);
+			l = q - p;
+			vector<Face>::iterator fi = p_kernel->p_mesh->face_list.begin();
+			int count = 0;
+			for (; fi!=p_kernel->p_mesh->face_list.end(); ++fi)
+			{
+				Vector3d n0, n1, n2, n01, n02, n03, n;
+
+				n0 = fi->node0->coordinate + fi->node0->displacement;
+				n1 = fi->node1->coordinate + fi->node1->displacement;
+				n2 = fi->node2->coordinate + fi->node2->displacement;
+
+				n = (-1)*fi->normal;
+				float nDotL = n.dot(l);
+
+				if (nDotL <= 0.0)
+					continue;
+
+				float d = n.dot(n0 - p) / nDotL;
+
+				if (d < 0.0f || d > 1.0f) // plane is beyond the ray we consider
+					continue;
+
+				m = p + d * l;
+
+				n01 = (n0 - n1).cross(m - n0);
+				n02 = (n1 - n2).cross(m - n1);
+				n03 = (n2 - n0).cross(m - n2);
+
+				if (n.dot(n01) >= 0.0f &&
+					n.dot(n02) >= 0.0f &&
+					n.dot(n03) >= 0.0f)
+				{
+					if (flag_left_surface)
+					{
+						p_kernel->para[0] = ((n1[1]-n2[1])*(m[0]-n2[0]) + (n2[0]-n1[0])*(m[1]-n2[1]))/((n1[1]-n2[1])*(n0[0]-n2[0]) + (n2[0]-n1[0])*(n0[1]-n2[1]));
+						p_kernel->para[1] = ((n2[1]-n0[1])*(m[0]-n2[0]) + (n0[0]-n2[0])*(m[1]-n2[1]))/((n1[1]-n2[1])*(n0[0]-n2[0]) + (n2[0]-n1[0])*(n0[1]-n2[1]));
+						p_kernel->para[2] = 1 - p_kernel->para[0] - p_kernel->para[1];
+						p_kernel->paraNode[0] = fi->node0;
+						p_kernel->paraNode[1] = fi->node1;
+						p_kernel->paraNode[2] = fi->node2;
+						p_kernel->surface_point_left[0] = m[0];
+						p_kernel->surface_point_left[1] = m[1];
+						p_kernel->surface_point_left[2] = m[2];
+						
+						//cout << m << endl;
+						//cout << n0 * p_kernel->para[0] + n1*p_kernel->para[1] + n2*p_kernel->para[2] << endl;
+					}
+					else
+					{
+						p_kernel->para2[0] = ((n1[1]-n2[1])*(m[0]-n2[0]) + (n2[0]-n1[0])*(m[1]-n2[1]))/((n1[1]-n2[1])*(n0[0]-n2[0]) + (n2[0]-n1[0])*(n0[1]-n2[1]));
+						p_kernel->para2[1] = ((n2[1]-n0[1])*(m[0]-n2[0]) + (n0[0]-n2[0])*(m[1]-n2[1]))/((n1[1]-n2[1])*(n0[0]-n2[0]) + (n2[0]-n1[0])*(n0[1]-n2[1]));
+						p_kernel->para2[2] = 1 - p_kernel->para2[0] - p_kernel->para2[1];
+						p_kernel->paraNode2[0] = fi->node0;
+						p_kernel->paraNode2[1] = fi->node1;
+						p_kernel->paraNode2[2] = fi->node2;
+						p_kernel->surface_point_right[0] = m[0];
+						p_kernel->surface_point_right[1] = m[1];
+						p_kernel->surface_point_right[2] = m[2];
+						
+					}
+				}
+				count ++;
 			}
 		}
 		if (flag_simulating)
@@ -1778,7 +1916,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 					//many constraints
 					for(int j = 0; j < p_kernel->level_list.size(); j ++)
 					{
-						if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+						if ((!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty() && p_kernel->idx_constraint == 1) || (!p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list.empty() && p_kernel->idx_constraint == 2))
 						{	
 							if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
 							{
@@ -1856,31 +1994,77 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 							}
 							else if (p_kernel->constraintType == Kernel::POSITION_CONSTRAINT)
 							{
-								if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+								if(p_kernel->idx_constraint == 1)
 								{
-								Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+									if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
+									{
+										int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
+										//Vector3d sum = Vector3d::Zero();
+										//for(int k = 0; k < size_k; k ++)
+										//{
+										//	 sum += p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+										//}
+										//p_kernel->level_list[j]->voxmesh_level->constraint_center = sum / size_k;
 
-								double wx, wy, wz;
+										Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->constraint_center;
 
-								gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
-									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+										double wx, wy, wz;
 
-								wx = current_mouse_x;
-								wy = win_height - current_mouse_y;
+										gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+											currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
 
-								Vector3d disp_center_after;
-								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-									&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+										wx = current_mouse_x;
+										wy = win_height - current_mouse_y;
 
-							
-								LCS_translation = disp_center_after - disp_center_before;
+										Vector3d disp_center_after;
+										gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+											&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
 
-								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
-								for(int k = 0; k < size_k; k ++)
-								{
-									Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+
+										LCS_translation = disp_center_after - disp_center_before;
+
+										for(int k = 0; k < size_k; k ++)
+										{
+											Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+											p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+										}
+									}
 								}
+								else
+								{
+									if (!p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list.empty())
+									{
+										int size_k = p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list.size();
+										//Vector3d sum = Vector3d::Zero();
+										//for(int k = 0; k < size_k; k ++)
+										//{
+										//	sum += p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
+										//}
+										//p_kernel->level_list[j]->voxmesh_level->another_constraint_center =  sum / size_k;
+
+										Vector3d disp_center_before = p_kernel->level_list[j]->voxmesh_level->another_constraint_center;
+
+										double wx, wy, wz;
+
+										gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+											currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+										wx = current_mouse_x;
+										wy = win_height - current_mouse_y;
+
+										Vector3d disp_center_after;
+										gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+											&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+
+
+										LCS_translation = disp_center_after - disp_center_before;
+
+										for(int k = 0; k < size_k; k ++)
+										{
+											Vector3d preposition = p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
+											p_kernel->level_list[j]->voxmesh_level->another_constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->another_constraint_displacement[k] + disp_center_after;
+										}
+									}
 								}
 							}
 						}
@@ -2178,6 +2362,18 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 		else
 		{
 			cout << "stop exporting obj!" << endl;
+		}
+		break;
+	case Qt::Key_C:
+		if(p_kernel->idx_constraint == 2)
+		{
+			p_kernel->idx_constraint = 1;
+			cout << "1" << endl;
+		}
+		else
+		{
+			p_kernel->idx_constraint = 2;
+			cout << "2" << endl;
 		}
 		break;
 	default:
@@ -3910,12 +4106,20 @@ void Renderer::renderForce()
 
 				force_arrow_begin /= size_k; 
 				p_kernel->level_list[j]->voxmesh_level->constraint_center = force_arrow_begin;
+
+				force_arrow_begin = p_kernel->level_list[j]->voxmesh_level->constraint_center;
+				//renderArrow(force_arrow[0], force_arrow[1], force_arrow[2],
+				//	force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2],
+				//	0.01, 0.0, 0.0, 0.1, 0.6);
+				myArrow->setPosBeginEnd(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], force_arrow[0], force_arrow[1], force_arrow[2]);
+				myArrow->render();
+				p_kernel->flag_exportObj4Arrow = true;
 			}
-			force_arrow_begin = p_kernel->level_list[j]->voxmesh_level->constraint_center;
-			renderArrow(force_arrow[0], force_arrow[1], force_arrow[2],
-				force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2],
-				0.01, 0.0, 0.0, 0.1, 0.6);
+			else
+				p_kernel->flag_exportObj4Arrow = false;
 		}
+		else
+			p_kernel->flag_exportObj4Arrow = false;
 	}
 	//one constraint(only for HSM)
 	if (p_kernel->p_vox_mesh->constraint_node)
@@ -4992,6 +5196,19 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	{
 		vector<Node*>::const_iterator n_iter = vm->constraint_node_list.begin();
 		for(; n_iter!=vm->constraint_node_list.end(); ++n_iter)
+		{
+			/*Vector3d p = (*n_iter)->coordinate + (*n_iter)->displacement;*/
+			Vector3d p = (*n_iter)->target_position;
+			renderCube(cube_size, p(0), p(1), p(2));
+		}
+	}
+
+	glColor3f(1.0, 0.0, 0.0);
+	// render constraint nodes
+	if (!vm->another_constraint_node_list.empty())
+	{
+		vector<Node*>::const_iterator n_iter = vm->another_constraint_node_list.begin();
+		for(; n_iter!=vm->another_constraint_node_list.end(); ++n_iter)
 		{
 			/*Vector3d p = (*n_iter)->coordinate + (*n_iter)->displacement;*/
 			Vector3d p = (*n_iter)->target_position;

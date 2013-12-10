@@ -8,7 +8,7 @@ joint_deformation::joint_deformation(QWidget *parent, Qt::WFlags flags)
 	ui.setupUi(this);
 	p_kernel = new Kernel;
 	ui.renderWidget->p_kernel = p_kernel;
-
+	ui.renderWidget->initArrow(p_kernel);
 	
 	flag_captureScreen = false;
 	flag_captureSubScreen = false;
@@ -246,6 +246,24 @@ void joint_deformation::simulate()
 		pauseSimulation();
 	}
 
+	//interpolation surface points
+	Vector3d a, b, c; 
+	if (p_kernel->paraNode[0] != NULL && p_kernel->paraNode[1] != NULL && p_kernel->paraNode[2] != NULL )
+	{
+		a = p_kernel->paraNode[0]->coordinate + p_kernel->paraNode[0]->displacement;
+		b =p_kernel->paraNode[1]->coordinate + p_kernel->paraNode[1]->displacement;
+		c =p_kernel->paraNode[2]->coordinate + p_kernel->paraNode[2]->displacement;
+		p_kernel->surface_point_left = p_kernel->para[0] * a + p_kernel->para[1] * b + p_kernel->para[2] * c;
+	}
+	if (p_kernel->paraNode2[0] != NULL && p_kernel->paraNode2[1] != NULL && p_kernel->paraNode2[2] != NULL)
+	{
+		a = p_kernel->paraNode2[0]->coordinate + p_kernel->paraNode2[0]->displacement;
+		b =p_kernel->paraNode2[1]->coordinate + p_kernel->paraNode2[1]->displacement;
+		c =p_kernel->paraNode2[2]->coordinate + p_kernel->paraNode2[2]->displacement;
+		p_kernel->surface_point_right = p_kernel->para2[0] * a + p_kernel->para2[1] * b + p_kernel->para2[2] * c;
+	}
+	////////////////////
+
 	if(p_kernel->pReceiver != NULL)
 	{
 		if(p_kernel->pReceiver->isMeshReady)
@@ -279,6 +297,7 @@ void joint_deformation::simulate()
 		char filenames[32];
 		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->num_obj);
 		p_kernel->exportToOBJ(filenames);
+		//p_kernel->exportToOBJ2Haptic(filenames);
 		p_kernel->num_obj ++;
 	}
 }
@@ -294,6 +313,7 @@ void joint_deformation::simulateNextStep()
 	{
 		pauseSimulation();
 	}
+
 
 
 	//if (flag_exportObj)
@@ -1283,4 +1303,27 @@ void joint_deformation::loadConstraints()
 void joint_deformation::saveConstraints()
 {
 	cout << "save" << endl;
+}
+
+void joint_deformation::setLeftSurface(bool a)
+{
+	ui.renderWidget->flag_left_surface = a;
+	if(a)
+	{
+		ui.actionRightSurface->setChecked(false);
+		ui.renderWidget->flag_right_surface = false;
+	}
+	ui.renderWidget->updateGL();
+}
+
+void joint_deformation::setRightSurface(bool a)
+{
+	ui.renderWidget->flag_right_surface = a;
+	if(a)
+	{
+
+		ui.actionLeftSurface->setChecked(false);
+		ui.renderWidget->flag_left_surface = false;
+	}
+	ui.renderWidget->updateGL();
 }
