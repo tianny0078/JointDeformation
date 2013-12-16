@@ -325,6 +325,56 @@ void joint_deformation::simulateNextStep()
 	ui.renderWidget->updateGL();
 }
 
+void joint_deformation::loadLevel()
+{
+	if (!p_kernel->flag_mesh_ready)
+	{
+		QMessageBox::warning(NULL, "warning", "load a mesh first");
+		return;
+	}
+
+	else if (!p_kernel->p_mesh->flag_normalized)
+	{
+		QMessageBox::warning(NULL, "warning", "scale the mesh first");
+		return;
+	}
+	p_kernel->clearAllLevel();
+	ifstream ifs("level.txt");
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		int level = atoi(token);
+		token = strtok(NULL, " ");
+		int d = atoi(token);
+		cout << level << " " << d << endl;
+		if(level > 0)
+		{
+			p_kernel->addLevel();
+			int index = ui.comboBox_level->count();
+			QString	item = "Level " + QString::number(index);
+			ui.comboBox_level->addItem(item);
+			ui.comboBox_level->setCurrentIndex(index);
+		}
+		p_kernel->generateVoxMesh4Level(level++, d);
+	}
+	ui.renderWidget->updateGL();
+}
+
+void joint_deformation::saveLevel()
+{
+	ofstream ofs("level.txt");
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		ofs << i << " " << p_kernel->level_list[i]->gridDensity << endl;
+	}
+	ofs.close();
+}
+
 void joint_deformation::initializeSimulator()
 {
 	if (p_kernel->used_simulator == Kernel::UNDEFINED)
@@ -1297,13 +1347,410 @@ void joint_deformation::setEnergyThreshold()
 
 void joint_deformation::loadConstraints()
 {
-	cout << "load" << endl;
+	string filename;
+	if (p_kernel->level_list.size() == 1)
+		filename = "constraints4naive.txt";
+	else
+		filename = "constraints.txt";
+	ifstream ifs(filename);
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		int level = atoi(token);
+		token = strtok(NULL, " ");
+		int z = atoi(token);
+		token = strtok(NULL, " ");
+		int y = atoi(token);
+		token = strtok(NULL, " ");
+		int x = atoi(token);
+		token = strtok(NULL, " ");
+		int nodei = atoi(token);
+		//traverse level vox, find the vox, and find corresponding node
+		vector<Vox>::iterator vi = p_kernel->level_list[level]->voxmesh_level->vox_list.begin();
+		for (; vi != p_kernel->level_list[level]->voxmesh_level->vox_list.end(); vi++)
+		{
+			if (z == vi->coord_grid(0) && y == vi->coord_grid(1) && x == vi->coord_grid(2))
+			{
+				Node * temp = NULL;
+				if (nodei == 0)
+					temp = vi->node_0;
+				else if (nodei == 1)
+					temp = vi->node_1;
+				else if (nodei == 2)
+					temp = vi->node_2;
+				else if (nodei == 3)
+					temp = vi->node_3;
+				else if (nodei == 4)
+					temp = vi->node_4;
+				else if (nodei == 5)
+					temp = vi->node_5;
+				else if (nodei == 6)
+					temp = vi->node_6;
+				else if (nodei == 7)
+					temp = vi->node_7;
+				temp->flag_constraint_node = true;
+				p_kernel->level_list[level]->voxmesh_level->constraint_node_list.push_back(temp);
+				for (int k=0; k < temp->duplicates.size(); ++k)
+				{
+					temp->duplicates[k]->flag_constraint_node = true;
+					temp->prescribed_position = temp->target_position;
+					temp->prescribed_preposition = temp->target_position;
+				}
+				for(int j=0; j < temp->incident_cluster.size(); ++j)
+				{
+					temp->incident_cluster[j]->flag_constrained = true;
+					temp->incident_cluster[j]->constraint_node = NULL;
+					p_kernel->level_list[level]->voxmesh_level->constraint_cluster_list.push_back(temp->incident_cluster[j]);
+				}
+				break;
+			}
+		}
+	}
+	char msg[1024];
+	int cx = 0;
+	for (int i = 0; i < p_kernel->level_list.size(); i++)
+	{
+		cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size());
+	}
+	QMessageBox::information(NULL, tr("success"), tr(msg));
+	cout << "load constraints" << endl;
 }
 
 void joint_deformation::saveConstraints()
 {
-	cout << "save" << endl;
+	ofstream ofs("constraints.txt");
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		vector<Node *>::iterator ni = p_kernel->level_list[i]->voxmesh_level->constraint_node_list.begin();
+		for(; ni != p_kernel->level_list[i]->voxmesh_level->constraint_node_list.end(); ni++)
+		{
+			int nodei;
+			if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+				nodei = 0;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+				nodei = 1;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+				nodei = 2;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+				nodei = 3;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+				nodei = 4;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+				nodei = 5;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+				nodei = 6;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+				nodei = 7;
+			ofs << i << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+				<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+				<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+				<< " " << nodei << endl;
+		}
+	}
+	ofs.close();
+	ofs.open("constraints4naive.txt");
+	int l = p_kernel->level_list.size() - 1;
+	vector<Node *>::iterator ni = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.begin();
+	for(; ni != p_kernel->level_list[l]->voxmesh_level->constraint_node_list.end(); ni++)
+	{
+		int nodei;
+		if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+			nodei = 0;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+			nodei = 1;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+			nodei = 2;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+			nodei = 3;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+			nodei = 4;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+			nodei = 5;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+			nodei = 6;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+			nodei = 7;
+		ofs << "0" << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+			<< " " << nodei << endl;
+	}
+	ofs.close();
+	cout << "save constraints" << endl;
 }
+
+void joint_deformation::loadConstraints2()
+{
+	string filename;
+	if (p_kernel->level_list.size() == 1)
+		filename = "constraints24naive.txt";
+	else
+		filename = "constraints2.txt";
+	ifstream ifs(filename);
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		int level = atoi(token);
+		token = strtok(NULL, " ");
+		int z = atoi(token);
+		token = strtok(NULL, " ");
+		int y = atoi(token);
+		token = strtok(NULL, " ");
+		int x = atoi(token);
+		token = strtok(NULL, " ");
+		int nodei = atoi(token);
+		//traverse level vox, find the vox, and find corresponding node
+		vector<Vox>::iterator vi = p_kernel->level_list[level]->voxmesh_level->vox_list.begin();
+		for (; vi != p_kernel->level_list[level]->voxmesh_level->vox_list.end(); vi++)
+		{
+			if (z == vi->coord_grid(0) && y == vi->coord_grid(1) && x == vi->coord_grid(2))
+			{
+				Node * temp = NULL;
+				if (nodei == 0)
+					temp = vi->node_0;
+				else if (nodei == 1)
+					temp = vi->node_1;
+				else if (nodei == 2)
+					temp = vi->node_2;
+				else if (nodei == 3)
+					temp = vi->node_3;
+				else if (nodei == 4)
+					temp = vi->node_4;
+				else if (nodei == 5)
+					temp = vi->node_5;
+				else if (nodei == 6)
+					temp = vi->node_6;
+				else if (nodei == 7)
+					temp = vi->node_7;
+				temp->flag_constraint_node = true;
+				p_kernel->level_list[level]->voxmesh_level->another_constraint_node_list.push_back(temp);
+				for (int k=0; k < temp->duplicates.size(); ++k)
+				{
+					temp->duplicates[k]->flag_constraint_node = true;
+					temp->prescribed_position = temp->target_position;
+					temp->prescribed_preposition = temp->target_position;
+				}
+				for(int j=0; j < temp->incident_cluster.size(); ++j)
+				{
+					temp->incident_cluster[j]->flag_constrained = true;
+					temp->incident_cluster[j]->constraint_node = NULL;
+					p_kernel->level_list[level]->voxmesh_level->constraint_cluster_list.push_back(temp->incident_cluster[j]);
+				}
+				break;
+			}
+		}
+	}
+	char msg[1024];
+	int cx = 0;
+	for (int i = 0; i < p_kernel->level_list.size(); i++)
+	{
+		cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size());
+	}
+	QMessageBox::information(NULL, tr("success"), tr(msg));
+	cout << "load another constraints" << endl;
+}
+
+void joint_deformation::saveConstraints2()
+{
+	ofstream ofs("constraints2.txt");
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		vector<Node *>::iterator ni = p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.begin();
+		for(; ni != p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.end(); ni++)
+		{
+			int nodei;
+			if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+				nodei = 0;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+				nodei = 1;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+				nodei = 2;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+				nodei = 3;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+				nodei = 4;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+				nodei = 5;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+				nodei = 6;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+				nodei = 7;
+			ofs << i << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+				<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+				<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+				<< " " << nodei << endl;
+		}
+	}
+	ofs.close();
+	ofs.open("constraints24naive.txt");
+	int l = p_kernel->level_list.size() - 1;
+	vector<Node *>::iterator ni = p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list.begin();
+	for(; ni != p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list.end(); ni++)
+	{
+		int nodei;
+		if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+			nodei = 0;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+			nodei = 1;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+			nodei = 2;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+			nodei = 3;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+			nodei = 4;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+			nodei = 5;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+			nodei = 6;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+			nodei = 7;
+		ofs << "0" << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+			<< " " << nodei << endl;
+	}
+	ofs.close();
+	cout << "save constraints" << endl;
+}
+
+void joint_deformation::loadAnchor()
+{
+	string filename;
+	if (p_kernel->level_list.size() == 1)
+		filename = "anchor4naive.txt";
+	else
+		filename = "anchor.txt";
+	ifstream ifs(filename);
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		int level = atoi(token);
+		token = strtok(NULL, " ");
+		int z = atoi(token);
+		token = strtok(NULL, " ");
+		int y = atoi(token);
+		token = strtok(NULL, " ");
+		int x = atoi(token);
+		token = strtok(NULL, " ");
+		int nodei = atoi(token);
+		//traverse level vox, find the vox, and find corresponding node
+		vector<Vox>::iterator vi = p_kernel->level_list[level]->voxmesh_level->vox_list.begin();
+		for (; vi != p_kernel->level_list[level]->voxmesh_level->vox_list.end(); vi++)
+		{
+			if (z == vi->coord_grid(0) && y == vi->coord_grid(1) && x == vi->coord_grid(2))
+			{
+				Node * temp = NULL;
+				if (nodei == 0)
+					temp = vi->node_0;
+				else if (nodei == 1)
+					temp = vi->node_1;
+				else if (nodei == 2)
+					temp = vi->node_2;
+				else if (nodei == 3)
+					temp = vi->node_3;
+				else if (nodei == 4)
+					temp = vi->node_4;
+				else if (nodei == 5)
+					temp = vi->node_5;
+				else if (nodei == 6)
+					temp = vi->node_6;
+				else if (nodei == 7)
+					temp = vi->node_7;
+				temp->flag_anchor_node = true;
+				p_kernel->level_list[level]->voxmesh_level->anchor_node_list.push_back(temp);
+				
+				break;
+			}
+		}
+	}
+	char msg[1024];
+	int cx = 0;
+	for (int i = 0; i < p_kernel->level_list.size(); i++)
+	{
+		cx += sprintf(msg+cx, "Level %d:  %d anchor nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->anchor_node_list.size());
+	}
+	QMessageBox::information(NULL, tr("success"), tr(msg));
+	cout << "load anchor nodes" << endl;
+}
+
+void joint_deformation::saveAnchor()
+{
+	ofstream ofs("anchor.txt");
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		vector<Node *>::iterator ni = p_kernel->level_list[i]->voxmesh_level->anchor_node_list.begin();
+		for(; ni != p_kernel->level_list[i]->voxmesh_level->anchor_node_list.end(); ni++)
+		{
+			int nodei;
+			if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+				nodei = 0;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+				nodei = 1;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+				nodei = 2;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+				nodei = 3;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+				nodei = 4;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+				nodei = 5;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+				nodei = 6;
+			else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+				nodei = 7;
+			ofs << i << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+			<< " " << nodei << endl;
+		}
+	}
+	ofs.close();
+	ofs.open("anchor4naive.txt");
+	int l = p_kernel->level_list.size() - 1;
+	vector<Node *>::iterator ni = p_kernel->level_list[l]->voxmesh_level->anchor_node_list.begin();
+	for(; ni != p_kernel->level_list[l]->voxmesh_level->anchor_node_list.end(); ni++)
+	{
+		int nodei;
+		if ((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_0)
+			nodei = 0;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_1))
+			nodei = 1;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_2))
+			nodei = 2;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_3))
+			nodei = 3;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_4))
+			nodei = 4;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_5))
+			nodei = 5;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_6))
+			nodei = 6;
+		else if(((*ni) == (*ni)->incident_cluster[0]->vox_list[0]->node_7))
+			nodei = 7;
+		ofs << "0" << " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(0)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(1)
+			<< " " << (*ni)->incident_cluster[0]->vox_list[0]->coord_grid(2) 
+			<< " " << nodei << endl;
+	}
+	ofs.close();
+	cout << "save anchor nodes" << endl;
+}
+
 
 void joint_deformation::setLeftSurface(bool a)
 {

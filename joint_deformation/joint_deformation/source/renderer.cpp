@@ -1133,8 +1133,9 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 			int cx = 0;				
 			Vector3d sum;
 			sum.setZero();
-			
-			for (int i = 0; i < p_kernel->level_list.size(); i++)
+			int l = p_kernel->level_list.size() - 1;
+			int i = 0;
+			for (i = 0; i < p_kernel->level_list.size(); i++)
 			{
 				vector<Node>::iterator n_iter = p_kernel->level_list[i]->voxmesh_level->node_list.begin();
 
@@ -1224,29 +1225,22 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 					}
 				}
 
+	
+				
+			}
+			for(i = 0; i < p_kernel->level_list.size(); i ++)
+			{
+
+				int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
+				Vector3d sum = Vector3d::Zero();
+				for(int k = 0; k < size_k; k ++)
+				{
+					sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+				}
 				if(p_kernel->idx_constraint == 1)
-				{
-					p_kernel->level_list[i]->voxmesh_level->constraint_center = sum;
-
-
-					int size_k = p_kernel->level_list[0]->voxmesh_level->constraint_node_list.size();
-					Vector3d sum = Vector3d::Zero();
-					for(int k = 0; k < size_k; k ++)
-					{
-						sum += p_kernel->level_list[0]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-					}
 					p_kernel->level_list[i]->voxmesh_level->constraint_center = sum / size_k;
-				}
 				else
-				{
-					int size_k = p_kernel->level_list[0]->voxmesh_level->another_constraint_node_list.size();
-					Vector3d sum = Vector3d::Zero();
-					for(int k = 0; k < size_k; k ++)
-					{
-						sum += p_kernel->level_list[0]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
-					}
 					p_kernel->level_list[i]->voxmesh_level->another_constraint_center = sum / size_k;
-				}
 				//cout << i << "constraint center: ";
 				//p_kernel->printVector3d(p_kernel->level_list[i]->voxmesh_level->constraint_center);
 				if(p_kernel->idx_constraint == 1)
@@ -1271,7 +1265,6 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 					}
 					cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size());
 				}
-				
 			}
 
 			QMessageBox::information(NULL, tr("success"), tr(msg));
@@ -1513,11 +1506,12 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 		}
 		else if (flag_show_constraints)
 		{
-			// clear anchor nodes for all level
+			// clear constraint nodes for all level
 			for (int i = 0; i < p_kernel->level_list.size(); i++)
 			{
-				vector<Node *>::iterator n_iter = p_kernel->level_list[i]->voxmesh_level->constraint_node_list.begin();
-
+				vector<Node *>::iterator n_iter;
+				
+				n_iter = p_kernel->level_list[i]->voxmesh_level->constraint_node_list.begin();
 				for (; n_iter!=p_kernel->level_list[i]->voxmesh_level->constraint_node_list.end(); ++n_iter)
 				{
 					(*n_iter)->flag_constraint_node = false;
@@ -1533,6 +1527,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				p_kernel->level_list[i]->voxmesh_level->constraint_center.setZero();
 				p_kernel->level_list[i]->voxmesh_level->another_constraint_center.setZero();
 
+				
 				//all targets set to be rest shape
 				vector<Cluster>::iterator ci;
 				for (ci = p_kernel->level_list[i]->voxmesh_level->cluster_list.begin(); ci!=p_kernel->level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
@@ -1551,6 +1546,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 						}
 					}
 				}
+				
 			}
 			LCS_x.setZero();
 			LCS_y.setZero();

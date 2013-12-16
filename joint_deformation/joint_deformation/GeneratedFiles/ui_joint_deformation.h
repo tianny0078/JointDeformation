@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon Dec 9 15:55:54 2013
+** Created: Mon Dec 16 00:34:42 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -126,8 +126,6 @@ public:
     QPushButton *pushButton_saveCameraConfig;
     QWidget *horizontalLayoutWidget_17;
     QHBoxLayout *horizontalLayout_17;
-    QPushButton *pushButton_loadConstraint;
-    QPushButton *pushButton_saveConstraint;
     QWidget *horizontalLayoutWidget_19;
     QHBoxLayout *horizontalLayout_19;
     QCheckBox *checkBox_setWindForce;
@@ -190,6 +188,7 @@ public:
     QSpinBox *spinBox_vox_vertex;
     QPushButton *pushButton_testFunction;
     QPushButton *pushButton_testVoxConnection;
+    QWidget *tab_4;
     QWidget *horizontalLayoutWidget_2;
     QHBoxLayout *horizontalLayout_2;
     QPushButton *pushButton_initSimulator;
@@ -202,6 +201,15 @@ public:
     QRadioButton *radioButton_setForceConstraint;
     QRadioButton *radioButton_setPositionConstraint;
     QRadioButton *radioButton_setOrientationConstraint;
+    QPushButton *pushButton_saveLevel;
+    QPushButton *pushButton_loadLevel;
+    QPushButton *pushButton_loadAnchor;
+    QPushButton *pushButton_saveAnchor;
+    QPushButton *pushButton_loadConstraint;
+    QPushButton *pushButton_saveConstraint;
+    QPushButton *pushButton_loadConstraint2;
+    QPushButton *pushButton_saveConstraint2;
+    QPushButton *pushButton_loadAnchor4Naive;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -675,16 +683,6 @@ public:
         horizontalLayout_17->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
         horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
-        pushButton_loadConstraint = new QPushButton(horizontalLayoutWidget_17);
-        pushButton_loadConstraint->setObjectName(QString::fromUtf8("pushButton_loadConstraint"));
-
-        horizontalLayout_17->addWidget(pushButton_loadConstraint);
-
-        pushButton_saveConstraint = new QPushButton(horizontalLayoutWidget_17);
-        pushButton_saveConstraint->setObjectName(QString::fromUtf8("pushButton_saveConstraint"));
-
-        horizontalLayout_17->addWidget(pushButton_saveConstraint);
-
         horizontalLayoutWidget_19 = new QWidget(tab_2);
         horizontalLayoutWidget_19->setObjectName(QString::fromUtf8("horizontalLayoutWidget_19"));
         horizontalLayoutWidget_19->setGeometry(QRect(0, 30, 291, 31));
@@ -979,6 +977,9 @@ public:
         pushButton_testVoxConnection->setObjectName(QString::fromUtf8("pushButton_testVoxConnection"));
         pushButton_testVoxConnection->setGeometry(QRect(80, 230, 111, 23));
         tabWidget->addTab(test, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QString::fromUtf8("tab_4"));
+        tabWidget->addTab(tab_4, QString());
         horizontalLayoutWidget_2 = new QWidget(centralWidget);
         horizontalLayoutWidget_2->setObjectName(QString::fromUtf8("horizontalLayoutWidget_2"));
         horizontalLayoutWidget_2->setGeometry(QRect(1060, 710, 301, 51));
@@ -1046,6 +1047,33 @@ public:
         radioButton_setOrientationConstraint = new QRadioButton(groupBox_3);
         radioButton_setOrientationConstraint->setObjectName(QString::fromUtf8("radioButton_setOrientationConstraint"));
         radioButton_setOrientationConstraint->setGeometry(QRect(200, 30, 131, 17));
+        pushButton_saveLevel = new QPushButton(centralWidget);
+        pushButton_saveLevel->setObjectName(QString::fromUtf8("pushButton_saveLevel"));
+        pushButton_saveLevel->setGeometry(QRect(1150, 500, 91, 23));
+        pushButton_loadLevel = new QPushButton(centralWidget);
+        pushButton_loadLevel->setObjectName(QString::fromUtf8("pushButton_loadLevel"));
+        pushButton_loadLevel->setGeometry(QRect(1050, 500, 91, 23));
+        pushButton_loadAnchor = new QPushButton(centralWidget);
+        pushButton_loadAnchor->setObjectName(QString::fromUtf8("pushButton_loadAnchor"));
+        pushButton_loadAnchor->setGeometry(QRect(1050, 530, 91, 23));
+        pushButton_saveAnchor = new QPushButton(centralWidget);
+        pushButton_saveAnchor->setObjectName(QString::fromUtf8("pushButton_saveAnchor"));
+        pushButton_saveAnchor->setGeometry(QRect(1150, 530, 91, 23));
+        pushButton_loadConstraint = new QPushButton(centralWidget);
+        pushButton_loadConstraint->setObjectName(QString::fromUtf8("pushButton_loadConstraint"));
+        pushButton_loadConstraint->setGeometry(QRect(1050, 560, 91, 23));
+        pushButton_saveConstraint = new QPushButton(centralWidget);
+        pushButton_saveConstraint->setObjectName(QString::fromUtf8("pushButton_saveConstraint"));
+        pushButton_saveConstraint->setGeometry(QRect(1150, 560, 91, 23));
+        pushButton_loadConstraint2 = new QPushButton(centralWidget);
+        pushButton_loadConstraint2->setObjectName(QString::fromUtf8("pushButton_loadConstraint2"));
+        pushButton_loadConstraint2->setGeometry(QRect(1050, 590, 91, 23));
+        pushButton_saveConstraint2 = new QPushButton(centralWidget);
+        pushButton_saveConstraint2->setObjectName(QString::fromUtf8("pushButton_saveConstraint2"));
+        pushButton_saveConstraint2->setGeometry(QRect(1150, 590, 91, 23));
+        pushButton_loadAnchor4Naive = new QPushButton(centralWidget);
+        pushButton_loadAnchor4Naive->setObjectName(QString::fromUtf8("pushButton_loadAnchor4Naive"));
+        pushButton_loadAnchor4Naive->setGeometry(QRect(1250, 530, 101, 23));
         joint_deformationClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(joint_deformationClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -1145,10 +1173,17 @@ public:
         QObject::connect(actionSetCubeActiveConstraint, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setCubeActiveConstraint(bool)));
         QObject::connect(pushButton_setEnergyThreshold, SIGNAL(clicked()), joint_deformationClass, SLOT(setEnergyThreshold()));
         QObject::connect(pushButton_nextStep, SIGNAL(clicked()), joint_deformationClass, SLOT(simulateNextStep()));
-        QObject::connect(pushButton_loadConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints()));
-        QObject::connect(pushButton_saveConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints()));
         QObject::connect(actionLeftSurface, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setLeftSurface(bool)));
         QObject::connect(actionRightSurface, SIGNAL(triggered(bool)), joint_deformationClass, SLOT(setRightSurface(bool)));
+        QObject::connect(pushButton_saveLevel, SIGNAL(clicked()), joint_deformationClass, SLOT(saveLevel()));
+        QObject::connect(pushButton_loadLevel, SIGNAL(clicked()), joint_deformationClass, SLOT(loadLevel()));
+        QObject::connect(pushButton_loadAnchor, SIGNAL(clicked()), joint_deformationClass, SLOT(loadAnchor()));
+        QObject::connect(pushButton_saveAnchor, SIGNAL(clicked()), joint_deformationClass, SLOT(saveAnchor()));
+        QObject::connect(pushButton_loadConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints()));
+        QObject::connect(pushButton_saveConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints()));
+        QObject::connect(pushButton_loadConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints2()));
+        QObject::connect(pushButton_saveConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints2()));
+        QObject::connect(pushButton_loadAnchor4Naive, SIGNAL(clicked()), joint_deformationClass, SLOT(loadAnchor4Naive()));
 
         tabWidget->setCurrentIndex(1);
 
@@ -1224,8 +1259,6 @@ public:
         checkBox_exportTxt->setText(QApplication::translate("joint_deformationClass", "ExportTXT", 0, QApplication::UnicodeUTF8));
         pushButton_loadCamConfig->setText(QApplication::translate("joint_deformationClass", "LoadCameraConfig", 0, QApplication::UnicodeUTF8));
         pushButton_saveCameraConfig->setText(QApplication::translate("joint_deformationClass", "SaveCameraConfig", 0, QApplication::UnicodeUTF8));
-        pushButton_loadConstraint->setText(QApplication::translate("joint_deformationClass", "LoadConstraints", 0, QApplication::UnicodeUTF8));
-        pushButton_saveConstraint->setText(QApplication::translate("joint_deformationClass", "SaveConstraints", 0, QApplication::UnicodeUTF8));
         checkBox_setWindForce->setText(QApplication::translate("joint_deformationClass", "Wind", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("joint_deformationClass", "Wind Magnitude", 0, QApplication::UnicodeUTF8));
         lineEdit_windMagnitude->setText(QApplication::translate("joint_deformationClass", "10.0", 0, QApplication::UnicodeUTF8));
@@ -1261,6 +1294,7 @@ public:
         pushButton_testFunction->setText(QApplication::translate("joint_deformationClass", "testFunction", 0, QApplication::UnicodeUTF8));
         pushButton_testVoxConnection->setText(QApplication::translate("joint_deformationClass", "testVoxConnection", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(test), QApplication::translate("joint_deformationClass", "test", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("joint_deformationClass", "Redo", 0, QApplication::UnicodeUTF8));
         pushButton_initSimulator->setText(QString());
         pushButton_startSimulation->setText(QString());
         pushButton_nextStep->setText(QString());
@@ -1289,6 +1323,15 @@ public:
         radioButton_setForceConstraint->setText(QApplication::translate("joint_deformationClass", "Force", 0, QApplication::UnicodeUTF8));
         radioButton_setPositionConstraint->setText(QApplication::translate("joint_deformationClass", "Position Constraint", 0, QApplication::UnicodeUTF8));
         radioButton_setOrientationConstraint->setText(QApplication::translate("joint_deformationClass", "Orientation Constraint", 0, QApplication::UnicodeUTF8));
+        pushButton_saveLevel->setText(QApplication::translate("joint_deformationClass", "SaveLevel", 0, QApplication::UnicodeUTF8));
+        pushButton_loadLevel->setText(QApplication::translate("joint_deformationClass", "LoadLevel", 0, QApplication::UnicodeUTF8));
+        pushButton_loadAnchor->setText(QApplication::translate("joint_deformationClass", "LoadAnchor", 0, QApplication::UnicodeUTF8));
+        pushButton_saveAnchor->setText(QApplication::translate("joint_deformationClass", "SaveAnchor", 0, QApplication::UnicodeUTF8));
+        pushButton_loadConstraint->setText(QApplication::translate("joint_deformationClass", "LoadConstraint", 0, QApplication::UnicodeUTF8));
+        pushButton_saveConstraint->setText(QApplication::translate("joint_deformationClass", "SaveConstraint", 0, QApplication::UnicodeUTF8));
+        pushButton_loadConstraint2->setText(QApplication::translate("joint_deformationClass", "LoadConstraint2", 0, QApplication::UnicodeUTF8));
+        pushButton_saveConstraint2->setText(QApplication::translate("joint_deformationClass", "SaveConstraint2", 0, QApplication::UnicodeUTF8));
+        pushButton_loadAnchor4Naive->setText(QApplication::translate("joint_deformationClass", "LoadAnchor4Naive", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

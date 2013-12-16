@@ -702,22 +702,7 @@
         <height>31</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_17">
-       <item>
-        <widget class="QPushButton" name="pushButton_loadConstraint">
-         <property name="text">
-          <string>LoadConstraints</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_saveConstraint">
-         <property name="text">
-          <string>SaveConstraints</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QHBoxLayout" name="horizontalLayout_17"/>
      </widget>
      <widget class="QWidget" name="horizontalLayoutWidget_19">
       <property name="geometry">
@@ -1368,6 +1353,11 @@
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>Redo</string>
+     </attribute>
+    </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_2">
     <property name="geometry">
@@ -1610,6 +1600,123 @@
       <string>Orientation Constraint</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveLevel">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>500</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SaveLevel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadLevel">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>500</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadLevel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadAnchor">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>530</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadAnchor</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveAnchor">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>530</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SaveAnchor</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadConstraint">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>560</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadConstraint</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveConstraint">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>560</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SaveConstraint</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadConstraint2">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>590</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadConstraint2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_saveConstraint2">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>590</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SaveConstraint2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_loadAnchor4Naive">
+    <property name="geometry">
+     <rect>
+      <x>1250</x>
+      <y>530</y>
+      <width>101</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadAnchor4Naive</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -2909,38 +3016,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_loadConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>joint_deformationClass</receiver>
-   <slot>loadConstraints()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1150</x>
-     <y>273</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1054</x>
-     <y>563</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_saveConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>joint_deformationClass</receiver>
-   <slot>saveConstraints()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1252</x>
-     <y>266</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1074</x>
-     <y>582</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionLeftSurface</sender>
    <signal>triggered(bool)</signal>
    <receiver>joint_deformationClass</receiver>
@@ -2969,6 +3044,150 @@
     <hint type="destinationlabel">
      <x>699</x>
      <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1176</x>
+     <y>555</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1041</x>
+     <y>513</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadLevel</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1125</x>
+     <y>555</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1047</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadAnchor</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadAnchor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1069</x>
+     <y>595</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1043</x>
+     <y>599</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveAnchor</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveAnchor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1178</x>
+     <y>597</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>583</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadConstraints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1061</x>
+     <y>626</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1044</x>
+     <y>628</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveConstraints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1206</x>
+     <y>629</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1038</x>
+     <y>653</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadConstraint2</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadConstraints2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1082</x>
+     <y>658</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1047</x>
+     <y>686</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_saveConstraint2</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>saveConstraints2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1168</x>
+     <y>657</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1335</x>
+     <y>649</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_loadAnchor4Naive</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadAnchor4Naive()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1313</x>
+     <y>603</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1259</x>
+     <y>639</y>
     </hint>
    </hints>
   </connection>
@@ -3045,5 +3264,12 @@
   <slot>saveConstraints()</slot>
   <slot>setLeftSurface(bool)</slot>
   <slot>setRightSurface(bool)</slot>
+  <slot>saveLevel()</slot>
+  <slot>loadLevel()</slot>
+  <slot>loadAnchor()</slot>
+  <slot>saveAnchor()</slot>
+  <slot>loadConstraints2()</slot>
+  <slot>saveConstraints2()</slot>
+  <slot>loadAnchor4Naive()</slot>
  </slots>
 </ui>

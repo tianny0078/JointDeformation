@@ -100,6 +100,13 @@ public slots:
 
 	void setLeftSurface(bool);
 	void setRightSurface(bool);
+
+	void saveLevel();
+	void loadLevel();
+	void loadAnchor();
+	void saveAnchor();
+	void loadConstraints2();
+	void saveConstraints2();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;
