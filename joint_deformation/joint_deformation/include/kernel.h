@@ -250,6 +250,13 @@ public:
 	vector<Vector3i> f_cone_list;
 	bool flag_exportObj4Arrow;
 
+	//redo
+	Vector3d current_force;
+	vector<Vector3d> force_list;
+	int no_record;
+	bool flag_exportForce;
+	bool flag_redo;
+	ofstream myForce;
 };
 
 

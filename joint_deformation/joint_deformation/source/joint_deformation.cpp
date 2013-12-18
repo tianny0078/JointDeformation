@@ -1411,6 +1411,24 @@ void joint_deformation::loadConstraints()
 			}
 		}
 	}
+	int l = p_kernel->level_list.size() - 1;
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
+		Vector3d sum = Vector3d::Zero();
+		for(int k = 0; k < size_k; k ++)
+		{
+			sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+		}
+		p_kernel->level_list[i]->voxmesh_level->constraint_center = sum / size_k;
+		p_kernel->level_list[i]->voxmesh_level->constraint_displacement.clear();
+		for(int j = 0; j < p_kernel->level_list[i]->voxmesh_level->constraint_node_list.size(); j++)
+		{
+			Vector3d displacement = p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->coordinate 
+				+ p_kernel->level_list[i]->voxmesh_level->constraint_node_list[j]->displacement - p_kernel->level_list[i]->voxmesh_level->constraint_center;
+			p_kernel->level_list[i]->voxmesh_level->constraint_displacement.push_back(displacement);
+		}
+	}
 	char msg[1024];
 	int cx = 0;
 	for (int i = 0; i < p_kernel->level_list.size(); i++)
@@ -1548,6 +1566,24 @@ void joint_deformation::loadConstraints2()
 				}
 				break;
 			}
+		}
+	}
+	int l = p_kernel->level_list.size() - 1;
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
+		Vector3d sum = Vector3d::Zero();
+		for(int k = 0; k < size_k; k ++)
+		{
+			sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+		}
+		p_kernel->level_list[i]->voxmesh_level->another_constraint_center = sum / size_k;
+		p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.clear();
+		for(int j = 0; j < p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size(); j++)
+		{
+			Vector3d displacement = p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list[j]->coordinate 
+				+ p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list[j]->displacement - p_kernel->level_list[i]->voxmesh_level->another_constraint_center;
+			p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.push_back(displacement);
 		}
 	}
 	char msg[1024];
@@ -1751,7 +1787,27 @@ void joint_deformation::saveAnchor()
 	cout << "save anchor nodes" << endl;
 }
 
-
+void joint_deformation::loadForce()
+{
+	ifstream ifs("record.txt");
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		double x = atof(token);
+		token = strtok(NULL, " ");
+		double y = atof(token);
+		token = strtok(NULL, " ");
+		double z = atof(token);
+		p_kernel->force_list.push_back(Vector3d(x, y, z));
+	}
+	p_kernel->flag_redo = true;
+	cout << "load force " << p_kernel->force_list.size() << endl;
+}
 void joint_deformation::setLeftSurface(bool a)
 {
 	ui.renderWidget->flag_left_surface = a;

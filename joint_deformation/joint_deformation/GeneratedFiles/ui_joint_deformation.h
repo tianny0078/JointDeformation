@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon Dec 16 00:34:42 2013
+** Created: Mon Dec 16 20:51:26 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -209,7 +209,7 @@ public:
     QPushButton *pushButton_saveConstraint;
     QPushButton *pushButton_loadConstraint2;
     QPushButton *pushButton_saveConstraint2;
-    QPushButton *pushButton_loadAnchor4Naive;
+    QPushButton *pushButton_loadForce;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -1071,9 +1071,9 @@ public:
         pushButton_saveConstraint2 = new QPushButton(centralWidget);
         pushButton_saveConstraint2->setObjectName(QString::fromUtf8("pushButton_saveConstraint2"));
         pushButton_saveConstraint2->setGeometry(QRect(1150, 590, 91, 23));
-        pushButton_loadAnchor4Naive = new QPushButton(centralWidget);
-        pushButton_loadAnchor4Naive->setObjectName(QString::fromUtf8("pushButton_loadAnchor4Naive"));
-        pushButton_loadAnchor4Naive->setGeometry(QRect(1250, 530, 101, 23));
+        pushButton_loadForce = new QPushButton(centralWidget);
+        pushButton_loadForce->setObjectName(QString::fromUtf8("pushButton_loadForce"));
+        pushButton_loadForce->setGeometry(QRect(1050, 620, 91, 23));
         joint_deformationClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(joint_deformationClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -1183,7 +1183,7 @@ public:
         QObject::connect(pushButton_saveConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints()));
         QObject::connect(pushButton_loadConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints2()));
         QObject::connect(pushButton_saveConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints2()));
-        QObject::connect(pushButton_loadAnchor4Naive, SIGNAL(clicked()), joint_deformationClass, SLOT(loadAnchor4Naive()));
+        QObject::connect(pushButton_loadForce, SIGNAL(clicked()), joint_deformationClass, SLOT(loadForce()));
 
         tabWidget->setCurrentIndex(1);
 
@@ -1331,7 +1331,7 @@ public:
         pushButton_saveConstraint->setText(QApplication::translate("joint_deformationClass", "SaveConstraint", 0, QApplication::UnicodeUTF8));
         pushButton_loadConstraint2->setText(QApplication::translate("joint_deformationClass", "LoadConstraint2", 0, QApplication::UnicodeUTF8));
         pushButton_saveConstraint2->setText(QApplication::translate("joint_deformationClass", "SaveConstraint2", 0, QApplication::UnicodeUTF8));
-        pushButton_loadAnchor4Naive->setText(QApplication::translate("joint_deformationClass", "LoadAnchor4Naive", 0, QApplication::UnicodeUTF8));
+        pushButton_loadForce->setText(QApplication::translate("joint_deformationClass", "LoadForce", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

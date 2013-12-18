@@ -107,6 +107,7 @@ public slots:
 	void saveAnchor();
 	void loadConstraints2();
 	void saveConstraints2();
+	void loadForce();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;

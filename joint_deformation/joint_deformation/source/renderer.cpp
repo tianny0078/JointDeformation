@@ -106,8 +106,8 @@ Renderer::~Renderer()
 void Renderer::initArrow(Kernel * p)
 {
 	myArrow = new arrow(p);
-	myArrow->setScale(0.1, 0.1);
-	myArrow->setLength(0.2);
+	myArrow->setScale(0.03, 0.03);
+	myArrow->setLength(0.05);
 }
 
 QSize Renderer::minimumSizeHint() const
@@ -1919,20 +1919,24 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 								int size_k = p_kernel->level_list[j]->voxmesh_level->constraint_node_list.size();
 								//put center to be the same, using the same force, set bottom level center.
 								Vector3d force_arrow_begin = p_kernel->level_list[p_kernel->level_list.size()-1]->voxmesh_level->constraint_center;
+
+
+								double wx, wy, wz;
+
+								gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
+									currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+								wx = current_mouse_x;
+								wy = win_height - current_mouse_y;
+
+								gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+									&force_arrow[0], &force_arrow[1], &force_arrow[2]);
+
+								//for recording
+								p_kernel->current_force = force_arrow - force_arrow_begin;
+
 								for(int k = 0; k < size_k; k ++)
 								{
-
-									double wx, wy, wz;
-
-									gluProject(force_arrow_begin[0], force_arrow_begin[1], force_arrow_begin[2], 
-										currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
-
-									wx = current_mouse_x;
-									wy = win_height - current_mouse_y;
-
-									gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
-										&force_arrow[0], &force_arrow[1], &force_arrow[2]);
-							
 									p_kernel->level_list[j]->voxmesh_level->constraint_node_list[k]->force =  force_arrow - force_arrow_begin;
 
 									//revised here 0204
@@ -2264,6 +2268,7 @@ void Renderer::mouseReleaseEvent(QMouseEvent *e)
 						p_kernel->level_list[j]->voxmesh_level->constraint_cluster_list.clear();
 					}
 					force_arrow.setZero();
+					p_kernel->current_force.setZero();
 				}
 			}
 			//if one constraint
@@ -2370,6 +2375,19 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 		{
 			p_kernel->idx_constraint = 2;
 			cout << "2" << endl;
+		}
+		break;
+	case Qt::Key_D:
+		p_kernel->flag_exportForce = !p_kernel->flag_exportForce;
+		if (p_kernel->flag_exportForce)
+		{
+			p_kernel->myForce.open("record.txt", ios::out);
+			cout << "start exporting force!" << endl;
+		}	
+		else
+		{
+			p_kernel->myForce.close();
+			cout << "stop exporting force!" << endl;
 		}
 		break;
 	default:
@@ -4085,9 +4103,17 @@ void Renderer::renderForce()
 	//many constraints
 	if(p_kernel->constraintType == Kernel::FORCE_CONSTRAINT)
 	{
-		if(force_arrow.norm() > 1e-3)
+		int j = p_kernel->level_list.size()-1;
+		if (p_kernel->flag_redo)
 		{
-			int j = p_kernel->level_list.size()-1;
+			if (p_kernel->no_record < p_kernel->force_list.size())
+			{
+				p_kernel->current_force = p_kernel->force_list[p_kernel->no_record];
+				force_arrow = p_kernel->level_list[j]->voxmesh_level->constraint_center + p_kernel->current_force;
+			}
+		}
+		if(p_kernel->current_force.norm() > 1e-3)
+		{
 			Vector3d force_arrow_begin;
 			if (!p_kernel->level_list[j]->voxmesh_level->constraint_node_list.empty())
 			{	
@@ -4116,6 +4142,7 @@ void Renderer::renderForce()
 		}
 		else
 			p_kernel->flag_exportObj4Arrow = false;
+
 	}
 	//one constraint(only for HSM)
 	if (p_kernel->p_vox_mesh->constraint_node)

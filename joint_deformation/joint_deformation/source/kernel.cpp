@@ -247,6 +247,10 @@ Kernel::Kernel()
 	temp2(2) = 1;
 	f_cone_list.push_back(temp2);
 
+	flag_exportForce = false;
+	no_record = 0;
+	current_force = Vector3d::Zero();
+	flag_redo = false;
 }
 
 Kernel::~Kernel()
@@ -2558,7 +2562,35 @@ bool Kernel::simulateNextStep4ShapeMatching()
 	//		}
 	//	}
 	//}
+	if (flag_redo && constraintType == Kernel::FORCE_CONSTRAINT)
+	{
+		if (no_record < force_list.size())
+		{
+			if (!p_vox_mesh->constraint_node_list.empty())
+			{
+				int size_k = p_vox_mesh->constraint_node_list.size();
+				for(int k = 0; k < size_k; k ++)
+				{
+					p_vox_mesh->constraint_node_list[k]->force = force_list[no_record];
 
+					for(int i=0; i < p_vox_mesh->constraint_node_list[k]->duplicates.size(); ++i)
+					{
+						p_vox_mesh->constraint_node_list[k]->duplicates[i]->force = force_list[no_record];
+					}
+				}
+			}
+			//flag_exportObj = true;
+			//cout << force_list[no_record] << endl;
+			no_record ++;
+		}
+		else
+		{
+			//
+			//flag_exportObj = false;
+			cout << "end of redo!" << endl;
+			return true;
+		}
+	}
 	vector<Cluster>::iterator ci = p_vox_mesh->cluster_list.begin();
 	for (; ci!=p_vox_mesh->cluster_list.end(); ++ci)
 	{
@@ -2732,7 +2764,7 @@ bool Kernel::simulateNextStep4ShapeMatching()
 		}
 	}
 	//cout << p_vox_mesh->new_energy << endl;
-	myEnergy << p_vox_mesh->new_energy << endl;
+	//myEnergy << p_vox_mesh->new_energy << endl;
 	////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////for rendering
@@ -2793,7 +2825,10 @@ bool Kernel::simulateNextStep4ShapeMatching()
 				<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
 		}
 	}
-
+	if (flag_redo)
+	{
+		myEnergy << p_vox_mesh->new_energy << endl;
+	}
 	++time_step_index;
 	return true;
 }
@@ -5967,7 +6002,72 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
 	}
 
+	if (flag_exportForce)
+	{
+		myForce << current_force(0) << " "
+			<< current_force(1) << " "
+			<< current_force(2) << endl;
+	}
 
+	if (flag_redo && constraintType == Kernel::FORCE_CONSTRAINT)
+	{
+		if (no_record < force_list.size())
+		{
+			for (int n = 0; n < level_list.size(); n++)
+			{
+				if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
+				{
+					int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
+					for(int k = 0; k < size_k; k ++)
+					{
+						level_list[n]->voxmesh_level->constraint_node_list[k]->force = force_list[no_record];
+
+						for(int i=0; i < level_list[n]->voxmesh_level->constraint_node_list[k]->duplicates.size(); ++i)
+						{
+							level_list[n]->voxmesh_level->constraint_node_list[k]->duplicates[i]->force = force_list[no_record];
+						}
+					}
+				}
+				//flag_exportObj = true;
+				//cout << force_list[no_record] << endl;
+			}
+			no_record ++;
+		}
+		else
+		{
+			//
+			//flag_exportObj = false;
+			cout << "end of redo!" << endl;
+			return true;
+		}
+	}
+	if (flag_redo && constraintType == Kernel::POSITION_CONSTRAINT)
+	{
+		if (no_record < force_list.size())
+		{
+			for (int n = 0; n < level_list.size(); n++)
+			{
+				if (!level_list[n]->voxmesh_level->constraint_node_list.empty())
+				{
+					int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
+					for(int k = 0; k < size_k; k ++)
+					{
+						level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = force_list[no_record];
+					}
+				}
+				//flag_exportObj = true;
+				//cout << force_list[no_record] << endl;
+			}
+			no_record ++;
+		}
+		else
+		{
+			//
+			//flag_exportObj = false;
+			cout << "end of redo!" << endl;
+			return true;
+		}
+	}
 	double PI = 3.14159265;
 	int idx_bottom = level_list.size() - 1;
 
@@ -6511,6 +6611,11 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 				<< " " << ni->coordinate(1) + ni->displacement(1) 
 				<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
 		}
+	}
+
+	if (flag_redo)
+	{
+		myHEnergy << level_list[idx_bottom]->voxmesh_level->new_energy << endl;
 	}
 	++time_step_index;
 	return true;

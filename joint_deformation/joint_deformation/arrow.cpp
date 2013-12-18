@@ -92,9 +92,9 @@ void arrow::setPosBeginEnd(float x1, float y1, float z1, float x2, float y2, flo
 	p_kernel->_posBegin(1) =  y1;
 	p_kernel->_posBegin(2) =  z1;
 
-	p_kernel->_posEnd(0) =  x2;
-	p_kernel->_posEnd(1) =  y2;
-	p_kernel->_posEnd(2) =  z2;
+	p_kernel->_posEnd(0) = x1 + 4*(x2 - x1) ;
+	p_kernel->_posEnd(1) = y1 + 4*(y2 - y1);
+	p_kernel->_posEnd(2) = z1 + 4*(z2 - z1);
 
 	Vector3d temp = p_kernel->_posEnd - p_kernel->_posBegin;
 	for (int i = 4; i < p_kernel->v_box_list.size(); ++i)
