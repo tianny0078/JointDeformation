@@ -102,6 +102,7 @@ public:
 	
 	void renderSelectSquare(int x1, int y1, int x2, int y2);
 	void renderForce();
+	void renderSurfaceNode();
 
 
 	// aux render function

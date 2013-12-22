@@ -115,7 +115,7 @@ struct Node: public HNPacketLockedMarshallHandler
 	int external_ele_idx;				
 	
 			
-	int index;
+	int idx;
 
 	// all the faces have this node
 	vector<Face*> incident_faces;		

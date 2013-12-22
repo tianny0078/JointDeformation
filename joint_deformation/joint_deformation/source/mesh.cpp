@@ -18,7 +18,7 @@ Node::Node()
 	external_node_idx = -1;
 	external_ele_idx = -1;
 
-	index = -1;
+	idx = -1;
 
 	coordinate = Vector3d::Zero();
 	displacement = Vector3d::Zero();
@@ -221,7 +221,7 @@ Cluster::Cluster()
 
 	alpha = 1.0;
 	beta = 0.0;
-	kappa = 0.0;
+	kappa = 0.1;
 
 	max_x = -1e10;
 	max_y = -1e10;
@@ -705,7 +705,7 @@ void Mesh::read(const char* filename)
 			min_z = new_node.coordinate(2) < min_z ? new_node.coordinate(2) : min_z;
 
 			node_list.push_back(new_node);
-			new_node.index = node_list.size() - 1;
+			new_node.idx = node_list.size() - 1;
 		}
 
 		// a line for face

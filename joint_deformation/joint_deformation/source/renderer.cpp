@@ -250,7 +250,7 @@ void Renderer::paintGL()
 
 		if(flag_show_test)
 		{
-			
+			renderSurfaceNode();
 			float target_color[3] = {1.0, 0.0, 0.0};
 			
 			Level * plevel = p_kernel->level_list[p_kernel->level_display];
@@ -1230,17 +1230,26 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 			}
 			for(i = 0; i < p_kernel->level_list.size(); i ++)
 			{
-
-				int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
-				Vector3d sum = Vector3d::Zero();
-				for(int k = 0; k < size_k; k ++)
-				{
-					sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
-				}
 				if(p_kernel->idx_constraint == 1)
+				{
+					int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
+					Vector3d sum = Vector3d::Zero();
+					for(int k = 0; k < size_k; k ++)
+					{
+						sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+					}
 					p_kernel->level_list[i]->voxmesh_level->constraint_center = sum / size_k;
+				}
 				else
+				{
+					int size_k = p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list.size();
+					Vector3d sum = Vector3d::Zero();
+					for(int k = 0; k < size_k; k ++)
+					{
+						sum += p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
+					}
 					p_kernel->level_list[i]->voxmesh_level->another_constraint_center = sum / size_k;
+				}
 				//cout << i << "constraint center: ";
 				//p_kernel->printVector3d(p_kernel->level_list[i]->voxmesh_level->constraint_center);
 				if(p_kernel->idx_constraint == 1)
@@ -1266,7 +1275,10 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 					cx += sprintf(msg+cx, "Level %d:  %d constraint nodes have been chosen\n", i, p_kernel->level_list[i]->voxmesh_level->another_constraint_node_list.size());
 				}
 			}
-
+			if(p_kernel->idx_constraint == 1)
+				p_kernel->constraint_first = p_kernel->level_list[l]->voxmesh_level->constraint_center;
+			else
+				p_kernel->constraint_second = p_kernel->level_list[l]->voxmesh_level->another_constraint_center;
 			QMessageBox::information(NULL, tr("success"), tr(msg));
 		}
 		if (flag_show_cube_static_constraints && last_mouse_button == Qt::RightButton && current_render_mode == REGULAR)
@@ -2020,7 +2032,8 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 										gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
 											&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
 
-
+										p_kernel->constraint_first = disp_center_after;
+										p_kernel->level_list[j]->voxmesh_level->constraint_center = disp_center_after;
 										LCS_translation = disp_center_after - disp_center_before;
 
 										for(int k = 0; k < size_k; k ++)
@@ -2056,7 +2069,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 										gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
 											&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
 
-
+										p_kernel->constraint_second = disp_center_after;
 										LCS_translation = disp_center_after - disp_center_before;
 
 										for(int k = 0; k < size_k; k ++)
@@ -2388,6 +2401,21 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 		{
 			p_kernel->myForce.close();
 			cout << "stop exporting force!" << endl;
+		}
+		break;
+	case Qt::Key_E:
+		p_kernel->flag_exportPosConstraint = !p_kernel->flag_exportPosConstraint;
+		if (p_kernel->flag_exportPosConstraint)
+		{
+			p_kernel->myForce.open("record_first.txt", ios::out);
+			p_kernel->myAnotherForce.open("record_second.txt", ios::out);
+			cout << "start exporting position!" << endl;
+		}	
+		else
+		{
+			p_kernel->myAnotherForce.close();
+			p_kernel->myForce.close();
+			cout << "stop exporting position!" << endl;
 		}
 		break;
 	default:
@@ -5288,6 +5316,21 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	//		renderCube(cube_size, p(0), p(1), p(2));
 	//	}
 	//}
+}
+
+void Renderer::renderSurfaceNode()
+{
+	// render selected nodes for anchor nodes
+	glColor3fv(anchor_node_color);
+	int l = p_kernel->level_list.size() - 1;
+	vector<Node*>::const_iterator n_iter = p_kernel->level_list[l]->voxmesh_level->surface_node_list.begin();
+	double cube_size = p_kernel->level_list[l]->voxmesh_level->vox_size *0.2;
+
+	for (; n_iter != p_kernel->level_list[l]->voxmesh_level->surface_node_list.end(); ++n_iter)
+	{
+		Vector3d p = (*n_iter)->target_position;
+		renderCube(cube_size, p(0), p(1), p(2));
+	}
 }
 
 void Renderer::setMass(double massValue)

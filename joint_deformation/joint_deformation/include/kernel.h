@@ -135,7 +135,8 @@ public:
 	//test the point outside cube
 	void test_findPointOutside();
 	void test();
-	
+	void setBeating(bool a);
+	void findSurfaceNode();
 public:
 	Simulator used_simulator;
 	PerformanceCounter * time_counter;
@@ -252,11 +253,17 @@ public:
 
 	//redo
 	Vector3d current_force;
+	Vector3d constraint_first;
+	Vector3d constraint_second;
 	vector<Vector3d> force_list;
+	vector<Vector3d> another_force_list;
 	int no_record;
 	bool flag_exportForce;
+	bool flag_exportPosConstraint;
 	bool flag_redo;
 	ofstream myForce;
+	ofstream myAnotherForce;
+	bool flag_beating;
 };
 
 

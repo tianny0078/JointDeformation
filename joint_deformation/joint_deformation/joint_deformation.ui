@@ -1718,6 +1718,32 @@
      <string>LoadForce</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_loadPosConstraint">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>650</y>
+      <width>101</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadPosConstraint</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_setBeating">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>680</y>
+      <width>147</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Beating</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -3191,6 +3217,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_loadPosConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadPosConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1087</x>
+     <y>715</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>754</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_setBeating</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setBeating(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1110</x>
+     <y>743</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>783</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -3272,5 +3330,8 @@
   <slot>saveConstraints2()</slot>
   <slot>loadAnchor4Naive()</slot>
   <slot>loadForce()</slot>
+  <slot>loadPosConstraint()</slot>
+  <slot>findSurfaceNode()</slot>
+  <slot>setBeating(bool)</slot>
  </slots>
 </ui>

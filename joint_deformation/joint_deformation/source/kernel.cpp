@@ -248,9 +248,13 @@ Kernel::Kernel()
 	f_cone_list.push_back(temp2);
 
 	flag_exportForce = false;
+	flag_exportPosConstraint = false;
 	no_record = 0;
 	current_force = Vector3d::Zero();
+	constraint_first = Vector3d::Zero();
+	constraint_second = Vector3d::Zero();
 	flag_redo = false;
+	flag_beating = false;
 }
 
 Kernel::~Kernel()
@@ -1611,6 +1615,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_0 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_1 == NULL)
@@ -1624,6 +1629,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_1 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_2 == NULL)
@@ -1637,6 +1643,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_2 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_3 == NULL)
@@ -1650,6 +1657,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_3 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_4 == NULL)
@@ -1663,6 +1671,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_4 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_5 == NULL)
@@ -1676,6 +1685,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_5 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_6 == NULL)
@@ -1689,6 +1699,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_6 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					if (new_vox.node_7 == NULL)
@@ -1702,6 +1713,7 @@ void Kernel::generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh)
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
 						new_vox.node_7 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 					}
 
 					// detect render surface
@@ -6009,6 +6021,84 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 			<< current_force(2) << endl;
 	}
 
+	if (flag_exportPosConstraint)
+	{
+		myForce << constraint_first(0) << " "
+			<< constraint_first(1) << " "
+			<< constraint_first(2) << endl;
+		myAnotherForce << constraint_second(0) << " "
+			<< constraint_second(1) << " "
+			<< constraint_second(2) << endl;
+	}
+
+	if (flag_beating)
+	{
+		int l = level_list.size() - 1;
+		
+		if (!level_list[l]->voxmesh_level->surface_node_list.empty())
+		{
+
+			int size_k = level_list[l]->voxmesh_level->surface_node_list.size();
+			for(int k = 0; k < size_k; k ++)
+			{
+				if ( (time_step_index%10) == 0 && !level_list[l]->voxmesh_level->surface_node_list[k]->flag_anchor_node && !level_list[l]->voxmesh_level->surface_node_list[l]->flag_constraint_node)
+				{
+					level_list[l]->voxmesh_level->surface_node_list[k]->force = p_mesh->mesh_center - level_list[l]->voxmesh_level->surface_node_list[k]->target_position;
+
+					for(int i=0; i < level_list[l]->voxmesh_level->surface_node_list[k]->duplicates.size(); ++i)
+					{
+						level_list[l]->voxmesh_level->surface_node_list[k]->duplicates[i]->force = p_mesh->mesh_center - level_list[l]->voxmesh_level->surface_node_list[k]->target_position;
+					}
+				}
+				else
+				{
+					level_list[l]->voxmesh_level->surface_node_list[k]->force = Vector3d::Zero();
+
+					for(int i=0; i < level_list[l]->voxmesh_level->surface_node_list[k]->duplicates.size(); ++i)
+					{
+						level_list[l]->voxmesh_level->surface_node_list[k]->duplicates[i]->force = Vector3d::Zero();
+					}
+				}
+			}
+		}
+		
+		/*
+		if (!level_list[l]->voxmesh_level->surface_vox_list.empty())
+		{
+
+			int size_k = level_list[l]->voxmesh_level->surface_vox_list.size();
+			for(int k = 0; k < size_k; k ++)
+			{
+				int idx = level_list[l]->voxmesh_level->surface_vox_list[k]->clusterid;
+
+				for (int j = 0; j < level_list[l]->voxmesh_level->cluster_list[idx].node_list.size(); j ++)
+				{
+					if ( (time_step_index%15) == 0 && !level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].mapped_node->flag_anchor_node && !level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].mapped_node->flag_constraint_node)
+					{
+						//level_list[l]->voxmesh_level->surface_node_list[k]->force = p_mesh->mesh_center - level_list[l]->voxmesh_level->surface_node_list[k]->target_position;
+
+						//for(int i=0; i < level_list[l]->voxmesh_level->surface_node_list[k]->duplicates.size(); ++i)
+						//{
+						//	level_list[l]->voxmesh_level->surface_node_list[k]->duplicates[i]->force = p_mesh->mesh_center - level_list[l]->voxmesh_level->surface_node_list[k]->target_position;
+						//}
+						level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].force = p_mesh->mesh_center - level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].target_position;
+					}
+					else
+					{
+						//level_list[l]->voxmesh_level->surface_node_list[k]->force = Vector3d::Zero();
+
+						//for(int i=0; i < level_list[l]->voxmesh_level->surface_node_list[k]->duplicates.size(); ++i)
+						//{
+						//	level_list[l]->voxmesh_level->surface_node_list[k]->duplicates[i]->force = Vector3d::Zero();
+						//}
+						level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].force = p_mesh->mesh_center - level_list[l]->voxmesh_level->cluster_list[idx].node_list[j].target_position;
+					}
+				}
+			}
+		}
+		*/
+	}
+
 	if (flag_redo && constraintType == Kernel::FORCE_CONSTRAINT)
 	{
 		if (no_record < force_list.size())
@@ -6052,13 +6142,27 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 					int size_k = level_list[n]->voxmesh_level->constraint_node_list.size();
 					for(int k = 0; k < size_k; k ++)
 					{
-						level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = force_list[no_record];
+						level_list[n]->voxmesh_level->constraint_node_list[k]->prescribed_position = level_list[n]->voxmesh_level->constraint_displacement[k] + force_list[no_record];
+					}
+				}
+				//flag_exportObj = true;
+				//cout << force_list[no_record] << endl;
+			}
+			for (int n = 0; n < level_list.size(); n++)
+			{
+				if (!level_list[n]->voxmesh_level->another_constraint_node_list.empty())
+				{
+					int size_k = level_list[n]->voxmesh_level->another_constraint_node_list.size();
+					for(int k = 0; k < size_k; k ++)
+					{
+						level_list[n]->voxmesh_level->another_constraint_node_list[k]->prescribed_position = level_list[n]->voxmesh_level->another_constraint_displacement[k] + another_force_list[no_record];
 					}
 				}
 				//flag_exportObj = true;
 				//cout << force_list[no_record] << endl;
 			}
 			no_record ++;
+			//flag_exportObj = true;
 		}
 		else
 		{
@@ -6245,7 +6349,7 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 							{
 								Vector3d _force = f_ni->force + force_gravity + force_wind;
 								f_ni->target_position = f_ni->target_position + time_step_size * time_step_size * _force * force_scalar;
-								f_ni->mapped_node->prescribed_position = f_ni->target_position;
+								//f_ni->mapped_node->prescribed_position = f_ni->target_position;
 							}
 						}
 						/////////////////////////////////////////////////////////////////////
@@ -8665,7 +8769,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_0 = &v_mesh->node_list.back();							
+						new_vox.node_0 = &v_mesh->node_list.back();
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;							
 						//if(count_cluster == 80)
 						//	cout << "node 0 created!" << endl;
 					}
@@ -8680,7 +8785,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_1 = &v_mesh->node_list.back();						
+						new_vox.node_1 = &v_mesh->node_list.back();		
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 1 created!" << endl;
 					}
@@ -8695,7 +8801,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_2 = &v_mesh->node_list.back();						
+						new_vox.node_2 = &v_mesh->node_list.back();		
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 2 created!" << endl;
 					}
@@ -8710,7 +8817,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_3 = &v_mesh->node_list.back();						
+						new_vox.node_3 = &v_mesh->node_list.back();	
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 3 created!" << endl;
 					}
@@ -8725,7 +8833,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_4 = &v_mesh->node_list.back();						
+						new_vox.node_4 = &v_mesh->node_list.back();		
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 4 created!" << endl;
 					}
@@ -8740,7 +8849,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_5 = &v_mesh->node_list.back();						
+						new_vox.node_5 = &v_mesh->node_list.back();	
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 5 created!" << endl;
 					}
@@ -8755,7 +8865,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_6 = &v_mesh->node_list.back();						
+						new_vox.node_6 = &v_mesh->node_list.back();	
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 6 created!" << endl;
 					}
@@ -8770,7 +8881,8 @@ void Kernel::generateVoxMeshFromParentMesh(const unsigned int* vol, VoxMesh * &v
 						new_node.static_position = new_node.coordinate;
 						new_node.target_position = new_node.coordinate;
 						v_mesh->node_list.push_back(new_node);
-						new_vox.node_7 = &v_mesh->node_list.back();						
+						new_vox.node_7 = &v_mesh->node_list.back();	
+						v_mesh->node_list.back().idx = v_mesh->node_list.size() - 1;
 						//if(count_cluster == 80)
 						//	cout << "node 7 created!" << endl;
 					}
@@ -13030,4 +13142,16 @@ void Kernel::test()
 	_rotation(2, 2) = cos(angle) + axis(2) * axis(2) * (1 - cos(angle));
 	cout << (_rotation * v2) << endl;
 	cout << (_rotation * v1) << endl;
+}
+
+void Kernel::findSurfaceNode()
+{
+	//int l = level_list.size() - 1;
+	//for (int i = 0; i < p_mesh->node_list.size(); i ++)
+	//{
+	//	for (int j = 0; j < 8; j++)
+	//	{
+	//		Node * temp = p_mesh->node_list[i].list_interpolation_nodes[j][l];
+	//	}
+	//}
 }

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon Dec 16 20:51:26 2013
+** Created: Thu Dec 19 23:57:33 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -210,6 +210,8 @@ public:
     QPushButton *pushButton_loadConstraint2;
     QPushButton *pushButton_saveConstraint2;
     QPushButton *pushButton_loadForce;
+    QPushButton *pushButton_loadPosConstraint;
+    QCheckBox *checkBox_setBeating;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -1074,6 +1076,12 @@ public:
         pushButton_loadForce = new QPushButton(centralWidget);
         pushButton_loadForce->setObjectName(QString::fromUtf8("pushButton_loadForce"));
         pushButton_loadForce->setGeometry(QRect(1050, 620, 91, 23));
+        pushButton_loadPosConstraint = new QPushButton(centralWidget);
+        pushButton_loadPosConstraint->setObjectName(QString::fromUtf8("pushButton_loadPosConstraint"));
+        pushButton_loadPosConstraint->setGeometry(QRect(1050, 650, 101, 23));
+        checkBox_setBeating = new QCheckBox(centralWidget);
+        checkBox_setBeating->setObjectName(QString::fromUtf8("checkBox_setBeating"));
+        checkBox_setBeating->setGeometry(QRect(1050, 680, 147, 17));
         joint_deformationClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(joint_deformationClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -1184,6 +1192,8 @@ public:
         QObject::connect(pushButton_loadConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(loadConstraints2()));
         QObject::connect(pushButton_saveConstraint2, SIGNAL(clicked()), joint_deformationClass, SLOT(saveConstraints2()));
         QObject::connect(pushButton_loadForce, SIGNAL(clicked()), joint_deformationClass, SLOT(loadForce()));
+        QObject::connect(pushButton_loadPosConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(loadPosConstraint()));
+        QObject::connect(checkBox_setBeating, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setBeating(bool)));
 
         tabWidget->setCurrentIndex(1);
 
@@ -1332,6 +1342,8 @@ public:
         pushButton_loadConstraint2->setText(QApplication::translate("joint_deformationClass", "LoadConstraint2", 0, QApplication::UnicodeUTF8));
         pushButton_saveConstraint2->setText(QApplication::translate("joint_deformationClass", "SaveConstraint2", 0, QApplication::UnicodeUTF8));
         pushButton_loadForce->setText(QApplication::translate("joint_deformationClass", "LoadForce", 0, QApplication::UnicodeUTF8));
+        pushButton_loadPosConstraint->setText(QApplication::translate("joint_deformationClass", "LoadPosConstraint", 0, QApplication::UnicodeUTF8));
+        checkBox_setBeating->setText(QApplication::translate("joint_deformationClass", "Beating", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

@@ -296,10 +296,17 @@ void joint_deformation::simulate()
 	{
 		char filenames[32];
 		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->num_obj);
-		p_kernel->exportToOBJ(filenames);
-		//p_kernel->exportToOBJ2Haptic(filenames);
+		//p_kernel->exportToOBJ(filenames);
+		p_kernel->exportToOBJ2Haptic(filenames);
 		p_kernel->num_obj ++;
 	}
+}
+
+void joint_deformation::setBeating(bool a)
+{
+	p_kernel->flag_beating = a;
+
+	ui.renderWidget->updateGL();
 }
 
 void joint_deformation::simulateNextStep()
@@ -1429,6 +1436,7 @@ void joint_deformation::loadConstraints()
 			p_kernel->level_list[i]->voxmesh_level->constraint_displacement.push_back(displacement);
 		}
 	}
+	p_kernel->constraint_first = p_kernel->level_list[l]->voxmesh_level->constraint_center;
 	char msg[1024];
 	int cx = 0;
 	for (int i = 0; i < p_kernel->level_list.size(); i++)
@@ -1571,11 +1579,11 @@ void joint_deformation::loadConstraints2()
 	int l = p_kernel->level_list.size() - 1;
 	for(int i = 0; i < p_kernel->level_list.size(); i ++)
 	{
-		int size_k = p_kernel->level_list[l]->voxmesh_level->constraint_node_list.size();
+		int size_k = p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list.size();
 		Vector3d sum = Vector3d::Zero();
 		for(int k = 0; k < size_k; k ++)
 		{
-			sum += p_kernel->level_list[l]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+			sum += p_kernel->level_list[l]->voxmesh_level->another_constraint_node_list[k]->prescribed_position;
 		}
 		p_kernel->level_list[i]->voxmesh_level->another_constraint_center = sum / size_k;
 		p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.clear();
@@ -1586,6 +1594,7 @@ void joint_deformation::loadConstraints2()
 			p_kernel->level_list[i]->voxmesh_level->another_constraint_displacement.push_back(displacement);
 		}
 	}
+	p_kernel->constraint_second = p_kernel->level_list[l]->voxmesh_level->another_constraint_center;
 	char msg[1024];
 	int cx = 0;
 	for (int i = 0; i < p_kernel->level_list.size(); i++)
@@ -1807,6 +1816,44 @@ void joint_deformation::loadForce()
 	}
 	p_kernel->flag_redo = true;
 	cout << "load force " << p_kernel->force_list.size() << endl;
+}
+
+void joint_deformation::loadPosConstraint()
+{
+	ifstream ifs("record_first.txt");
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		double x = atof(token);
+		token = strtok(NULL, " ");
+		double y = atof(token);
+		token = strtok(NULL, " ");
+		double z = atof(token);
+		p_kernel->force_list.push_back(Vector3d(x, y, z));
+	}
+	ifs.close();
+	token = NULL;
+	ifs.open("record_second.txt");	
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		double x = atof(token);
+		token = strtok(NULL, " ");
+		double y = atof(token);
+		token = strtok(NULL, " ");
+		double z = atof(token);
+		p_kernel->another_force_list.push_back(Vector3d(x, y, z));
+	}
+	p_kernel->flag_redo = true;
+	cout << "load Position  " << p_kernel->force_list.size() << endl;
 }
 void joint_deformation::setLeftSurface(bool a)
 {
