@@ -1855,6 +1855,24 @@ void joint_deformation::loadPosConstraint()
 	p_kernel->flag_redo = true;
 	cout << "load Position  " << p_kernel->force_list.size() << endl;
 }
+void joint_deformation::loadStep()
+{
+	ifstream ifs("rt.txt");
+	char line[1024];
+	char * token;
+	while (!ifs.eof())
+	{
+		ifs.getline(line, 1024);
+		if (strlen(line) == 0)
+			break;
+		token = strtok(line, " ");
+		int x = atoi(token);
+		p_kernel->step_list.push_back(x);
+	}
+	ifs.close();
+	cout << "load step  " << p_kernel->step_list.size() << endl;
+}
+
 void joint_deformation::setLeftSurface(bool a)
 {
 	ui.renderWidget->flag_left_surface = a;

@@ -6173,7 +6173,9 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 		}
 	}
 	double PI = 3.14159265;
-	int idx_bottom = level_list.size() - 1;
+	//int idx_bottom = level_list.size() - 1;
+	//yuan 1223//
+	int idx_bottom = 1;
 
 	for (int n = 0; n < level_list.size(); n++)
 	{
@@ -6341,6 +6343,17 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 
 						ci->a_pq = Matrix3d::Zero();
 						Vector3d p, q;
+						//yuan////////////////
+						if (flag_redo && i == iteration-1)
+						{
+							if(step_list[no_record-1] > n)
+								ci->flag_isRendering = false;
+							else if(step_list[no_record-1] == n)
+							{
+								ci->flag_isRendering = true;
+							}
+						}
+						//yuan////////////////
 						//////////////////////////////////////////////////////////////////// only for force
 						if(i == 0)
 						{
@@ -6361,7 +6374,6 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 							q = const_ni->coordinate - ci->original_center;
 							ci->a_pq += const_ni->mass * p * q.transpose();
 						}
-
 
 						ci->a = ci->a_pq * ci->a_qq;
 		
@@ -6505,6 +6517,39 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 						}
 					}//update for
 					time_counter->StopCounter();
+
+					//yuan////////////////
+					if (flag_redo && i == iteration-1)
+					{
+						vector<Cluster>::iterator ci = level_list[n]->voxmesh_level->cluster_list.begin();
+						for (; ci != level_list[n]->voxmesh_level->cluster_list.end(); ++ci)
+						{
+							if(ci->flag_isRendering)
+							{
+							    //computing energy
+								double cEnergy = 0.0;
+								for(vector<DuplicatedNode>::const_iterator const_ni = ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
+								{
+									cEnergy += pow((const_ni->static_position(0) - const_ni->target_position(0)), 2);
+									cEnergy += pow((const_ni->static_position(1) - const_ni->target_position(1)), 2);
+									cEnergy += pow((const_ni->static_position(2) - const_ni->target_position(2)), 2);
+								}
+								if (cEnergy > energyThreshold)
+								{
+									if (ci->cluster_list_children.size() > 0)
+									{
+										ci->flag_isRendering = false;
+										for (int i = 0; i < ci->cluster_list_children.size(); i++)
+										{
+											ci->cluster_list_children[i]->flag_isRendering = true;
+										}
+									}
+								}
+							}
+						}
+					}
+					//yuan////////////////
+
 					//cout << time_counter->GetElapsedTime() << endl;
 					/*
 					VoxMesh * pVM = level_list[n]->voxmesh_level;
@@ -6649,7 +6694,9 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 	time_counter->StopCounter();
 	//cout << time_counter->GetElapsedTime() << endl;
 	time_counter->StartCounter();
-	int num_last = level_list.size()-1;
+	//yuan//
+	//int num_last = level_list.size()-1;
+	int num_last = 1;
 	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
 	{
 		nmi->displacement.setZero();
@@ -6659,8 +6706,9 @@ bool Kernel::simulateNextStep4HSMForce4StepFirst()
 		}
 	}
 
-	time_counter->StopCounter();
-	//cout << time_counter->GetElapsedTime() << endl;
+	//time_counter->StopCounter();
+	////cout << time_counter->GetElapsedTime() << endl;
+	//yuan
 
 	//networking
 	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
@@ -10557,15 +10605,18 @@ void Kernel::generatePerVoxCluster4Level(VoxMesh* &vm, VoxMesh* &parent_mesh)
 	{
 		ci->cluster_list_children.clear();
 	}
-	for (int i = 0; i < level_list.size() - 1; i ++)
+	if (level_list.size() <= 2)
 	{
-		for (ci = level_list[i]->voxmesh_level->cluster_list.begin(); ci != level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
+		for (int i = 0; i < level_list.size() - 1; i ++)
 		{
-			ci->leaf_list.clear();
-			ci->leaf_parameter.clear();
-			ci->term_normlize = 1.0;
-		}
+			for (ci = level_list[i]->voxmesh_level->cluster_list.begin(); ci != level_list[i]->voxmesh_level->cluster_list.end(); ++ci)
+			{
+				ci->leaf_list.clear();
+				ci->leaf_parameter.clear();
+				ci->term_normlize = 1.0;
+			}
 
+		}
 	}
 
 	if(!vm->cluster_list.empty())
@@ -10668,11 +10719,15 @@ void Kernel::generatePerVoxCluster4Level(VoxMesh* &vm, VoxMesh* &parent_mesh)
 			vm->cluster_list.back().super_parent_cluster = parent_mesh->cluster_list[vi->parent_vox->clusterid].super_parent_cluster;
 
 		//vm->cluster_list.back().super_parent_cluster->leaf_list.push_back(&vm->cluster_list.back());
-		Cluster * pParent = vm->cluster_list.back().parent_cluster;
-		while(pParent != NULL)
+		//yuan//
+		if (level_list.size() <= 2)
 		{
-			pParent->leaf_list.push_back(&vm->cluster_list.back());
-			pParent = pParent->parent_cluster;
+			Cluster * pParent = vm->cluster_list.back().parent_cluster;
+			while(pParent != NULL)
+			{
+				pParent->leaf_list.push_back(&vm->cluster_list.back());
+				pParent = pParent->parent_cluster;
+			}
 		}
 		/////
 		//vm->cluster_list.back().parent_cluster = vi->parent_vox->pcluster;
@@ -10749,33 +10804,38 @@ void Kernel::generatePerVoxCluster4Level(VoxMesh* &vm, VoxMesh* &parent_mesh)
 				translation = T_all[0];
 			}
 			*/
-	for(int li = 0; li < level_list.size()-1; li ++)
+	//yuan//
+	if (level_list.size() <= 2)
 	{
-		for (ci = level_list[li]->voxmesh_level->cluster_list.begin(); ci != level_list[li]->voxmesh_level->cluster_list.end(); ++ci)
+		for(int li = 0; li < level_list.size()-1; li ++)
 		{
-			double sum = 0.0;
-			int sizeLeaf = ci->leaf_list.size();
-			//compute interpolation params
-			int i_l = 0;
-			for (i_l = 0; i_l < sizeLeaf; i_l++)
+			for (ci = level_list[li]->voxmesh_level->cluster_list.begin(); ci != level_list[li]->voxmesh_level->cluster_list.end(); ++ci)
 			{
-				double para = 0.0;
-				para += pow((ci->current_center(0) - ci->leaf_list[i_l]->current_center(0)), 2);
-				para += pow((ci->current_center(1) - ci->leaf_list[i_l]->current_center(1)), 2);
-				para += pow((ci->current_center(2) - ci->leaf_list[i_l]->current_center(2)), 2);
+				double sum = 0.0;
+				int sizeLeaf = ci->leaf_list.size();
+				//compute interpolation params
+				int i_l = 0;
+				for (i_l = 0; i_l < sizeLeaf; i_l++)
+				{
+					double para = 0.0;
+					para += pow((ci->current_center(0) - ci->leaf_list[i_l]->current_center(0)), 2);
+					para += pow((ci->current_center(1) - ci->leaf_list[i_l]->current_center(1)), 2);
+					para += pow((ci->current_center(2) - ci->leaf_list[i_l]->current_center(2)), 2);
 
-				if(para == 0)
-					para = 0.0001;
+					if(para == 0)
+						para = 0.0001;
 
-				para = 1.0 / para;
+					para = 1.0 / para;
 
 			
-				ci->leaf_parameter.push_back(para);
-				sum += para;
+					ci->leaf_parameter.push_back(para);
+					sum += para;
+				}
+				ci->term_normlize = sum;
 			}
-			ci->term_normlize = sum;
 		}
 	}
+	//yuan//
 
 
 	vector<Node>::const_iterator niter = vm->node_list.begin();

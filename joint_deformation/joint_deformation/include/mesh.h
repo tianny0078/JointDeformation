@@ -532,6 +532,7 @@ struct Cluster
 
 	Vector3d linear_displacement;
 	Matrix3d angular_displacement;
+	bool flag_isRendering;
 	//Quaterniond angular_displacement;
 };
 

@@ -264,6 +264,7 @@ public:
 	ofstream myForce;
 	ofstream myAnotherForce;
 	bool flag_beating;
+	vector<int> step_list;
 };
 
 

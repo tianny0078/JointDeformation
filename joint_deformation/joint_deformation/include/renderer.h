@@ -81,6 +81,7 @@ public:
 
 	//rendering for level
 	void renderLevelVoxMesh(const Level * plevel);
+	void renderLevelVoxMesh4Static(const Level * plevel);
 	void renderLevelStaticPosition(const Level * plevel, float * level_color, int showNum1, int showNum2);
 	void renderLevelStaticPosition(const Level * plevel, float * level_color);
 	void renderNeighborStaticPosition(const Level * plevel, int showNumNeighbor);
@@ -88,7 +89,9 @@ public:
 	void renderLevelVertex(const Mesh * m, const Level * plevel, int showVertexIndex);
 	void renderLevelVox(const Level * plevel, int showVoxIdx[]);
 	void renderVoxSurfaceBoundary(Vox * pVox, float * pColor);
-	void renderVoxSurface(Vox * pVox, float * pColor);
+	void renderVoxSurface(Vox * pVox, float * pColor);	
+	void renderVoxSurfaceBoundary4Static(Vox * pVox, float * pColor);
+	void renderVoxSurface4Static(Vox * pVox, float * pColor);
 	
 	
 	//void renderMeshForSelectAnchorNode(const Mesh* m);

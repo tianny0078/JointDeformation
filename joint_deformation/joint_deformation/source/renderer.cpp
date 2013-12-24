@@ -250,10 +250,13 @@ void Renderer::paintGL()
 
 		if(flag_show_test)
 		{
-			renderSurfaceNode();
+			//renderSurfaceNode();
 			float target_color[3] = {1.0, 0.0, 0.0};
 			
-			Level * plevel = p_kernel->level_list[p_kernel->level_display];
+			for (int i = 0; i<p_kernel->level_list.size(); i++)
+			{
+				renderLevelVoxMesh4Static(p_kernel->level_list[i]);
+			}
 			/*
 			//renderLevelStaticPosition(plevel, target_color, showNum1, showNum2);
 			///////////////////////display neighbor
@@ -5128,6 +5131,467 @@ void Renderer::renderVoxSurface(Vox * pVox, float * pColor)
 
 	glEnd();
 }
+void Renderer::renderVoxSurfaceBoundary4Static(Vox * pVox, float * pColor)
+{
+	glColor3fv(pColor);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Vector3d p0, p1, p2, p3, n1, n2, n;
+		glBegin(GL_QUADS);
+
+		if (pVox->flag_top_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			*/
+			p0 = pVox->node_0->static_position;
+			p1 = pVox->node_3->static_position;
+			p2 = pVox->node_2->static_position;
+			p3 = pVox->node_1->static_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_bottom_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			*/
+
+			p0 = pVox->node_4->static_position;
+			p1 = pVox->node_5->static_position;
+			p2 = pVox->node_6->static_position;
+			p3 = pVox->node_7->static_position;
+			
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+
+		if (pVox->flag_left_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			*/
+
+			p0 = pVox->node_0->static_position;
+			p1 = pVox->node_4->static_position;
+			p2 = pVox->node_7->static_position;
+			p3 = pVox->node_3->static_position;
+
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_right_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			*/
+
+			p0 = pVox->node_1->static_position;
+			p1 = pVox->node_2->static_position;
+			p2 = pVox->node_6->static_position;
+			p3 = pVox->node_5->static_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_front_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+			p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+			p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+			p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+			*/
+			
+			p0 = pVox->node_2->static_position;
+			p1 = pVox->node_3->static_position;
+			p2 = pVox->node_7->static_position;
+			p3 = pVox->node_6->static_position;
+			
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		if (pVox->flag_back_face)
+		{
+			/*
+			p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+			p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+			p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+			p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+			*/
+
+			p0 = pVox->node_0->static_position;
+			p1 = pVox->node_1->static_position;
+			p2 = pVox->node_5->static_position;
+			p3 = pVox->node_4->static_position;
+
+			Vector3d p10 = p1 - p1;
+			Vector3d p30 = p3 - p0;
+
+			n1 = p10.cross(p30);
+			n1.normalize();
+
+			Vector3d p12 = p1 - p2;
+			Vector3d p32 = p3 - p2;
+
+			n2 = p12.cross(p32);
+			n2.normalize();
+
+			n = n1 + n2;
+			n.normalize();
+
+			glNormal3d(n[0], n[1], n[2]);
+
+			glVertex3d(p0[0], p0[1], p0[2]);
+			glVertex3d(p1[0], p1[1], p1[2]);
+			glVertex3d(p2[0], p2[1], p2[2]);
+			glVertex3d(p3[0], p3[1], p3[2]);
+		}
+
+		glEnd();
+}
+void Renderer::renderVoxSurface4Static(Vox * pVox, float * pColor)
+{
+	glColor4f(pColor[0], pColor[1], pColor[2], 0.2);
+	glPolygonMode(GL_FRONT, GL_FILL);
+	Vector3d p0, p1, p2, p3, n1, n2, n;
+	glBegin(GL_QUADS);
+
+	if (pVox->flag_top_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		p2 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p3 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		*/
+		p0 = pVox->node_0->static_position;
+		p1 = pVox->node_3->static_position;
+		p2 = pVox->node_2->static_position;
+		p3 = pVox->node_1->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_bottom_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		p1 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		p3 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		*/
+
+		p0 = pVox->node_4->static_position;
+		p1 = pVox->node_5->static_position;
+		p2 = pVox->node_6->static_position;
+		p3 = pVox->node_7->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+
+	if (pVox->flag_left_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		p3 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		*/
+
+		p0 = pVox->node_0->static_position;
+		p1 = pVox->node_4->static_position;
+		p2 = pVox->node_7->static_position;
+		p3 = pVox->node_3->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_right_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		p1 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p2 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		p3 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		*/
+		p0 = pVox->node_1->static_position;
+		p1 = pVox->node_2->static_position;
+		p2 = pVox->node_6->static_position;
+		p3 = pVox->node_5->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_front_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_2->coordinate + (*vox_iter)->node_2->displacement;
+		p1 = (*vox_iter)->node_3->coordinate + (*vox_iter)->node_3->displacement;
+		p2 = (*vox_iter)->node_7->coordinate + (*vox_iter)->node_7->displacement;
+		p3 = (*vox_iter)->node_6->coordinate + (*vox_iter)->node_6->displacement;
+		*/
+
+		p0 = pVox->node_2->static_position;
+		p1 = pVox->node_3->static_position;
+		p2 = pVox->node_7->static_position;
+		p3 = pVox->node_6->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	if (pVox->flag_back_face)
+	{
+		/*
+		p0 = (*vox_iter)->node_0->coordinate + (*vox_iter)->node_0->displacement;
+		p1 = (*vox_iter)->node_1->coordinate + (*vox_iter)->node_1->displacement;
+		p2 = (*vox_iter)->node_5->coordinate + (*vox_iter)->node_5->displacement;
+		p3 = (*vox_iter)->node_4->coordinate + (*vox_iter)->node_4->displacement;
+		*/
+		p0 = pVox->node_0->static_position;
+		p1 = pVox->node_1->static_position;
+		p2 = pVox->node_5->static_position;
+		p3 = pVox->node_4->static_position;
+
+		Vector3d p10 = p1 - p1;
+		Vector3d p30 = p3 - p0;
+
+		n1 = p10.cross(p30);
+		n1.normalize();
+
+		Vector3d p12 = p1 - p2;
+		Vector3d p32 = p3 - p2;
+
+		n2 = p12.cross(p32);
+		n2.normalize();
+
+		n = n1 + n2;
+		n.normalize();
+
+		glNormal3d(n[0], n[1], n[2]);
+
+		glVertex3d(p0[0], p0[1], p0[2]);
+		glVertex3d(p1[0], p1[1], p1[2]);
+		glVertex3d(p2[0], p2[1], p2[2]);
+		glVertex3d(p3[0], p3[1], p3[2]);
+	}
+
+	glEnd();
+}
 void Renderer::renderLevelVoxMesh(const Level * plevel)
 {
 	if(plevel->voxmesh_level == NULL)
@@ -5316,6 +5780,40 @@ void Renderer::renderLevelVoxMesh(const Level * plevel)
 	//		renderCube(cube_size, p(0), p(1), p(2));
 	//	}
 	//}
+}
+
+void Renderer::renderLevelVoxMesh4Static(const Level * plevel)
+{
+	if(plevel->voxmesh_level == NULL)
+		return;
+
+	VoxMesh* vm = plevel->voxmesh_level;
+	if (!vm->num_surface_vox)
+	{
+		return;
+	}
+	double v_dim = vm->vox_size * 0.5;
+	double cube_size = v_dim*0.2;
+	//double cube_size = (1.0/20.0)*0.1;
+
+
+
+	vector<Vox*>::const_iterator vox_iter = vm->surface_vox_list.begin();
+	//cout << "surface vox number " << vm->surface_vox_list.size() << endl;
+
+	for (; vox_iter!=vm->surface_vox_list.end(); ++vox_iter)
+	{
+		if(plevel->voxmesh_level->cluster_list[(*vox_iter)->clusterid].flag_isRendering)
+			renderVoxSurfaceBoundary((*vox_iter), vox_mesh_color);
+	}
+
+
+	vox_iter = vm->surface_vox_list.begin();
+	for (; vox_iter!=vm->surface_vox_list.end(); ++vox_iter)
+	{
+		if(plevel->voxmesh_level->cluster_list[(*vox_iter)->clusterid].flag_isRendering)
+			renderVoxSurface((*vox_iter), vox_mesh_color);
+	}
 }
 
 void Renderer::renderSurfaceNode()

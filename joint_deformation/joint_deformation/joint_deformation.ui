@@ -1744,6 +1744,19 @@
      <string>Beating</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_loadStep">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>620</y>
+      <width>101</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LoadStep</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -3249,6 +3262,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_loadStep</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>loadStep()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1193</x>
+     <y>689</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1187</x>
+     <y>710</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -3333,5 +3362,6 @@
   <slot>loadPosConstraint()</slot>
   <slot>findSurfaceNode()</slot>
   <slot>setBeating(bool)</slot>
+  <slot>loadStep()</slot>
  </slots>
 </ui>

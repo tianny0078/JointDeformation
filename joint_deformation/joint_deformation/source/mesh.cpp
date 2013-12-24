@@ -251,6 +251,9 @@ Cluster::Cluster()
 	super_parent_cluster = NULL;
 	term_normlize = 1.0;
 
+
+	flag_isRendering = false;
+
 }
 
 Cluster::~Cluster()
