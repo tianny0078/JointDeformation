@@ -193,7 +193,7 @@ void Renderer::paintGL()
 		if (flag_show_mesh && p_kernel->flag_mesh_ready)
 		{
 			renderMesh(p_kernel->p_mesh);
-
+			/*
 			glColor3f(0.0, 1.0, 0.0);
 			glPushMatrix();
 			glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
@@ -204,6 +204,7 @@ void Renderer::paintGL()
 			glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
 			glutSolidSphere(0.03, 16, 16);
 			glPopMatrix();
+			*/
 		}
 
 		if (flag_show_grid)
