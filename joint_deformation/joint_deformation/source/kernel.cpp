@@ -5965,6 +5965,7 @@ bool Kernel::simulateNextStep4HSMForce4Step()
 
 bool Kernel::simulateNextStep4HSMForce4StepFirst()
 {
+
 	/////////////////////////////////////////////////////////////////////////////////
 	//test whether quaternion is the same as rotation matrix.
 	//Matrix3d r1 = level_list[n-1]->voxmesh_level->cluster_list[ci->vox_list[0]->list_near_parentVox[p]->clusterid].r;
