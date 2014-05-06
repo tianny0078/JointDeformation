@@ -182,6 +182,7 @@
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\joint_deformation.cpp" />
     <ClCompile Include="source\kernel.cpp" />
+    <ClCompile Include="source\lattice.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\mesh.cpp" />
     <ClCompile Include="source\renderer.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="include\HSMReceiver.h" />
     <ClInclude Include="include\HSMTransmitter.h" />
     <ClInclude Include="include\kernel.h" />
+    <ClInclude Include="include\lattice.h" />
     <ClInclude Include="include\mesh.h" />
     <ClInclude Include="include\network\HNCaptureDevice.h" />
     <ClInclude Include="include\network\HNCommunicator.h" />
