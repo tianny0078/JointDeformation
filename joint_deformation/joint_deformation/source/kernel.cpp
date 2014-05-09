@@ -13,6 +13,7 @@ Kernel::Kernel()
 	p_mesh = new Mesh;
 	p_mesh_low = new Mesh;
 	p_vox_mesh = new VoxMesh;
+	p_body = new Body;
 	grid_density = 1;
 	num_sim_vox = 0;
 	num_surface_vox = 0;
@@ -2125,6 +2126,55 @@ void Kernel::generatePerVoxCluster(VoxMesh* &vm)
 		temp += niter->duplicates.size();
 	}
 	vm->num_pair = temp;
+}
+
+void Kernel::generatePerRegionParticle(VoxMesh *vm)
+{
+	for (vox_iterator vi=vm->vox_list.begin(); vi!=vm->vox_list.end(); ++vi)
+	{
+		//node 0
+		Point3 idx = Point3(vi->coord_grid(2), vi->coord_grid(1)+1, vi->coord_grid(0));
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_0);
+		//node 1
+		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1)+1, vi->coord_grid(0));
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_1);
+		//node 2
+		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1)+1, vi->coord_grid(0)+1);
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_2);
+		//node 3
+		idx = Point3(vi->coord_grid(2), vi->coord_grid(1)+1, vi->coord_grid(0)+1);
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_3);
+		//node 4
+		idx = Point3(vi->coord_grid(2), vi->coord_grid(1), vi->coord_grid(0));
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_4);
+		//node 5
+		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1), vi->coord_grid(0));
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_5);
+		//node 6
+		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1), vi->coord_grid(0)+1);
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_6);
+		//node 7
+		idx = Point3(vi->coord_grid(2), vi->coord_grid(1), vi->coord_grid(0)+1);
+		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		if(found == p_body->lattice.end())
+			p_body->AddParticle(idx, vi->node_7);
+	}
+	printf("Adding %d, %d particles into the body.", p_body->latticeLocations.size(), p_body->_particles.size());
+	p_body->Finalize();
 }
 
 void Kernel::initializeSimulator()
@@ -8635,6 +8685,9 @@ void Kernel::generateVoxMesh4Level(int level, int d)
 		//link also
 		//if(p_mesh->mesh_simplified)
 			//linkMesh_VolMesh(p_mesh->mesh_simplified, p_vox_mesh, d);
+
+		//flsm
+		generatePerRegionParticle(p_vox_mesh);
 		
 	}
 	else{

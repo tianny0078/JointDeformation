@@ -27,6 +27,7 @@
 #include "Eigen/Geometry"
 
 #include "mesh.h"
+#include "lattice.h"//flsm
 #include <time.h>
 #include <stdlib.h>
 
@@ -41,7 +42,8 @@ class Kernel
 public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
 		MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, 
-		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP, HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2} Simulator;
+		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP, 
+		HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2, FLSM_ORIGINAL} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -79,6 +81,7 @@ public:
 
 	void generateVoxMesh(const unsigned int* vol, int dim, VoxMesh* &v_mesh);
 	void generatePerVoxCluster(VoxMesh* &vm);																// each voxel corresponding a cluster
+	void generatePerRegionParticle(VoxMesh *vm);
 	bool simulateNextStep();
 	bool simulateNextStep4ShapeMatching();
 	bool simulateNextStep4VelocityMatching();
@@ -148,10 +151,12 @@ public:
 	bool flag_simulator_ready;
 	bool flag_network_ready;
 	
+	//data
 	Mesh* p_mesh;
 	Mesh* p_mesh_low;
 	VoxMesh* p_vox_mesh;
 	unsigned int* p_voxel;
+	Body* p_body;//flsm
 
 	int grid_density;
 	int num_sim_vox;

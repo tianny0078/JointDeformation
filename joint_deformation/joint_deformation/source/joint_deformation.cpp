@@ -617,6 +617,13 @@ void joint_deformation::chooseSimulator(int t)
 		ui.comboBox_level->setDisabled(false);
 		ui.pushButton_addLevel->setDisabled(false);
 		break;
+	case 16:
+		p_kernel->used_simulator = Kernel::FLSM_ORIGINAL;
+		p_kernel->clearAllLevel();
+		//enable some parts of UI.
+		ui.comboBox_level->clear();
+		ui.comboBox_level->addItem("Level 0");
+		ui.comboBox_level->setDisabled(false);
 	default:
 		break;
 	}
