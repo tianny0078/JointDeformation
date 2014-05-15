@@ -7,6 +7,7 @@
 
 Node::Node()
 {
+	lp = NULL;
 	
 	flag_visited = false;
 	flag_anchor_node = false;

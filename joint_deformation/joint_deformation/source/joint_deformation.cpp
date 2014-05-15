@@ -822,6 +822,12 @@ void joint_deformation::setWindMagnitude()
 	p_kernel->wind_magnitude = ui.lineEdit_windMagnitude->text().toDouble();
 }
 
+void joint_deformation::testFLRegion()
+{
+	ui.renderWidget->idx_FLRegion = ui.spinBox_gridDensity_vertex->text().toInt();
+	ui.renderWidget->updateGL();
+}
+
 void joint_deformation::setTimesShapeMatching()
 {
 	int d = ui.spinBox_TimesShapeMatching->value();
@@ -1900,5 +1906,12 @@ void joint_deformation::setRightSurface(bool a)
 		ui.actionLeftSurface->setChecked(false);
 		ui.renderWidget->flag_left_surface = false;
 	}
+	ui.renderWidget->updateGL();
+}
+
+void joint_deformation::setW()
+{
+	p_kernel->p_body->w = ui.lineEdit_W->text().toInt();
+	p_kernel->generatePerRegionParticle(p_kernel->p_vox_mesh);
 	ui.renderWidget->updateGL();
 }

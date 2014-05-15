@@ -111,6 +111,9 @@ public slots:
 	void loadPosConstraint();
 	void setBeating(bool);
 	void loadStep();
+
+	void testFLRegion();
+	void setW();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;

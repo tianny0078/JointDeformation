@@ -8,12 +8,15 @@
  
 Kernel::Kernel()
 {
+
 	used_simulator = UNDEFINED;
 	constraintType = FORCE_CONSTRAINT;
 	p_mesh = new Mesh;
 	p_mesh_low = new Mesh;
 	p_vox_mesh = new VoxMesh;
 	p_body = new Body;
+	//p_body->w = 2;
+
 	grid_density = 1;
 	num_sim_vox = 0;
 	num_surface_vox = 0;
@@ -2130,6 +2133,9 @@ void Kernel::generatePerVoxCluster(VoxMesh* &vm)
 
 void Kernel::generatePerRegionParticle(VoxMesh *vm)
 {
+	p_body->clearRegions();
+	p_body->clearParticles();
+
 	for (vox_iterator vi=vm->vox_list.begin(); vi!=vm->vox_list.end(); ++vi)
 	{
 		//node 0
@@ -2139,41 +2145,41 @@ void Kernel::generatePerRegionParticle(VoxMesh *vm)
 			p_body->AddParticle(idx, vi->node_0);
 		//node 1
 		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1)+1, vi->coord_grid(0));
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_1);
 		//node 2
 		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1)+1, vi->coord_grid(0)+1);
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_2);
 		//node 3
 		idx = Point3(vi->coord_grid(2), vi->coord_grid(1)+1, vi->coord_grid(0)+1);
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_3);
 		//node 4
 		idx = Point3(vi->coord_grid(2), vi->coord_grid(1), vi->coord_grid(0));
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_4);
 		//node 5
 		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1), vi->coord_grid(0));
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_5);
 		//node 6
 		idx = Point3(vi->coord_grid(2)+1, vi->coord_grid(1), vi->coord_grid(0)+1);
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_6);
 		//node 7
 		idx = Point3(vi->coord_grid(2), vi->coord_grid(1), vi->coord_grid(0)+1);
-		std::map<Point3, LatticeLocation*>::iterator found = p_body->lattice.find(idx);
+		found = p_body->lattice.find(idx);
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_7);
 	}
-	printf("Adding %d, %d particles into the body.", p_body->latticeLocations.size(), p_body->_particles.size());
+	printf("Adding %d particles, %d regions into the body.", p_body->latticeLocations.size(), p_body->latticeLocationsWithExistentRegions.size());
 	p_body->Finalize();
 }
 
@@ -2529,6 +2535,14 @@ void Kernel::initializeSimulator()
 			}
 		}
 
+		flag_simulator_ready = true;
+		break;
+	case FLSM_ORIGINAL:
+
+		//for each(Node * n in level_list[0]->voxmesh_level->anchor_node_list)
+		//{
+		//	n->lp->_mass = 10000.0;
+		//}
 		flag_simulator_ready = true;
 		break;
 	}
@@ -5289,6 +5303,22 @@ bool Kernel::simulateNextStep4HSMOriginal()
 
 bool Kernel::simulateNextStep4HSMAdaptiveStep()
 {
+	return true;
+}
+
+bool Kernel::simulateNextStep4FLSMOriginal()
+{
+	p_body->ShapeMatch();
+	p_body->CalculateParticleVelocities(time_step_size);
+	//p_body->PerformRegionDamping();
+	p_body->ApplyParticleVelocities(time_step_size);
+	p_body->SetNodePosition();
+	//constraint node
+	for each(Node * n in level_list[0]->voxmesh_level->constraint_node_list)
+	{
+		n->lp->_f = n->force;
+	}
+	++time_step_index;
 	return true;
 }
 
@@ -8561,6 +8591,8 @@ bool Kernel::simulateNextStep()
 		return simulateNextStep4HSMForce4StepFirst1();
 	case HSM_FORCE4STEP_FIRST2:
 		return simulateNextStep4HSMForce4StepFirst2();
+	case FLSM_ORIGINAL:
+		return simulateNextStep4FLSMOriginal();
 	default:
 		return false;
 		break;

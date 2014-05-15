@@ -14,19 +14,16 @@ Class LatticeLocation represents the location of lattice which includes the poin
 
 by Yuan Tian
 */
-#ifndef LATTICE_H
-#define LATTICE_H
-
-#include "mesh.h"
+#pragma once
 #include <map>
+#include "mesh.h"
 using namespace std;
-using namespace Eigen;
 
 class Point3;
 class Summation;
 class LatticeRegion;
-class LatticeParticle;
 class LatticeLocation;
+class LatticeParticle;
 class Body;
 
 // The actual elements of data that must be summmed. These elements will be
@@ -187,7 +184,7 @@ public:
 	Matrix3d A;
 	Matrix3d _eigenVectors; // Cached to warm-start Jacobi iterations for polar decomposition - see Extensions section of FastLSM paper
 	Vector3d _t;
-	Vector3d _R;
+	Matrix3d _R;
 };
 
 class LatticeParticle:public Summation{
@@ -270,6 +267,8 @@ public:
 	void CalculateParticleVelocities(float h);
 	void PerformRegionDamping();
 	void ApplyParticleVelocities(float h);
+	void ApplyGravity();
+	void SetNodePosition();
 	//void DoFracturing();
 
 	// Fast summation
@@ -281,8 +280,11 @@ public:
 	void CalculateInvariants();
 	//void RebuildRegions(std::vector<LatticeLocation*> &regen);		// Used in fracturing
 	LatticeLocation *GetLatticeLocation(Point3 index);
+	Matrix3d MrMatrix(Vector3d v);//return v*v'
+
+	//clear
+	void clearParticles();
+	void clearRegions();
+	void resetW();
 };
 
-
-
-#endif

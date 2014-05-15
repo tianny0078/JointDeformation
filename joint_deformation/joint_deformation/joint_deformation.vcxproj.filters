@@ -33,6 +33,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;cxx;c;def</Extensions>
     </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{6833caed-beab-459d-b2a0-a661ae7f7d95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_joint_deformation.cpp">
@@ -106,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="source\lattice.cpp">
       <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\jacobi.cpp">
+      <Filter>Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +257,12 @@
     </ClInclude>
     <ClInclude Include="include\lattice.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\jacobi.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\InvSqrt.h">
+      <Filter>Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

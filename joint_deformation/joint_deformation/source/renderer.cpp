@@ -96,6 +96,8 @@ Renderer::Renderer(QWidget *parent)
 	flag_right_surface = false;
 
 	myArrow = NULL;
+
+	idx_FLRegion = 0;
 }
 
 Renderer::~Renderer()
@@ -251,13 +253,24 @@ void Renderer::paintGL()
 
 		if(flag_show_test)
 		{
-			//renderSurfaceNode();
-			float target_color[3] = {1.0, 0.0, 0.0};
-			
-			for (int i = 0; i<p_kernel->level_list.size(); i++)
-			{
-				renderLevelVoxMesh4Static(p_kernel->level_list[i]);
-			}
+			//////////////////////////////////////////////////////////////////////////
+			///// test if flsm region is right
+			//////////////////////////////////////////////////////////////////////////
+			float color[] = {1.0, 0.0, 0.0};
+			renderFLParticle4Region(idx_FLRegion,color);
+			//////////////////////////////////////////////////////////////////////////
+
+			/////////////////////////////////////////////////////////////////
+			///////// Render last level clusters to show the multi-resolution
+			//////////////////////////////////////////////////////////////////
+			//float target_color[3] = {1.0, 0.0, 0.0};
+			//
+			//for (int i = 0; i<p_kernel->level_list.size(); i++)
+			//{
+			//	renderLevelVoxMesh4Static(p_kernel->level_list[i]);
+			//}
+			/////////////////////////////////////////////////
+
 			/*
 			//renderLevelStaticPosition(plevel, target_color, showNum1, showNum2);
 			///////////////////////display neighbor
@@ -1903,6 +1916,7 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				case Kernel::HSM_FORCE4STEP_FIRST:
 				case Kernel::HSM_FORCE4STEP_FIRST1:
 				case Kernel::HSM_FORCE4STEP_FIRST2:
+				case Kernel::FLSM_ORIGINAL:
 					//single point
 					if (p_kernel->p_vox_mesh->active_node)
 					{
@@ -4601,6 +4615,40 @@ void Renderer::renderLevelVertex(const Mesh * m, const Level * plevel, int showV
 	}
 	else
 		cout << "Test Error! index of vertex is out of range" << endl;
+}
+
+void Renderer::renderNode(float x, float y, float z, float * pColor)
+{
+	glColor4f(pColor[0], pColor[1], pColor[2], 0.3);
+	glVertex3f(x, y, z);
+}
+
+void Renderer::renderFLParticle4Region(int idx, float * pColor)
+{
+	glColor4f(pColor[0], pColor[1], pColor[2], 0.8);
+	if (idx >= p_kernel->p_body->latticeLocationsWithExistentRegions.size())
+	{
+		printf("Error, index of lattice is beyond the range\n");
+	}
+	else
+	{
+		LatticeLocation * pl = p_kernel->p_body->latticeLocationsWithExistentRegions[idx];
+		GLfloat vx = pl->_node->static_position.x();
+		GLfloat vy = pl->_node->static_position.y();
+		GLfloat vz = pl->_node->static_position.z();
+		renderCube(0.01, vx, vy, vz);
+		
+		//neighbors
+		glColor4f(0.0, 1.0, 0.0, 0.8);
+		vector<LatticeLocation *>::const_iterator nb = pl->neighborhood.begin();
+		for (; nb != pl->neighborhood.end(); nb++)
+		{
+			GLfloat nx = (*nb)->_node->static_position.x();
+			GLfloat ny = (*nb)->_node->static_position.y();
+			GLfloat nz = (*nb)->_node->static_position.z();
+			renderCube(0.01, nx, ny, nz);
+		}
+	}
 }
 
 void Renderer::renderLevelVox(const Level * plevel, int showVoxIdx[])

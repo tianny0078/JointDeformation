@@ -96,6 +96,7 @@ public:
 	bool simulateNextStep4HSMForce4StepFirst();
 	bool simulateNextStep4HSMForce4StepFirst1();
 	bool simulateNextStep4HSMForce4StepFirst2();
+	bool simulateNextStep4FLSMOriginal();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();

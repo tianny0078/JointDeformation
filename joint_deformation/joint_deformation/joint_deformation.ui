@@ -49,7 +49,7 @@
      <enum>QTabWidget::East</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -702,7 +702,29 @@
         <height>31</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_17"/>
+      <layout class="QHBoxLayout" name="horizontalLayout_17">
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>         W        :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_W">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setW">
+         <property name="text">
+          <string>SetW</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="horizontalLayoutWidget_19">
       <property name="geometry">
@@ -1352,6 +1374,19 @@
        <string>testVoxConnection</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton_testFLRegion">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>260</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>FLRegionTest</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -1739,9 +1774,9 @@
    <widget class="QCheckBox" name="checkBox_setBeating">
     <property name="geometry">
      <rect>
-      <x>1050</x>
+      <x>1320</x>
       <y>680</y>
-      <width>147</width>
+      <width>71</width>
       <height>17</height>
      </rect>
     </property>
@@ -1752,8 +1787,8 @@
    <widget class="QPushButton" name="pushButton_loadStep">
     <property name="geometry">
      <rect>
-      <x>1150</x>
-      <y>620</y>
+      <x>1050</x>
+      <y>680</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -3258,7 +3293,7 @@
    <slot>setBeating(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1110</x>
+     <x>1380</x>
      <y>743</y>
     </hint>
     <hint type="destinationlabel">
@@ -3274,12 +3309,44 @@
    <slot>loadStep()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1193</x>
-     <y>689</y>
+     <x>1093</x>
+     <y>749</y>
     </hint>
     <hint type="destinationlabel">
      <x>1187</x>
      <y>710</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testFLRegion</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>testFLRegion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1108</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1041</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setW</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setW()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1330</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1390</x>
+     <y>266</y>
     </hint>
    </hints>
   </connection>
@@ -3368,5 +3435,7 @@
   <slot>findSurfaceNode()</slot>
   <slot>setBeating(bool)</slot>
   <slot>loadStep()</slot>
+  <slot>testFLRegion()</slot>
+  <slot>setW()</slot>
  </slots>
 </ui>

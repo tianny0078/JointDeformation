@@ -92,7 +92,9 @@ public:
 	void renderVoxSurface(Vox * pVox, float * pColor);	
 	void renderVoxSurfaceBoundary4Static(Vox * pVox, float * pColor);
 	void renderVoxSurface4Static(Vox * pVox, float * pColor);
-	
+	//rendering for flsm
+	void renderNode(float x, float y, float z, float * pColor);
+	void renderFLParticle4Region(int idx, float * pColor);
 	
 	//void renderMeshForSelectAnchorNode(const Mesh* m);
 	void renderWCS(float shift);
@@ -287,6 +289,9 @@ public:
 	Vector3d LCS_translation;
 	cubeTool * tool;
 	arrow * myArrow;
+
+	//FLSM related
+	int idx_FLRegion;
 };
 
 #endif

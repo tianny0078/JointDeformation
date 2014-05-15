@@ -50,7 +50,6 @@
 #include "Eigen/Geometry"
 
 #include "network/HNPacketMarshallHandler.h"
-
 //#include "kernel.h"
 
 using namespace std;
@@ -66,6 +65,7 @@ struct VoxMesh;
 struct Level;
 struct Data4Mobile;
 struct Data4PC;
+class LatticeParticle;
 
 typedef enum{
 	HSM_DATA_4_MOBILE_TYPE_NONE,
@@ -86,6 +86,8 @@ struct Node: public HNPacketLockedMarshallHandler
 {
 	Node();
 	~Node(){}
+
+	LatticeParticle * lp;
 
 	Vector3d coordinate;
 	Vector3d displacement;

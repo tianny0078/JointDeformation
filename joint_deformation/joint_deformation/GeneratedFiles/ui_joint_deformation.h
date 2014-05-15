@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Thu May 8 21:07:28 2014
+** Created: Wed May 14 20:33:56 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -126,6 +126,9 @@ public:
     QPushButton *pushButton_saveCameraConfig;
     QWidget *horizontalLayoutWidget_17;
     QHBoxLayout *horizontalLayout_17;
+    QLabel *label_8;
+    QLineEdit *lineEdit_W;
+    QPushButton *pushButton_setW;
     QWidget *horizontalLayoutWidget_19;
     QHBoxLayout *horizontalLayout_19;
     QCheckBox *checkBox_setWindForce;
@@ -188,6 +191,7 @@ public:
     QSpinBox *spinBox_vox_vertex;
     QPushButton *pushButton_testFunction;
     QPushButton *pushButton_testVoxConnection;
+    QPushButton *pushButton_testFLRegion;
     QWidget *tab_4;
     QWidget *horizontalLayoutWidget_2;
     QHBoxLayout *horizontalLayout_2;
@@ -686,6 +690,21 @@ public:
         horizontalLayout_17->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
         horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
+        label_8 = new QLabel(horizontalLayoutWidget_17);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+
+        horizontalLayout_17->addWidget(label_8);
+
+        lineEdit_W = new QLineEdit(horizontalLayoutWidget_17);
+        lineEdit_W->setObjectName(QString::fromUtf8("lineEdit_W"));
+
+        horizontalLayout_17->addWidget(lineEdit_W);
+
+        pushButton_setW = new QPushButton(horizontalLayoutWidget_17);
+        pushButton_setW->setObjectName(QString::fromUtf8("pushButton_setW"));
+
+        horizontalLayout_17->addWidget(pushButton_setW);
+
         horizontalLayoutWidget_19 = new QWidget(tab_2);
         horizontalLayoutWidget_19->setObjectName(QString::fromUtf8("horizontalLayoutWidget_19"));
         horizontalLayoutWidget_19->setGeometry(QRect(0, 30, 291, 31));
@@ -979,6 +998,9 @@ public:
         pushButton_testVoxConnection = new QPushButton(test);
         pushButton_testVoxConnection->setObjectName(QString::fromUtf8("pushButton_testVoxConnection"));
         pushButton_testVoxConnection->setGeometry(QRect(80, 230, 111, 23));
+        pushButton_testFLRegion = new QPushButton(test);
+        pushButton_testFLRegion->setObjectName(QString::fromUtf8("pushButton_testFLRegion"));
+        pushButton_testFLRegion->setGeometry(QRect(0, 260, 75, 23));
         tabWidget->addTab(test, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QString::fromUtf8("tab_4"));
@@ -1082,10 +1104,10 @@ public:
         pushButton_loadPosConstraint->setGeometry(QRect(1050, 650, 101, 23));
         checkBox_setBeating = new QCheckBox(centralWidget);
         checkBox_setBeating->setObjectName(QString::fromUtf8("checkBox_setBeating"));
-        checkBox_setBeating->setGeometry(QRect(1050, 680, 147, 17));
+        checkBox_setBeating->setGeometry(QRect(1320, 680, 71, 17));
         pushButton_loadStep = new QPushButton(centralWidget);
         pushButton_loadStep->setObjectName(QString::fromUtf8("pushButton_loadStep"));
-        pushButton_loadStep->setGeometry(QRect(1150, 620, 101, 23));
+        pushButton_loadStep->setGeometry(QRect(1050, 680, 101, 23));
         joint_deformationClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(joint_deformationClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -1199,8 +1221,10 @@ public:
         QObject::connect(pushButton_loadPosConstraint, SIGNAL(clicked()), joint_deformationClass, SLOT(loadPosConstraint()));
         QObject::connect(checkBox_setBeating, SIGNAL(clicked(bool)), joint_deformationClass, SLOT(setBeating(bool)));
         QObject::connect(pushButton_loadStep, SIGNAL(clicked()), joint_deformationClass, SLOT(loadStep()));
+        QObject::connect(pushButton_testFLRegion, SIGNAL(clicked()), joint_deformationClass, SLOT(testFLRegion()));
+        QObject::connect(pushButton_setW, SIGNAL(clicked()), joint_deformationClass, SLOT(setW()));
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);
@@ -1274,6 +1298,9 @@ public:
         checkBox_exportTxt->setText(QApplication::translate("joint_deformationClass", "ExportTXT", 0, QApplication::UnicodeUTF8));
         pushButton_loadCamConfig->setText(QApplication::translate("joint_deformationClass", "LoadCameraConfig", 0, QApplication::UnicodeUTF8));
         pushButton_saveCameraConfig->setText(QApplication::translate("joint_deformationClass", "SaveCameraConfig", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("joint_deformationClass", "         W        :", 0, QApplication::UnicodeUTF8));
+        lineEdit_W->setText(QApplication::translate("joint_deformationClass", "1", 0, QApplication::UnicodeUTF8));
+        pushButton_setW->setText(QApplication::translate("joint_deformationClass", "SetW", 0, QApplication::UnicodeUTF8));
         checkBox_setWindForce->setText(QApplication::translate("joint_deformationClass", "Wind", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("joint_deformationClass", "Wind Magnitude", 0, QApplication::UnicodeUTF8));
         lineEdit_windMagnitude->setText(QApplication::translate("joint_deformationClass", "10.0", 0, QApplication::UnicodeUTF8));
@@ -1308,6 +1335,7 @@ public:
         pushButton_testSleep->setText(QApplication::translate("joint_deformationClass", "TestSleepTime", 0, QApplication::UnicodeUTF8));
         pushButton_testFunction->setText(QApplication::translate("joint_deformationClass", "testFunction", 0, QApplication::UnicodeUTF8));
         pushButton_testVoxConnection->setText(QApplication::translate("joint_deformationClass", "testVoxConnection", 0, QApplication::UnicodeUTF8));
+        pushButton_testFLRegion->setText(QApplication::translate("joint_deformationClass", "FLRegionTest", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(test), QApplication::translate("joint_deformationClass", "test", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("joint_deformationClass", "Redo", 0, QApplication::UnicodeUTF8));
         pushButton_initSimulator->setText(QString());
