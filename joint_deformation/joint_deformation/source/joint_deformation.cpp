@@ -788,6 +788,7 @@ void joint_deformation::setDampParameter()
 			ci->kappa = kappa;
 		}
 	}
+	p_kernel->p_body->kParticleDamping = 1 - kappa;
 }
 
 void joint_deformation::setMultigrid(bool a)

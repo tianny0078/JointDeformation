@@ -292,6 +292,7 @@ Body::Body()
 	defaultParticleMass = 1.0f;
 	w = 1;
 	kRegionDamping = 0.9f;
+	kParticleDamping = 1.0f;
 	invariantsDirty = true;
 	fracturing = false;
 }
@@ -583,7 +584,7 @@ void Body::ShapeMatch()
 	}
 }
 
-void Body::CalculateParticleVelocities(float h)
+void Body::CalculateParticleVelocities(float h, float damping)
 {
 	for each(LatticeParticle *particle in _particles)
 	{
@@ -598,7 +599,7 @@ void Body::CalculateParticleVelocities(float h)
 		else
 		{
 			// We have a goal position
-			particle->_v = particle->_v + alpha * (particle->_g - particle->_x) / h + h * (particle->_f / particle->_mass);	// Eqn. 1
+			particle->_v = damping * particle->_v + alpha * (particle->_g - particle->_x) / h + h * (particle->_f / particle->_mass);	// Eqn. 1
 		}
 		particle->_f = Vector3d::Zero();			// Zero the force accumulator
 	}

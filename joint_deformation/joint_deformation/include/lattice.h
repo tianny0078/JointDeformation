@@ -248,6 +248,7 @@ public:
 
 	//Damping
 	float kRegionDamping;
+	float kParticleDamping; // by Yuan
 	
 	//Elements
 	std::vector<LatticeParticle*> _particles;
@@ -264,7 +265,7 @@ public:
 
 	// Simulation
 	void ShapeMatch();
-	void CalculateParticleVelocities(float h);
+	void CalculateParticleVelocities(float h, float damping = 1.0);
 	void PerformRegionDamping();
 	void ApplyParticleVelocities(float h);
 	void ApplyGravity();

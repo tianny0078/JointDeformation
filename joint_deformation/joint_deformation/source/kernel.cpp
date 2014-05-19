@@ -2179,8 +2179,8 @@ void Kernel::generatePerRegionParticle(VoxMesh *vm)
 		if(found == p_body->lattice.end())
 			p_body->AddParticle(idx, vi->node_7);
 	}
-	printf("Adding %d particles, %d regions into the body.", p_body->latticeLocations.size(), p_body->latticeLocationsWithExistentRegions.size());
 	p_body->Finalize();
+	printf("Adding %d particles, %d regions into the body.", p_body->latticeLocations.size(), p_body->latticeLocationsWithExistentRegions.size());
 }
 
 void Kernel::initializeSimulator()
@@ -5309,7 +5309,7 @@ bool Kernel::simulateNextStep4HSMAdaptiveStep()
 bool Kernel::simulateNextStep4FLSMOriginal()
 {
 	p_body->ShapeMatch();
-	p_body->CalculateParticleVelocities(time_step_size);
+	p_body->CalculateParticleVelocities(time_step_size, p_body->kParticleDamping);
 	//p_body->PerformRegionDamping();
 	p_body->ApplyParticleVelocities(time_step_size);
 	p_body->SetNodePosition();
