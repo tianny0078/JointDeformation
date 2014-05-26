@@ -205,3 +205,125 @@ void MedicalSurgery::chooseSimulator(int t)
 	}
 
 }
+
+void MedicalSurgery::simulateNextStep()
+{
+	if (!p_kernel->flag_simulator_ready)
+	{
+		QMessageBox::warning(NULL, "warning", "initialize simulator first");
+		return;
+	}
+	if (!p_kernel->simulateNextStep()) 
+	{
+		pauseSimulation();
+	}
+
+
+
+	//if (flag_exportObj)
+	//{
+	//	char filenames[32];
+	//	sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->time_step_index);
+	//	p_kernel->exportToOBJ(filenames);
+	//}
+	ui.renderWidget->updateGL();
+}
+
+void MedicalSurgery::startSimulation()
+{
+	if (!p_kernel->flag_simulator_ready)
+	{
+		QMessageBox::warning(NULL, "warning", "initialize simulator first");
+		return;
+	}
+
+	if (!simulation_timer.isActive())
+	{
+		connect(&simulation_timer, SIGNAL(timeout()), this, SLOT(simulate()));
+		ui.actionSetAnchor->setChecked(false);
+		ui.renderWidget->flag_show_selection = false;
+		ui.renderWidget->flag_simulating = true;
+		simulation_timer.start(0);
+
+	}
+}
+
+void MedicalSurgery::pauseSimulation()
+{
+	if (!simulation_timer.isActive())
+	{
+		simulation_timer.start(0);
+	}
+	else
+	{
+		simulation_timer.stop();
+	}
+}
+
+void MedicalSurgery::simulate()
+{
+	if (!p_kernel->simulateNextStep())
+	{
+		pauseSimulation();
+	}
+
+	//interpolation surface points
+	Vector3d a, b, c; 
+	if (p_kernel->paraNode[0] != NULL && p_kernel->paraNode[1] != NULL && p_kernel->paraNode[2] != NULL )
+	{
+		a = p_kernel->paraNode[0]->coordinate + p_kernel->paraNode[0]->displacement;
+		b =p_kernel->paraNode[1]->coordinate + p_kernel->paraNode[1]->displacement;
+		c =p_kernel->paraNode[2]->coordinate + p_kernel->paraNode[2]->displacement;
+		p_kernel->surface_point_left = p_kernel->para[0] * a + p_kernel->para[1] * b + p_kernel->para[2] * c;
+	}
+	if (p_kernel->paraNode2[0] != NULL && p_kernel->paraNode2[1] != NULL && p_kernel->paraNode2[2] != NULL)
+	{
+		a = p_kernel->paraNode2[0]->coordinate + p_kernel->paraNode2[0]->displacement;
+		b =p_kernel->paraNode2[1]->coordinate + p_kernel->paraNode2[1]->displacement;
+		c =p_kernel->paraNode2[2]->coordinate + p_kernel->paraNode2[2]->displacement;
+		p_kernel->surface_point_right = p_kernel->para2[0] * a + p_kernel->para2[1] * b + p_kernel->para2[2] * c;
+	}
+	////////////////////
+	ui.renderWidget->updateGL();
+	/*
+	if (flag_captureScreen)
+	{
+		//QPixmap Screenshot = ui.RenderWidget->renderPixmap();
+		QPixmap Screenshot = QPixmap::grabWindow(QApplication::desktop()->winId(), 
+			this->pos().x(), this->pos().y(), width()+15, height()+35);
+		char filenames[32];
+		sprintf(filenames, "..\\ScreenShots\\SIMG%0004d.bmp", p_kernel->time_step_index);
+		Screenshot.save(filenames, "bmp", -1);
+	}
+
+	if (flag_captureSubScreen)
+	{
+		//ui.renderWidget->fini();
+		QImage Screenshot = ui.renderWidget->grabFrameBuffer(false);
+		char filenames[32];
+		sprintf(filenames, "..\\ScreenShots\\IMG%0004d.png", p_kernel->time_step_index);
+		Screenshot.save(filenames, "png", -1);
+	}
+
+	if (flag_exportObj || p_kernel->flag_exportObj)
+	{
+		char filenames[32];
+		sprintf(filenames, "..\\OBJs\\OBJ%0004d.obj", p_kernel->num_obj);
+		//p_kernel->exportToOBJ(filenames);
+		p_kernel->exportToOBJ2Haptic(filenames);
+		p_kernel->num_obj ++;
+	}
+	*/
+}
+
+void MedicalSurgery::initializeSimulator()
+{
+	if (p_kernel->used_simulator == Kernel::UNDEFINED)
+	{
+		QMessageBox::warning(NULL, "warning", "choose simulator first");
+		return;
+	}
+	p_kernel->initializeSimulator();
+
+	QMessageBox::information(NULL, "success", "simulator initialized");
+}

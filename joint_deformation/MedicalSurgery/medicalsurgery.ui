@@ -335,8 +335,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../joint_deformation/joint_deformation.qrc">
-         <normaloff>:/joint_deformation/Resources/gnome_run.png</normaloff>:/joint_deformation/Resources/gnome_run.png</iconset>
+        <iconset resource="medicalsurgery.qrc">
+         <normaloff>:/MedicalSurgery/Resources/gnome_run.png</normaloff>:/MedicalSurgery/Resources/gnome_run.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -352,8 +352,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../joint_deformation/joint_deformation.qrc">
-         <normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</iconset>
+        <iconset resource="medicalsurgery.qrc">
+         <normaloff>:/MedicalSurgery/Resources/gtk_media_play_ltr.png</normaloff>:/MedicalSurgery/Resources/gtk_media_play_ltr.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -369,8 +369,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../joint_deformation/joint_deformation.qrc">
-         <normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</iconset>
+        <iconset resource="medicalsurgery.qrc">
+         <normaloff>:/MedicalSurgery/Resources/gtk_media_next_ltr.png</normaloff>:/MedicalSurgery/Resources/gtk_media_next_ltr.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -386,8 +386,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../joint_deformation/joint_deformation.qrc">
-         <normaloff>:/joint_deformation/Resources/gtk_media_pause.png</normaloff>:/joint_deformation/Resources/gtk_media_pause.png</iconset>
+        <iconset resource="medicalsurgery.qrc">
+         <normaloff>:/MedicalSurgery/Resources/gtk_media_pause.png</normaloff>:/MedicalSurgery/Resources/gtk_media_pause.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -403,8 +403,8 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../joint_deformation/joint_deformation.qrc">
-         <normaloff>:/joint_deformation/Resources/gtk_media_stop.png</normaloff>:/joint_deformation/Resources/gtk_media_stop.png</iconset>
+        <iconset resource="medicalsurgery.qrc">
+         <normaloff>:/MedicalSurgery/Resources/gtk_media_stop.png</normaloff>:/MedicalSurgery/Resources/gtk_media_stop.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -715,6 +715,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_initSimulator</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>initializeSimulator()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>933</x>
+     <y>520</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>932</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_startSimulation</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>startSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>976</x>
+     <y>520</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>976</x>
+     <y>539</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_nextStep</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>simulateNextStep()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1016</x>
+     <y>528</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1013</x>
+     <y>554</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_pauseSimulation</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>pauseSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1067</x>
+     <y>519</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1071</x>
+     <y>571</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>chooseSimulator(int)</slot>
@@ -725,5 +789,9 @@
   <slot>showVox(bool)</slot>
   <slot>showGoalPosition(bool)</slot>
   <slot>showMesh(bool)</slot>
+  <slot>initializeSimulator()</slot>
+  <slot>startSimulation()</slot>
+  <slot>simulateNextStep()</slot>
+  <slot>pauseSimulation()</slot>
  </slots>
 </ui>

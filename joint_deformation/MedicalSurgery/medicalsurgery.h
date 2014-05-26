@@ -25,6 +25,13 @@ public slots:
 
 	void chooseSimulator(int t);
 
+	void startSimulation();
+	void pauseSimulation();
+
+	void simulate();
+	void initializeSimulator();
+	void simulateNextStep();
+
 private:
 	Ui::MedicalSurgeryClass ui;
 

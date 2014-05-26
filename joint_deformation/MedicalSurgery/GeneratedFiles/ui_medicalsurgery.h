@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'medicalsurgery.ui'
 **
-** Created: Mon May 26 16:59:16 2014
+** Created: Mon May 26 17:15:20 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -273,7 +273,7 @@ public:
         pushButton_initSimulator = new QPushButton(horizontalLayoutWidget_2);
         pushButton_initSimulator->setObjectName(QString::fromUtf8("pushButton_initSimulator"));
         QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/joint_deformation/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon8.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_initSimulator->setIcon(icon8);
         pushButton_initSimulator->setIconSize(QSize(24, 24));
 
@@ -282,7 +282,7 @@ public:
         pushButton_startSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_startSimulation->setObjectName(QString::fromUtf8("pushButton_startSimulation"));
         QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon9.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_startSimulation->setIcon(icon9);
         pushButton_startSimulation->setIconSize(QSize(24, 24));
 
@@ -291,7 +291,7 @@ public:
         pushButton_nextStep = new QPushButton(horizontalLayoutWidget_2);
         pushButton_nextStep->setObjectName(QString::fromUtf8("pushButton_nextStep"));
         QIcon icon10;
-        icon10.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon10.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_nextStep->setIcon(icon10);
         pushButton_nextStep->setIconSize(QSize(24, 24));
 
@@ -300,7 +300,7 @@ public:
         pushButton_pauseSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_pauseSimulation->setObjectName(QString::fromUtf8("pushButton_pauseSimulation"));
         QIcon icon11;
-        icon11.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon11.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_pauseSimulation->setIcon(icon11);
         pushButton_pauseSimulation->setIconSize(QSize(24, 24));
 
@@ -309,7 +309,7 @@ public:
         pushButton_resetSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_resetSimulation->setObjectName(QString::fromUtf8("pushButton_resetSimulation"));
         QIcon icon12;
-        icon12.addFile(QString::fromUtf8(":/joint_deformation/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon12.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_resetSimulation->setIcon(icon12);
         pushButton_resetSimulation->setIconSize(QSize(24, 24));
 
@@ -374,6 +374,10 @@ public:
         QObject::connect(actionShowMesh, SIGNAL(triggered(bool)), MedicalSurgeryClass, SLOT(showMesh(bool)));
         QObject::connect(actionShowVox, SIGNAL(triggered(bool)), MedicalSurgeryClass, SLOT(showVox(bool)));
         QObject::connect(actionShowGoalPosition, SIGNAL(triggered(bool)), MedicalSurgeryClass, SLOT(showGoalPosition(bool)));
+        QObject::connect(pushButton_initSimulator, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(initializeSimulator()));
+        QObject::connect(pushButton_startSimulation, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(startSimulation()));
+        QObject::connect(pushButton_nextStep, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(simulateNextStep()));
+        QObject::connect(pushButton_pauseSimulation, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(pauseSimulation()));
 
         QMetaObject::connectSlotsByName(MedicalSurgeryClass);
     } // setupUi
