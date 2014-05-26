@@ -737,9 +737,21 @@ void Body::SetNodePosition()
 		else
 		{
 			particle->_x = particle->lp->_node->coordinate;
+			//particle->_v = Vector3d::Zero();
 			particle->lp->_node->target_position = particle->_x;
 		}
 		//particle->lp->_node->target_position = particle->_x;
 		particle->lp->_node->displacement = particle->lp->_node->target_position - particle->lp->_node->coordinate;
+	}
+}
+
+void Body::SetNodeVelocity()
+{
+	for each(LatticeParticle * particle in _particles)
+	{
+		if(particle->lp->_node->flag_anchor_node)
+		{
+			particle->_v = Vector3d::Zero();
+		}
 	}
 }

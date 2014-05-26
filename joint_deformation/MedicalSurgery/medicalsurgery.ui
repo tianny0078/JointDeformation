@@ -1,29 +1,729 @@
-<UI version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MedicalSurgeryClass</class>
- <widget class="QMainWindow" name="MedicalSurgeryClass" >
-  <property name="objectName" >
-   <string notr="true">MedicalSurgeryClass</string>
-  </property>
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MedicalSurgeryClass">
+  <property name="geometry">
    <rect>
-	<x>0</x>
-	<y>0</y>
-	<width>600</width>
-	<height>400</height>
+    <x>0</x>
+    <y>0</y>
+    <width>1128</width>
+    <height>689</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MedicalSurgery</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <widget class="Renderer" name="renderWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>900</width>
+      <height>600</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>900</width>
+      <height>600</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>900</width>
+      <height>600</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_chooseSimulator">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>10</y>
+      <width>201</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>New Item</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>ShapeMatching</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>40</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="text">
+        <string>Grid density</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinBox_gridDensity">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>256</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setGridDensity">
+       <property name="minimumSize">
+        <size>
+         <width>70</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>70</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Apply</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_5">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>80</y>
+      <width>284</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Damping</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_damping">
+       <property name="text">
+        <string>0.01</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setDamping">
+       <property name="minimumSize">
+        <size>
+         <width>70</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>70</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>SetDamp</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/dialog_apply.png</normaloff>:/joint_deformation/Resources/dialog_apply.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>120</y>
+      <width>201</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Force | PosConstraint | Orientation</string>
+    </property>
+    <widget class="QRadioButton" name="radioButton_setForceConstraint">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>61</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Force</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_setPositionConstraint">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>30</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Position Constraint</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton_setOrientationConstraint">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>131</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Orientation Constraint</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>220</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QCheckBox" name="checkBox_dynamics">
+       <property name="text">
+        <string>Dynamics</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_10">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>260</y>
+      <width>256</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_10">
+     <item>
+      <widget class="QCheckBox" name="checkBox_gravity">
+       <property name="text">
+        <string>Gravity</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_18">
+       <property name="text">
+        <string> Magnitude</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_gravityMagnitude">
+       <property name="text">
+        <string>0.01</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setGravityMagnitude">
+       <property name="text">
+        <string>SetMagnitude</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>440</y>
+      <width>206</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButton_initSimulator">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gnome_run.png</normaloff>:/joint_deformation/Resources/gnome_run.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_startSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_play_ltr.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_nextStep">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</normaloff>:/joint_deformation/Resources/gtk_media_next_ltr.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_pauseSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_pause.png</normaloff>:/joint_deformation/Resources/gtk_media_pause.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_resetSimulation">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../joint_deformation/joint_deformation.qrc">
+         <normaloff>:/joint_deformation/Resources/gtk_media_stop.png</normaloff>:/joint_deformation/Resources/gtk_media_stop.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_20">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>300</y>
+      <width>244</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_20">
+     <item>
+      <widget class="QLabel" name="label_20">
+       <property name="text">
+        <string>Mass</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_mass">
+       <property name="text">
+        <string>1.0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setMass">
+       <property name="text">
+        <string>SetMass</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_resetMass">
+       <property name="text">
+        <string>ResetMass</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1128</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionLoadMesh"/>
+   <addaction name="separator"/>
+   <addaction name="actionScaleMesh"/>
+   <addaction name="actionShowMesh"/>
+   <addaction name="actionShowVox"/>
+   <addaction name="actionShowGoalPosition"/>
+   <addaction name="separator"/>
+   <addaction name="actionSetAnchor"/>
+   <addaction name="actionSetConstraint"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLoadMesh">
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/folder_drag_accept.png</normaloff>:/MedicalSurgery/Resources/folder_drag_accept.png</iconset>
+   </property>
+   <property name="text">
+    <string>LoadMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionScaleMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/scale_ruler.png</normaloff>:/MedicalSurgery/Resources/scale_ruler.png</iconset>
+   </property>
+   <property name="text">
+    <string>scaleMesh</string>
+   </property>
+  </action>
+  <action name="actionShowMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/mesh.png</normaloff>:/MedicalSurgery/Resources/mesh.png</iconset>
+   </property>
+   <property name="text">
+    <string>showMesh</string>
+   </property>
+  </action>
+  <action name="actionShowVox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/CMS.png</normaloff>:/MedicalSurgery/Resources/CMS.png</iconset>
+   </property>
+   <property name="text">
+    <string>showVox</string>
+   </property>
+  </action>
+  <action name="actionShowGoalPosition">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/target.png</normaloff>:/MedicalSurgery/Resources/target.png</iconset>
+   </property>
+   <property name="text">
+    <string>showGoalPosition</string>
+   </property>
+  </action>
+  <action name="actionSetAnchor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/Selection.png</normaloff>:/MedicalSurgery/Resources/Selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>setAnchor</string>
+   </property>
+  </action>
+  <action name="actionSetConstraint">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/Selection4Constraint.png</normaloff>:/MedicalSurgery/Resources/Selection4Constraint.png</iconset>
+   </property>
+   <property name="text">
+    <string>setConstraint</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Renderer</class>
+   <extends>QWidget</extends>
+   <header>renderer.h</header>
+   <container>1</container>
+   <slots>
+    <signal>appendCluster()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources>
-   <include location="medicalsurgery.qrc"/>
+  <include location="medicalsurgery.qrc"/>
+  <include location="../joint_deformation/joint_deformation.qrc"/>
  </resources>
- <connections/>
-</UI>
+ <connections>
+  <connection>
+   <sender>actionLoadMesh</sender>
+   <signal>triggered()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>loadMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_chooseSimulator</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>chooseSimulator(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>959</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>917</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionScaleMesh</sender>
+   <signal>triggered()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>scaleMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSetAnchor</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setAnchor(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSetConstraint</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowMesh</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>showMesh(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowVox</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>showVox(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowGoalPosition</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>showGoalPosition(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>chooseSimulator(int)</slot>
+  <slot>loadMesh()</slot>
+  <slot>scaleMesh()</slot>
+  <slot>setAnchor(bool)</slot>
+  <slot>setConstraint(bool)</slot>
+  <slot>showVox(bool)</slot>
+  <slot>showGoalPosition(bool)</slot>
+  <slot>showMesh(bool)</slot>
+ </slots>
+</ui>

@@ -5310,7 +5310,8 @@ bool Kernel::simulateNextStep4FLSMOriginal()
 {
 	p_body->ShapeMatch();
 	p_body->CalculateParticleVelocities(time_step_size, p_body->kParticleDamping);
-	//p_body->PerformRegionDamping();
+	p_body->SetNodeVelocity();
+	p_body->PerformRegionDamping();
 	p_body->ApplyParticleVelocities(time_step_size);
 	p_body->SetNodePosition();
 	//constraint node

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Wed May 14 20:33:56 2014
+** Created: Mon May 26 16:16:29 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -1224,7 +1224,7 @@ public:
         QObject::connect(pushButton_testFLRegion, SIGNAL(clicked()), joint_deformationClass, SLOT(testFLRegion()));
         QObject::connect(pushButton_setW, SIGNAL(clicked()), joint_deformationClass, SLOT(setW()));
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);

@@ -2664,7 +2664,6 @@ void Renderer::renderStatus()
 	}
 	
 	// others...
-
 	// render string
 	for (int i=0; i<num_stats_line; ++i)
 	{

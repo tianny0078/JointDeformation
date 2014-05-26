@@ -270,6 +270,7 @@ public:
 	void ApplyParticleVelocities(float h);
 	void ApplyGravity();
 	void SetNodePosition();
+	void SetNodeVelocity();
 	//void DoFracturing();
 
 	// Fast summation
