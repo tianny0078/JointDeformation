@@ -114,6 +114,7 @@ public slots:
 
 	void testFLRegion();
 	void setW();
+	void setRegionDamping();
 private:
 	Ui::joint_deformationClass ui;
 	Kernel* p_kernel;

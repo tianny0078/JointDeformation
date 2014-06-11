@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'medicalsurgery.ui'
 **
-** Created: Mon May 26 17:15:20 2014
+** Created: Thu May 29 17:12:25 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -43,6 +43,7 @@ public:
     QAction *actionShowGoalPosition;
     QAction *actionSetAnchor;
     QAction *actionSetConstraint;
+    QAction *actionRopeDragging;
     QWidget *centralWidget;
     Renderer *renderWidget;
     QComboBox *comboBox_chooseSimulator;
@@ -66,7 +67,6 @@ public:
     QWidget *horizontalLayoutWidget_10;
     QHBoxLayout *horizontalLayout_10;
     QCheckBox *checkBox_gravity;
-    QLabel *label_18;
     QLineEdit *lineEdit_gravityMagnitude;
     QPushButton *pushButton_setGravityMagnitude;
     QWidget *horizontalLayoutWidget_2;
@@ -81,7 +81,16 @@ public:
     QLabel *label_20;
     QLineEdit *lineEdit_mass;
     QPushButton *pushButton_setMass;
-    QPushButton *pushButton_resetMass;
+    QWidget *horizontalLayoutWidget_21;
+    QHBoxLayout *horizontalLayout_21;
+    QLabel *label_21;
+    QLineEdit *lineEdit_JointNum;
+    QPushButton *pushButton_setJointNum;
+    QWidget *horizontalLayoutWidget_22;
+    QHBoxLayout *horizontalLayout_22;
+    QLabel *label_22;
+    QLineEdit *lineEdit_Length;
+    QPushButton *pushButton_setJointNum_2;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -90,7 +99,7 @@ public:
     {
         if (MedicalSurgeryClass->objectName().isEmpty())
             MedicalSurgeryClass->setObjectName(QString::fromUtf8("MedicalSurgeryClass"));
-        MedicalSurgeryClass->resize(1128, 689);
+        MedicalSurgeryClass->resize(1129, 689);
         actionLoadMesh = new QAction(MedicalSurgeryClass);
         actionLoadMesh->setObjectName(QString::fromUtf8("actionLoadMesh"));
         QIcon icon;
@@ -132,6 +141,12 @@ public:
         QIcon icon6;
         icon6.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/Selection4Constraint.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionSetConstraint->setIcon(icon6);
+        actionRopeDragging = new QAction(MedicalSurgeryClass);
+        actionRopeDragging->setObjectName(QString::fromUtf8("actionRopeDragging"));
+        actionRopeDragging->setCheckable(true);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/agt_virussafe.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionRopeDragging->setIcon(icon7);
         centralWidget = new QWidget(MedicalSurgeryClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         renderWidget = new Renderer(centralWidget);
@@ -172,9 +187,9 @@ public:
         pushButton_setGridDensity->setObjectName(QString::fromUtf8("pushButton_setGridDensity"));
         pushButton_setGridDensity->setMinimumSize(QSize(70, 25));
         pushButton_setGridDensity->setMaximumSize(QSize(70, 25));
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/joint_deformation/Resources/dialog_apply.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_setGridDensity->setIcon(icon7);
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/joint_deformation/Resources/dialog_apply.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_setGridDensity->setIcon(icon8);
 
         horizontalLayout->addWidget(pushButton_setGridDensity);
 
@@ -202,7 +217,7 @@ public:
         pushButton_setDamping->setObjectName(QString::fromUtf8("pushButton_setDamping"));
         pushButton_setDamping->setMinimumSize(QSize(70, 25));
         pushButton_setDamping->setMaximumSize(QSize(70, 25));
-        pushButton_setDamping->setIcon(icon7);
+        pushButton_setDamping->setIcon(icon8);
 
         horizontalLayout_5->addWidget(pushButton_setDamping);
 
@@ -235,7 +250,7 @@ public:
 
         horizontalLayoutWidget_10 = new QWidget(centralWidget);
         horizontalLayoutWidget_10->setObjectName(QString::fromUtf8("horizontalLayoutWidget_10"));
-        horizontalLayoutWidget_10->setGeometry(QRect(920, 260, 256, 31));
+        horizontalLayoutWidget_10->setGeometry(QRect(920, 260, 201, 31));
         horizontalLayout_10 = new QHBoxLayout(horizontalLayoutWidget_10);
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setContentsMargins(11, 11, 11, 11);
@@ -246,11 +261,6 @@ public:
         checkBox_gravity->setChecked(false);
 
         horizontalLayout_10->addWidget(checkBox_gravity);
-
-        label_18 = new QLabel(horizontalLayoutWidget_10);
-        label_18->setObjectName(QString::fromUtf8("label_18"));
-
-        horizontalLayout_10->addWidget(label_18);
 
         lineEdit_gravityMagnitude = new QLineEdit(horizontalLayoutWidget_10);
         lineEdit_gravityMagnitude->setObjectName(QString::fromUtf8("lineEdit_gravityMagnitude"));
@@ -264,7 +274,7 @@ public:
 
         horizontalLayoutWidget_2 = new QWidget(centralWidget);
         horizontalLayoutWidget_2->setObjectName(QString::fromUtf8("horizontalLayoutWidget_2"));
-        horizontalLayoutWidget_2->setGeometry(QRect(920, 440, 206, 51));
+        horizontalLayoutWidget_2->setGeometry(QRect(920, 560, 206, 51));
         horizontalLayout_2 = new QHBoxLayout(horizontalLayoutWidget_2);
         horizontalLayout_2->setSpacing(6);
         horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -272,52 +282,52 @@ public:
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
         pushButton_initSimulator = new QPushButton(horizontalLayoutWidget_2);
         pushButton_initSimulator->setObjectName(QString::fromUtf8("pushButton_initSimulator"));
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_initSimulator->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gnome_run.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_initSimulator->setIcon(icon9);
         pushButton_initSimulator->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_initSimulator);
 
         pushButton_startSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_startSimulation->setObjectName(QString::fromUtf8("pushButton_startSimulation"));
-        QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_startSimulation->setIcon(icon9);
+        QIcon icon10;
+        icon10.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_play_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_startSimulation->setIcon(icon10);
         pushButton_startSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_startSimulation);
 
         pushButton_nextStep = new QPushButton(horizontalLayoutWidget_2);
         pushButton_nextStep->setObjectName(QString::fromUtf8("pushButton_nextStep"));
-        QIcon icon10;
-        icon10.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_nextStep->setIcon(icon10);
+        QIcon icon11;
+        icon11.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_next_ltr.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_nextStep->setIcon(icon11);
         pushButton_nextStep->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_nextStep);
 
         pushButton_pauseSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_pauseSimulation->setObjectName(QString::fromUtf8("pushButton_pauseSimulation"));
-        QIcon icon11;
-        icon11.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_pauseSimulation->setIcon(icon11);
+        QIcon icon12;
+        icon12.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_pause.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_pauseSimulation->setIcon(icon12);
         pushButton_pauseSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_pauseSimulation);
 
         pushButton_resetSimulation = new QPushButton(horizontalLayoutWidget_2);
         pushButton_resetSimulation->setObjectName(QString::fromUtf8("pushButton_resetSimulation"));
-        QIcon icon12;
-        icon12.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_resetSimulation->setIcon(icon12);
+        QIcon icon13;
+        icon13.addFile(QString::fromUtf8(":/MedicalSurgery/Resources/gtk_media_stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_resetSimulation->setIcon(icon13);
         pushButton_resetSimulation->setIconSize(QSize(24, 24));
 
         horizontalLayout_2->addWidget(pushButton_resetSimulation);
 
         horizontalLayoutWidget_20 = new QWidget(centralWidget);
         horizontalLayoutWidget_20->setObjectName(QString::fromUtf8("horizontalLayoutWidget_20"));
-        horizontalLayoutWidget_20->setGeometry(QRect(920, 300, 244, 31));
+        horizontalLayoutWidget_20->setGeometry(QRect(920, 300, 201, 31));
         horizontalLayout_20 = new QHBoxLayout(horizontalLayoutWidget_20);
         horizontalLayout_20->setSpacing(6);
         horizontalLayout_20->setContentsMargins(11, 11, 11, 11);
@@ -338,15 +348,56 @@ public:
 
         horizontalLayout_20->addWidget(pushButton_setMass);
 
-        pushButton_resetMass = new QPushButton(horizontalLayoutWidget_20);
-        pushButton_resetMass->setObjectName(QString::fromUtf8("pushButton_resetMass"));
+        horizontalLayoutWidget_21 = new QWidget(centralWidget);
+        horizontalLayoutWidget_21->setObjectName(QString::fromUtf8("horizontalLayoutWidget_21"));
+        horizontalLayoutWidget_21->setGeometry(QRect(920, 330, 201, 31));
+        horizontalLayout_21 = new QHBoxLayout(horizontalLayoutWidget_21);
+        horizontalLayout_21->setSpacing(6);
+        horizontalLayout_21->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_21->setObjectName(QString::fromUtf8("horizontalLayout_21"));
+        horizontalLayout_21->setContentsMargins(0, 0, 0, 0);
+        label_21 = new QLabel(horizontalLayoutWidget_21);
+        label_21->setObjectName(QString::fromUtf8("label_21"));
 
-        horizontalLayout_20->addWidget(pushButton_resetMass);
+        horizontalLayout_21->addWidget(label_21);
+
+        lineEdit_JointNum = new QLineEdit(horizontalLayoutWidget_21);
+        lineEdit_JointNum->setObjectName(QString::fromUtf8("lineEdit_JointNum"));
+
+        horizontalLayout_21->addWidget(lineEdit_JointNum);
+
+        pushButton_setJointNum = new QPushButton(horizontalLayoutWidget_21);
+        pushButton_setJointNum->setObjectName(QString::fromUtf8("pushButton_setJointNum"));
+
+        horizontalLayout_21->addWidget(pushButton_setJointNum);
+
+        horizontalLayoutWidget_22 = new QWidget(centralWidget);
+        horizontalLayoutWidget_22->setObjectName(QString::fromUtf8("horizontalLayoutWidget_22"));
+        horizontalLayoutWidget_22->setGeometry(QRect(920, 360, 201, 31));
+        horizontalLayout_22 = new QHBoxLayout(horizontalLayoutWidget_22);
+        horizontalLayout_22->setSpacing(6);
+        horizontalLayout_22->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_22->setObjectName(QString::fromUtf8("horizontalLayout_22"));
+        horizontalLayout_22->setContentsMargins(0, 0, 0, 0);
+        label_22 = new QLabel(horizontalLayoutWidget_22);
+        label_22->setObjectName(QString::fromUtf8("label_22"));
+
+        horizontalLayout_22->addWidget(label_22);
+
+        lineEdit_Length = new QLineEdit(horizontalLayoutWidget_22);
+        lineEdit_Length->setObjectName(QString::fromUtf8("lineEdit_Length"));
+
+        horizontalLayout_22->addWidget(lineEdit_Length);
+
+        pushButton_setJointNum_2 = new QPushButton(horizontalLayoutWidget_22);
+        pushButton_setJointNum_2->setObjectName(QString::fromUtf8("pushButton_setJointNum_2"));
+
+        horizontalLayout_22->addWidget(pushButton_setJointNum_2);
 
         MedicalSurgeryClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MedicalSurgeryClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1128, 21));
+        menuBar->setGeometry(QRect(0, 0, 1129, 21));
         MedicalSurgeryClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MedicalSurgeryClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -364,6 +415,7 @@ public:
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionSetAnchor);
         mainToolBar->addAction(actionSetConstraint);
+        mainToolBar->addAction(actionRopeDragging);
 
         retranslateUi(MedicalSurgeryClass);
         QObject::connect(actionLoadMesh, SIGNAL(triggered()), MedicalSurgeryClass, SLOT(loadMesh()));
@@ -378,6 +430,18 @@ public:
         QObject::connect(pushButton_startSimulation, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(startSimulation()));
         QObject::connect(pushButton_nextStep, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(simulateNextStep()));
         QObject::connect(pushButton_pauseSimulation, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(pauseSimulation()));
+        QObject::connect(pushButton_setGridDensity, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setGridDensity()));
+        QObject::connect(pushButton_setDamping, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setDampParameter()));
+        QObject::connect(checkBox_dynamics, SIGNAL(clicked(bool)), MedicalSurgeryClass, SLOT(setDynamics(bool)));
+        QObject::connect(checkBox_gravity, SIGNAL(clicked(bool)), MedicalSurgeryClass, SLOT(setGravity(bool)));
+        QObject::connect(pushButton_setGravityMagnitude, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setGravityMagnitude()));
+        QObject::connect(pushButton_setMass, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setMass()));
+        QObject::connect(radioButton_setForceConstraint, SIGNAL(clicked(bool)), MedicalSurgeryClass, SLOT(setForceConstraint(bool)));
+        QObject::connect(radioButton_setPositionConstraint, SIGNAL(clicked(bool)), MedicalSurgeryClass, SLOT(setPositionConstraint(bool)));
+        QObject::connect(radioButton_setOrientationConstraint, SIGNAL(clicked(bool)), MedicalSurgeryClass, SLOT(setOrientationConstraint(bool)));
+        QObject::connect(actionRopeDragging, SIGNAL(triggered(bool)), MedicalSurgeryClass, SLOT(setRopeDragging(bool)));
+        QObject::connect(pushButton_setJointNum, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setJointNumber()));
+        QObject::connect(pushButton_setJointNum_2, SIGNAL(clicked()), MedicalSurgeryClass, SLOT(setLength()));
 
         QMetaObject::connectSlotsByName(MedicalSurgeryClass);
     } // setupUi
@@ -393,10 +457,12 @@ public:
         actionShowGoalPosition->setText(QApplication::translate("MedicalSurgeryClass", "showGoalPosition", 0, QApplication::UnicodeUTF8));
         actionSetAnchor->setText(QApplication::translate("MedicalSurgeryClass", "setAnchor", 0, QApplication::UnicodeUTF8));
         actionSetConstraint->setText(QApplication::translate("MedicalSurgeryClass", "setConstraint", 0, QApplication::UnicodeUTF8));
+        actionRopeDragging->setText(QApplication::translate("MedicalSurgeryClass", "ropeDragging", 0, QApplication::UnicodeUTF8));
         comboBox_chooseSimulator->clear();
         comboBox_chooseSimulator->insertItems(0, QStringList()
          << QApplication::translate("MedicalSurgeryClass", "New Item", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MedicalSurgeryClass", "ShapeMatching", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MedicalSurgeryClass", "FTL", 0, QApplication::UnicodeUTF8)
         );
         label->setText(QApplication::translate("MedicalSurgeryClass", "Grid density", 0, QApplication::UnicodeUTF8));
         pushButton_setGridDensity->setText(QApplication::translate("MedicalSurgeryClass", "Apply", 0, QApplication::UnicodeUTF8));
@@ -409,7 +475,6 @@ public:
         radioButton_setOrientationConstraint->setText(QApplication::translate("MedicalSurgeryClass", "Orientation Constraint", 0, QApplication::UnicodeUTF8));
         checkBox_dynamics->setText(QApplication::translate("MedicalSurgeryClass", "Dynamics", 0, QApplication::UnicodeUTF8));
         checkBox_gravity->setText(QApplication::translate("MedicalSurgeryClass", "Gravity", 0, QApplication::UnicodeUTF8));
-        label_18->setText(QApplication::translate("MedicalSurgeryClass", " Magnitude", 0, QApplication::UnicodeUTF8));
         lineEdit_gravityMagnitude->setText(QApplication::translate("MedicalSurgeryClass", "0.01", 0, QApplication::UnicodeUTF8));
         pushButton_setGravityMagnitude->setText(QApplication::translate("MedicalSurgeryClass", "SetMagnitude", 0, QApplication::UnicodeUTF8));
         pushButton_initSimulator->setText(QString());
@@ -420,7 +485,12 @@ public:
         label_20->setText(QApplication::translate("MedicalSurgeryClass", "Mass", 0, QApplication::UnicodeUTF8));
         lineEdit_mass->setText(QApplication::translate("MedicalSurgeryClass", "1.0", 0, QApplication::UnicodeUTF8));
         pushButton_setMass->setText(QApplication::translate("MedicalSurgeryClass", "SetMass", 0, QApplication::UnicodeUTF8));
-        pushButton_resetMass->setText(QApplication::translate("MedicalSurgeryClass", "ResetMass", 0, QApplication::UnicodeUTF8));
+        label_21->setText(QApplication::translate("MedicalSurgeryClass", "Joint Num:", 0, QApplication::UnicodeUTF8));
+        lineEdit_JointNum->setText(QApplication::translate("MedicalSurgeryClass", "40", 0, QApplication::UnicodeUTF8));
+        pushButton_setJointNum->setText(QApplication::translate("MedicalSurgeryClass", "SetNum", 0, QApplication::UnicodeUTF8));
+        label_22->setText(QApplication::translate("MedicalSurgeryClass", "Length:", 0, QApplication::UnicodeUTF8));
+        lineEdit_Length->setText(QApplication::translate("MedicalSurgeryClass", "0.05", 0, QApplication::UnicodeUTF8));
+        pushButton_setJointNum_2->setText(QApplication::translate("MedicalSurgeryClass", "SetLength", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

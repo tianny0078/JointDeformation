@@ -49,7 +49,7 @@
      <enum>QTabWidget::East</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -834,6 +834,39 @@
         <widget class="QPushButton" name="pushButton_setEnergyThreshold">
          <property name="text">
           <string>Set</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_24">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>260</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_24">
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>        RegionDamping      :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_RegionDamping">
+         <property name="text">
+          <string>0.05</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_setRegionDamping">
+         <property name="text">
+          <string>SetRDamping</string>
          </property>
         </widget>
        </item>
@@ -3350,6 +3383,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_setRegionDamping</sender>
+   <signal>clicked()</signal>
+   <receiver>joint_deformationClass</receiver>
+   <slot>setRegionDamping()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1320</x>
+     <y>393</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1360</x>
+     <y>597</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadMesh()</slot>
@@ -3437,5 +3486,6 @@
   <slot>loadStep()</slot>
   <slot>testFLRegion()</slot>
   <slot>setW()</slot>
+  <slot>setRegionDamping()</slot>
  </slots>
 </ui>

@@ -201,6 +201,7 @@ public:
 	bool flag_cube_operation;
 	bool flag_show_cube_static_constraints;
 	bool flag_show_cube_active_constraints;
+	bool flag_rope_dragging;
 
 	bool flag_left_surface;
 	bool flag_right_surface;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1128</width>
+    <width>1129</width>
     <height>689</height>
    </rect>
   </property>
@@ -53,6 +53,11 @@
     <item>
      <property name="text">
       <string>ShapeMatching</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>FTL</string>
      </property>
     </item>
    </widget>
@@ -281,7 +286,7 @@
      <rect>
       <x>920</x>
       <y>260</y>
-      <width>256</width>
+      <width>201</width>
       <height>31</height>
      </rect>
     </property>
@@ -293,13 +298,6 @@
        </property>
        <property name="checked">
         <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_18">
-       <property name="text">
-        <string> Magnitude</string>
        </property>
       </widget>
      </item>
@@ -323,7 +321,7 @@
     <property name="geometry">
      <rect>
       <x>920</x>
-      <y>440</y>
+      <y>560</y>
       <width>206</width>
       <height>51</height>
      </rect>
@@ -421,7 +419,7 @@
      <rect>
       <x>920</x>
       <y>300</y>
-      <width>244</width>
+      <width>201</width>
       <height>31</height>
      </rect>
     </property>
@@ -447,10 +445,69 @@
        </property>
       </widget>
      </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_21">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>330</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_21">
      <item>
-      <widget class="QPushButton" name="pushButton_resetMass">
+      <widget class="QLabel" name="label_21">
        <property name="text">
-        <string>ResetMass</string>
+        <string>Joint Num:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_JointNum">
+       <property name="text">
+        <string>40</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setJointNum">
+       <property name="text">
+        <string>SetNum</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_22">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>360</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_22">
+     <item>
+      <widget class="QLabel" name="label_22">
+       <property name="text">
+        <string>Length:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_Length">
+       <property name="text">
+        <string>0.05</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_setJointNum_2">
+       <property name="text">
+        <string>SetLength</string>
        </property>
       </widget>
      </item>
@@ -462,7 +519,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1128</width>
+     <width>1129</width>
      <height>21</height>
     </rect>
    </property>
@@ -483,6 +540,7 @@
    <addaction name="separator"/>
    <addaction name="actionSetAnchor"/>
    <addaction name="actionSetConstraint"/>
+   <addaction name="actionRopeDragging"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadMesh">
@@ -567,6 +625,18 @@
    </property>
    <property name="text">
     <string>setConstraint</string>
+   </property>
+  </action>
+  <action name="actionRopeDragging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="medicalsurgery.qrc">
+     <normaloff>:/MedicalSurgery/Resources/agt_virussafe.png</normaloff>:/MedicalSurgery/Resources/agt_virussafe.png</iconset>
+   </property>
+   <property name="text">
+    <string>ropeDragging</string>
    </property>
   </action>
  </widget>
@@ -723,7 +793,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>933</x>
-     <y>520</y>
+     <y>640</y>
     </hint>
     <hint type="destinationlabel">
      <x>932</x>
@@ -739,7 +809,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>976</x>
-     <y>520</y>
+     <y>640</y>
     </hint>
     <hint type="destinationlabel">
      <x>976</x>
@@ -755,7 +825,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1016</x>
-     <y>528</y>
+     <y>648</y>
     </hint>
     <hint type="destinationlabel">
      <x>1013</x>
@@ -771,11 +841,203 @@
    <hints>
     <hint type="sourcelabel">
      <x>1067</x>
-     <y>519</y>
+     <y>639</y>
     </hint>
     <hint type="destinationlabel">
      <x>1071</x>
      <y>571</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setGridDensity</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setGridDensity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1075</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1067</x>
+     <y>127</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setDamping</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setDampParameter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1202</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1125</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_dynamics</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setDynamics(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>971</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1025</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_gravity</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setGravity(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>945</x>
+     <y>331</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>939</x>
+     <y>346</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setGravityMagnitude</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setGravityMagnitude()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1101</x>
+     <y>338</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1113</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setMass</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setMass()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1077</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1078</x>
+     <y>404</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_setForceConstraint</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setForceConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>949</x>
+     <y>210</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>917</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_setPositionConstraint</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setPositionConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1037</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1130</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_setOrientationConstraint</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setOrientationConstraint(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>981</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>279</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRopeDragging</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setRopeDragging(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>564</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setJointNum</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setJointNumber()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1054</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>450</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_setJointNum_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MedicalSurgeryClass</receiver>
+   <slot>setLength()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1083</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1084</x>
+     <y>460</y>
     </hint>
    </hints>
   </connection>
@@ -793,5 +1055,17 @@
   <slot>startSimulation()</slot>
   <slot>simulateNextStep()</slot>
   <slot>pauseSimulation()</slot>
+  <slot>setGridDensity()</slot>
+  <slot>setDampParameter()</slot>
+  <slot>setDynamics(bool)</slot>
+  <slot>setGravity(bool)</slot>
+  <slot>setGravityMagnitude()</slot>
+  <slot>setMass()</slot>
+  <slot>setForceConstraint(bool)</slot>
+  <slot>setPositionConstraint(bool)</slot>
+  <slot>setOrientationConstraint(bool)</slot>
+  <slot>setRopeDragging(bool)</slot>
+  <slot>setLength()</slot>
+  <slot>setJointNumber()</slot>
  </slots>
 </ui>

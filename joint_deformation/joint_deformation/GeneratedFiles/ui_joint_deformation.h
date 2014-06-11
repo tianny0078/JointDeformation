@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'joint_deformation.ui'
 **
-** Created: Mon May 26 16:16:29 2014
+** Created: Thu May 29 17:06:44 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -146,6 +146,11 @@ public:
     QLabel *label_21;
     QLineEdit *lineEdit_energyThreshold;
     QPushButton *pushButton_setEnergyThreshold;
+    QWidget *horizontalLayoutWidget_24;
+    QHBoxLayout *horizontalLayout_24;
+    QLabel *label_11;
+    QLineEdit *lineEdit_RegionDamping;
+    QPushButton *pushButton_setRegionDamping;
     QWidget *tab_3;
     QWidget *horizontalLayoutWidget_12;
     QHBoxLayout *horizontalLayout_12;
@@ -784,6 +789,29 @@ public:
 
         horizontalLayout_23->addWidget(pushButton_setEnergyThreshold);
 
+        horizontalLayoutWidget_24 = new QWidget(tab_2);
+        horizontalLayoutWidget_24->setObjectName(QString::fromUtf8("horizontalLayoutWidget_24"));
+        horizontalLayoutWidget_24->setGeometry(QRect(0, 260, 301, 31));
+        horizontalLayout_24 = new QHBoxLayout(horizontalLayoutWidget_24);
+        horizontalLayout_24->setSpacing(6);
+        horizontalLayout_24->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
+        horizontalLayout_24->setContentsMargins(0, 0, 0, 0);
+        label_11 = new QLabel(horizontalLayoutWidget_24);
+        label_11->setObjectName(QString::fromUtf8("label_11"));
+
+        horizontalLayout_24->addWidget(label_11);
+
+        lineEdit_RegionDamping = new QLineEdit(horizontalLayoutWidget_24);
+        lineEdit_RegionDamping->setObjectName(QString::fromUtf8("lineEdit_RegionDamping"));
+
+        horizontalLayout_24->addWidget(lineEdit_RegionDamping);
+
+        pushButton_setRegionDamping = new QPushButton(horizontalLayoutWidget_24);
+        pushButton_setRegionDamping->setObjectName(QString::fromUtf8("pushButton_setRegionDamping"));
+
+        horizontalLayout_24->addWidget(pushButton_setRegionDamping);
+
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
@@ -1223,8 +1251,9 @@ public:
         QObject::connect(pushButton_loadStep, SIGNAL(clicked()), joint_deformationClass, SLOT(loadStep()));
         QObject::connect(pushButton_testFLRegion, SIGNAL(clicked()), joint_deformationClass, SLOT(testFLRegion()));
         QObject::connect(pushButton_setW, SIGNAL(clicked()), joint_deformationClass, SLOT(setW()));
+        QObject::connect(pushButton_setRegionDamping, SIGNAL(clicked()), joint_deformationClass, SLOT(setRegionDamping()));
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(joint_deformationClass);
@@ -1312,6 +1341,9 @@ public:
         label_21->setText(QApplication::translate("joint_deformationClass", "EnergyThreshold", 0, QApplication::UnicodeUTF8));
         lineEdit_energyThreshold->setText(QApplication::translate("joint_deformationClass", "0.001", 0, QApplication::UnicodeUTF8));
         pushButton_setEnergyThreshold->setText(QApplication::translate("joint_deformationClass", "Set", 0, QApplication::UnicodeUTF8));
+        label_11->setText(QApplication::translate("joint_deformationClass", "        RegionDamping      :", 0, QApplication::UnicodeUTF8));
+        lineEdit_RegionDamping->setText(QApplication::translate("joint_deformationClass", "0.05", 0, QApplication::UnicodeUTF8));
+        pushButton_setRegionDamping->setText(QApplication::translate("joint_deformationClass", "SetRDamping", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("joint_deformationClass", "Shape matching", 0, QApplication::UnicodeUTF8));
         checkBox_Network->setText(QApplication::translate("joint_deformationClass", "Network", 0, QApplication::UnicodeUTF8));
         radioButton_Server->setText(QApplication::translate("joint_deformationClass", "Server", 0, QApplication::UnicodeUTF8));

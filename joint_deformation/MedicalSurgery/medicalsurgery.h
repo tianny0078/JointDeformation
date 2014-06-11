@@ -13,8 +13,8 @@ public:
 	MedicalSurgery(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MedicalSurgery();
 
-	void setGridDensity();
 public slots:
+	void setGridDensity();
 	void loadMesh();
 	void scaleMesh();
 	void showMesh(bool);
@@ -32,6 +32,18 @@ public slots:
 	void initializeSimulator();
 	void simulateNextStep();
 
+	void setDampParameter();
+	void setDynamics(bool);
+	void setGravity(bool);
+	void setGravityMagnitude();
+	void setMass();
+
+	void setForceConstraint(bool);
+	void setPositionConstraint(bool);
+	void setOrientationConstraint(bool);
+	void setRopeDragging(bool);
+	void setJointNumber();
+	void setLength();
 private:
 	Ui::MedicalSurgeryClass ui;
 

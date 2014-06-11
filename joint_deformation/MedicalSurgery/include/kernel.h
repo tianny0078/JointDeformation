@@ -25,6 +25,7 @@
 #include "Eigen/Geometry"
 
 #include "mesh.h"
+#include "rope.h"
 #include <time.h>
 #include <stdlib.h>
 #include "performanceCounter.h"
@@ -40,7 +41,7 @@ public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
 		MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, 
 		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP, 
-		HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2, FLSM_ORIGINAL} Simulator;
+		HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2, FLSM_ORIGINAL, FTL_ROPE} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -94,6 +95,7 @@ public:
 	bool simulateNextStep4HSMForce4StepFirst1();
 	bool simulateNextStep4HSMForce4StepFirst2();
 	bool simulateNextStep4FLSMOriginal();
+	bool simulateNextStep4FTL();
 	//
 	bool simulateNextStep4SingleGrid();
 	bool simulateNextStep4Hierarchy();
@@ -154,6 +156,7 @@ public:
 	Mesh* p_mesh_low;
 	VoxMesh* p_vox_mesh;
 	unsigned int* p_voxel;
+	Rope * p_rope;
 
 	int grid_density;
 	int num_sim_vox;

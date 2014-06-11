@@ -48,6 +48,7 @@ Renderer::Renderer(QWidget *parent)
 	flag_cube_operation = false;
 	flag_show_cube_static_constraints = false;
 	flag_show_cube_active_constraints = false;
+	flag_rope_dragging = false;
 		
 	rotate_dist = 0;
 	view_dist = 0;
@@ -186,6 +187,10 @@ void Renderer::paintGL()
 	switch (current_render_mode)
 	{
 	case REGULAR:
+		if (p_kernel->p_rope)
+		{
+			p_kernel->p_rope->render();
+		}
 
 		if (flag_cube_operation)
 		{
@@ -1405,6 +1410,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 			QMessageBox::information(NULL, tr("success"), tr(msg));
 		}
+
 		/*
 		if (current_render_mode == TREE_SETTING && last_mouse_button == Qt::RightButton)
 		{
@@ -1452,6 +1458,32 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 			upper_left_x = current_mouse_x;
 			upper_left_y = current_mouse_y;
 		}
+
+		/*
+		//rope dragging
+		if (flag_rope_dragging)
+		{
+			if (!p_kernel->p_rope->activeJoint != -1)
+			{
+				Vector3d mouse_pos_before = p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x;
+
+				double wx, wy, wz;
+
+				gluProject(mouse_pos_before[0], mouse_pos_before[1], mouse_pos_before[2], 
+					currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+				wx = current_mouse_x;
+				wy = win_height - current_mouse_y;
+
+				Vector3d mouse_pos;
+
+				gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+					&mouse_pos[0], &mouse_pos[1], &mouse_pos[2]);
+
+				p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x = mouse_pos;
+			}
+		}
+		*/
 	}
 		
 	last_mouse_x = current_mouse_x;
@@ -1803,6 +1835,26 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				break;
 			}
 		}
+		//rope dragging
+		if (flag_rope_dragging)
+		{
+			vector<joint>::iterator ji = p_kernel->p_rope->joint_list.begin();
+			int i = 0;
+			for (; ji != p_kernel->p_rope->joint_list.end(); ji++)
+			{
+				double x, y, z;
+				Vector3d p = ji->_x;
+				gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &x, &y, &z);
+
+				if (isPicked(x, y))
+				{
+					p_kernel->p_rope->activeJoint = i;
+					p_kernel->p_rope->constraint_list[0] = i;
+					break;
+				}
+				i++;
+			}
+		}
 	}
 
 
@@ -1819,6 +1871,33 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				}
 				p_kernel->p_vox_mesh->active_node = NULL;
 				force_arrow.setZero();
+			}
+		}
+
+		//rope dragging
+		if (flag_rope_dragging)
+		{
+			vector<joint>::iterator ji = p_kernel->p_rope->joint_list.begin();
+			int i = 0;
+			for (; ji != p_kernel->p_rope->joint_list.end(); ji++)
+			{
+				double x, y, z;
+				Vector3d p = ji->_x;
+				gluProject(p[0], p[1], p[2], currentmodelview, currentprojection, currentviewport, &x, &y, &z);
+
+				if (isPicked(x, y))
+				{
+					p_kernel->p_rope->staticJoint = i;
+					if (p_kernel->p_rope->constraint_list.size() > 1)
+						p_kernel->p_rope->constraint_list[1] = i;
+					else{
+						p_kernel->p_rope->constraint_list.push_back(i);
+					}
+
+
+					break;
+				}
+				i++;
 			}
 		}
 	}
@@ -2236,9 +2315,32 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 			{
 				//cube operation
 			}
+
+			//rope dragging
+			if (flag_rope_dragging)
+			{
+				if (p_kernel->p_rope->activeJoint != -1)
+				{
+					Vector3d mouse_pos_before = p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x;
+
+					double wx, wy, wz;
+
+					gluProject(mouse_pos_before[0], mouse_pos_before[1], mouse_pos_before[2], 
+						currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+					wx = current_mouse_x;
+					wy = win_height - current_mouse_y;
+					
+					Vector3d mouse_pos;
+
+					gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+						&mouse_pos[0], &mouse_pos[1], &mouse_pos[2]);
+
+					p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x = mouse_pos;
+				}
+			}
 		} // end if simulation
 	}
-	
 
 
 	last_mouse_xd = current_mouse_xd;

@@ -791,6 +791,11 @@ void joint_deformation::setDampParameter()
 	p_kernel->p_body->kParticleDamping = 1 - kappa;
 }
 
+void joint_deformation::setRegionDamping()
+{
+	p_kernel->p_body->kRegionDamping = 1 - ui.lineEdit_damping->text().toDouble();
+}
+
 void joint_deformation::setMultigrid(bool a)
 {
 	p_kernel->flag_multigrid = a;

@@ -200,6 +200,9 @@ void MedicalSurgery::chooseSimulator(int t)
 	case 1:
 		p_kernel->used_simulator = Kernel::SHAPE_MATCHING;
 		break;
+	case 2:
+		p_kernel->used_simulator = Kernel::FTL_ROPE;
+		break;
 	default:
 		break;
 	}
@@ -326,4 +329,81 @@ void MedicalSurgery::initializeSimulator()
 	p_kernel->initializeSimulator();
 
 	QMessageBox::information(NULL, "success", "simulator initialized");
+}
+
+void MedicalSurgery::setDampParameter()
+{
+	double kappa= ui.lineEdit_damping->text().toDouble();
+	for(int i = 0; i < p_kernel->level_list.size(); i ++)
+	{
+		vector<Cluster>::iterator ci;
+		for( ci = p_kernel->level_list[i]->voxmesh_level->cluster_list.begin(); ci != p_kernel->level_list[i]->voxmesh_level->cluster_list.end(); ci++)
+		{
+			ci->kappa = kappa;
+		}
+	}
+}
+
+void MedicalSurgery::setDynamics(bool a)
+{
+	p_kernel->flag_dynamics = a;
+}
+
+void MedicalSurgery::setGravity(bool a)
+{
+	if(a && (!p_kernel->flag_dynamics))
+	{
+		QMessageBox::warning(NULL, "warning", "Please enable dynamics!");
+		ui.checkBox_gravity->setChecked(false);
+		return;
+	}
+	p_kernel->flag_gravity = a;
+}
+
+void MedicalSurgery::setGravityMagnitude()
+{
+	p_kernel->gravity_magnitude = (-1) * ui.lineEdit_gravityMagnitude->text().toDouble();
+}
+
+void MedicalSurgery::setMass()
+{
+	ui.renderWidget->setMass(ui.lineEdit_mass->text().toDouble());
+}
+
+void MedicalSurgery::setForceConstraint(bool a)
+{
+	if(a)
+	{
+		p_kernel->constraintType = Kernel::FORCE_CONSTRAINT;
+	}
+}
+
+void MedicalSurgery::setPositionConstraint(bool a)
+{
+	p_kernel->constraintType = Kernel::POSITION_CONSTRAINT;
+	ui.renderWidget->updateGL();
+}
+
+void MedicalSurgery::setOrientationConstraint(bool a)
+{
+	p_kernel->constraintType = Kernel::ORIENTATION_CONSTRAINT;
+	ui.renderWidget->updateGL();
+}
+
+void MedicalSurgery::setRopeDragging(bool a)
+{
+	ui.renderWidget->flag_rope_dragging = a;
+	ui.renderWidget->updateGL();
+}
+
+void MedicalSurgery::setJointNumber()
+{
+	p_kernel->p_rope->setNum(ui.lineEdit_JointNum->text().toInt());
+	ui.renderWidget->updateGL();
+}
+
+void MedicalSurgery::setLength()
+{
+	p_kernel->p_rope->setLength(ui.lineEdit_Length->text().toDouble());
+	ui.renderWidget->updateGL();
 }

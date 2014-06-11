@@ -14,6 +14,7 @@ Kernel::Kernel()
 	p_mesh = new Mesh;
 	p_mesh_low = new Mesh;
 	p_vox_mesh = new VoxMesh;
+	p_rope = new Rope();
 
 	grid_density = 1;
 	num_sim_vox = 0;
@@ -2535,6 +2536,12 @@ void Kernel::initializeSimulator()
 		//{
 		//	n->lp->_mass = 10000.0;
 		//}
+
+		flag_simulator_ready = true;
+		break;
+	case FTL_ROPE:
+		p_rope->constraint_list.push_back(0);
+		//p_rope->constraint_list.push_back(39);
 		flag_simulator_ready = true;
 		break;
 	}
@@ -8359,6 +8366,36 @@ bool Kernel::simulateNextStepForMobile()
 	return true;
 }
 
+bool Kernel::simulateNextStep4FTL()
+{
+	/*
+	if (time_step_index % 3 == 0)
+	{
+		for (int i = 0; i < p_rope->constraint_list.size(); i++)
+		{
+			p_rope->joint_list[p_rope->constraint_list[i]]._x(1) = 0.5;
+		}
+	}
+	else if(time_step_index % 3 == 1)
+	{
+		for (int i = 0; i < p_rope->constraint_list.size(); i++)
+		{
+			p_rope->joint_list[p_rope->constraint_list[i]]._x(1) = 0;
+		}
+	}
+	else if(time_step_index % 3 == 2)
+	{
+		for (int i = 0; i < p_rope->constraint_list.size(); i++)
+		{
+			p_rope->joint_list[p_rope->constraint_list[i]]._x(1) = -0.5;
+		}
+	}
+	*/
+	p_rope->FTL(time_step_size);
+	++time_step_index;
+	return true;
+}
+
 bool Kernel::simulateNextStep4SingleGrid()
 {
 	if (p_vox_mesh->active_node)
@@ -8586,6 +8623,8 @@ bool Kernel::simulateNextStep()
 		return simulateNextStep4HSMForce4StepFirst2();
 	case FLSM_ORIGINAL:
 		return simulateNextStep4FLSMOriginal();
+	case FTL_ROPE:
+		return simulateNextStep4FTL();
 	default:
 		return false;
 		break;
