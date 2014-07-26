@@ -624,6 +624,9 @@ void joint_deformation::chooseSimulator(int t)
 		ui.comboBox_level->clear();
 		ui.comboBox_level->addItem("Level 0");
 		ui.comboBox_level->setDisabled(false);
+	case 17:
+		p_kernel->used_simulator = Kernel::NEEDLE_SM;
+		break;
 	default:
 		break;
 	}

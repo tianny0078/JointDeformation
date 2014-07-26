@@ -1618,6 +1618,11 @@
       <string>FLSM</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Needle_SM</string>
+     </property>
+    </item>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">

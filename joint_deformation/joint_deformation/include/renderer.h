@@ -182,6 +182,10 @@ public:
 
 public:
 
+	//test for a segment
+	float sbegin[3];
+	float send[3];
+	float svec[3];
 
 	Render_mode current_render_mode;
 
@@ -205,6 +209,8 @@ public:
 
 	bool flag_left_surface;
 	bool flag_right_surface;
+
+	bool flag_rope_dragging;
 	
 	// colors
 	QColor background_color;

@@ -30,6 +30,8 @@
 #include "lattice.h"//flsm
 #include <time.h>
 #include <stdlib.h>
+#include "rope.h"
+#include "needletip.h"
 
 #include "performanceCounter.h"
 
@@ -43,7 +45,7 @@ public:
 	typedef enum {UNDEFINED, SHAPE_MATCHING, VELOCITY_MATCHING, PAIR_MATCHING, SINGLE_GRID,HIERARCHY, 
 		MULTIPLE_VELOCITY_MATCHING, SIMULATION_NETWORKING, SIMULATION_MOBILE, 
 		HSM_FORCE4ITERATION, HSM_ONE_STEP, HSM_FORCE4STEP, HSM_ORIGINAL, HSM_ADAPTIVE_STEP, 
-		HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2, FLSM_ORIGINAL} Simulator;
+		HSM_FORCE4STEP_FIRST, HSM_FORCE4STEP_FIRST1, HSM_FORCE4STEP_FIRST2, FLSM_ORIGINAL, NEEDLE_SM} Simulator;
 	typedef enum {NETWORK_ROLE_NONE, NETWORK_ROLE_SERVER, NETWORK_ROLE_CLIENT} NetworkRole;
 	typedef enum {FORCE_CONSTRAINT, POSITION_CONSTRAINT, ORIENTATION_CONSTRAINT} ConstraintType;
 
@@ -84,6 +86,7 @@ public:
 	void generatePerRegionParticle(VoxMesh *vm);
 	bool simulateNextStep();
 	bool simulateNextStep4ShapeMatching();
+	bool simulateNextStep4NeedleShapeMatching();
 	bool simulateNextStep4VelocityMatching();
 	//newly
 	bool simulateNextStepForMobile();
@@ -244,6 +247,8 @@ public:
 	Node * paraNode2[3];
 	int idx_constraint;
 	Mesh * sphere;
+	Rope * p_rope;
+	needleTip * p_needle;
 
 	//for arrow
 	Vector3d _posBegin;
@@ -269,6 +274,7 @@ public:
 	bool flag_redo;
 	ofstream myForce;
 	ofstream myAnotherForce;
+	ofstream myForce3;
 	bool flag_beating;
 	vector<int> step_list;
 };

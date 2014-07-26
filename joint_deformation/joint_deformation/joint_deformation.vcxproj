@@ -188,7 +188,9 @@
     <ClCompile Include="source\lattice.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\mesh.cpp" />
+    <ClCompile Include="source\needletip.cpp" />
     <ClCompile Include="source\renderer.cpp" />
+    <ClCompile Include="source\rope.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="joint_deformation.ui">
@@ -223,6 +225,7 @@
     <ClInclude Include="include\kernel.h" />
     <ClInclude Include="include\lattice.h" />
     <ClInclude Include="include\mesh.h" />
+    <ClInclude Include="include\needletip.h" />
     <ClInclude Include="include\network\HNCaptureDevice.h" />
     <ClInclude Include="include\network\HNCommunicator.h" />
     <ClInclude Include="include\network\HNCompressedPacketMarshaller.h" />
@@ -257,6 +260,7 @@
     <ClInclude Include="include\network\HNWindowsThread.h" />
     <ClInclude Include="include\network\tinyxml2.h" />
     <ClInclude Include="include\performanceCounter.h" />
+    <ClInclude Include="include\rope.h" />
     <CustomBuild Include="include\renderer.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing renderer.h...</Message>

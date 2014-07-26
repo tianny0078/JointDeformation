@@ -2564,6 +2564,14 @@ bool Kernel::simulateNextStep4ShapeMatching()
 	num_PE_perTimeStep = 0;
 	Vector3d force_gravity = Vector3d::Zero();
 	Vector3d force_wind = Vector3d::Zero();
+	
+	if (flag_exportForce)
+	{
+		myForce << current_force(0) << " "
+			<< current_force(1) << " "
+			<< current_force(2) << endl;
+	}
+
 	//set gravity
 	if(flag_gravity)
 	{

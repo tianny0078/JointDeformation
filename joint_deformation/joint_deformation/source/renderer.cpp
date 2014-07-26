@@ -48,6 +48,7 @@ Renderer::Renderer(QWidget *parent)
 	flag_cube_operation = false;
 	flag_show_cube_static_constraints = false;
 	flag_show_cube_active_constraints = false;
+	flag_rope_dragging = false;
 		
 	rotate_dist = 0;
 	view_dist = 0;
@@ -98,6 +99,16 @@ Renderer::Renderer(QWidget *parent)
 	myArrow = NULL;
 
 	idx_FLRegion = 0;
+
+	sbegin[0] = 0.0;
+	sbegin[1] = 0.0;
+	sbegin[2] = 0.0;
+	send[0] = 0.0;
+	send[1] = 0.0;
+	send[2] = 0.0;
+	svec[0] = 0.0;
+	svec[1] = 0.0;
+	svec[2] = 0.0;
 }
 
 Renderer::~Renderer()
@@ -192,22 +203,7 @@ void Renderer::paintGL()
 			tool->render();
 		}
 
-		if (flag_show_mesh && p_kernel->flag_mesh_ready)
-		{
-			renderMesh(p_kernel->p_mesh);
-			/*
-			glColor3f(0.0, 1.0, 0.0);
-			glPushMatrix();
-			glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
-			glutSolidSphere(0.03, 16, 16);
-			glPopMatrix();
-			glColor3f(1.0, 0.0, 0.0);
-			glPushMatrix();
-			glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
-			glutSolidSphere(0.03, 16, 16);
-			glPopMatrix();
-			*/
-		}
+
 
 		if (flag_show_grid)
 		{
@@ -247,7 +243,7 @@ void Renderer::paintGL()
 		}
 		if (flag_simulating)
 		{
-			renderForce();
+			//renderForce();
 		}
 
 
@@ -256,8 +252,8 @@ void Renderer::paintGL()
 			//////////////////////////////////////////////////////////////////////////
 			///// test if flsm region is right
 			//////////////////////////////////////////////////////////////////////////
-			float color[] = {1.0, 0.0, 0.0};
-			renderFLParticle4Region(idx_FLRegion,color);
+			//float color[] = {1.0, 0.0, 0.0};
+			//renderFLParticle4Region(idx_FLRegion,color);
 			//////////////////////////////////////////////////////////////////////////
 
 			/////////////////////////////////////////////////////////////////
@@ -290,11 +286,41 @@ void Renderer::paintGL()
 			//renderLevelVox(plevel, showVox4Idx);
 			//renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
 			///////////////////////////////////////////////////////////////
-		
+			//for rigid needle
+
+			sbegin[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0);
+			sbegin[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1);
+			sbegin[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2);
+
+			send[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0) +  svec[0];
+			send[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1) +  svec[1];
+			send[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2) +  svec[2];
+			//render a segment line
+			p_kernel->p_needle->setNeedleBeginPos(sbegin[0], sbegin[1], sbegin[2]);
+			p_kernel->p_needle->setNeedleEndPos(send[0], send[1], send[2]);
+			p_kernel->p_needle->render();
+
+			//for flexible needle
+			/*
+			sbegin[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0) - 0.5 * svec[0];
+			sbegin[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1) - 0.5 * svec[1];
+			sbegin[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2) - 0.5 * svec[2];
+
+			send[0] = 0.5 * (p_kernel->paraNode2[0]->coordinate(0) +  p_kernel->paraNode2[0]->displacement(0));
+			send[1] = 0.5 * (p_kernel->paraNode2[0]->coordinate(1) +  p_kernel->paraNode2[0]->displacement(1));
+			send[2] = 0.5 * (p_kernel->paraNode2[0]->coordinate(2) +  p_kernel->paraNode2[0]->displacement(2));
+
+			glPushMatrix();
+			glTranslatef(sbegin[0], sbegin[1], sbegin[2]);
+			glutSolidCube(0.05);
+			glPopMatrix();
+
+			glPushMatrix();
+			glTranslatef(send[0], send[1], send[2]);
+			glutSolidCube(0.05);
+			glPopMatrix();
+			*/
 		}
-
-
-
 		break;
 
 
@@ -318,6 +344,28 @@ void Renderer::paintGL()
 			renderVoxMesh(p_kernel->p_vox_mesh, light_mesh_color);
 			renderSelectSquare(upper_left_x, upper_left_y, bottom_right_x, bottom_right_y);
 		}
+	}
+	/*
+	if (p_kernel->p_rope)
+	{
+		p_kernel->p_rope->render();
+	}
+	*/
+	if (flag_show_mesh && p_kernel->flag_mesh_ready)
+	{
+		renderMesh(p_kernel->p_mesh);
+		/*
+		glColor3f(0.0, 1.0, 0.0);
+		glPushMatrix();
+		glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
+		glutSolidSphere(0.03, 16, 16);
+		glPopMatrix();
+		glColor3f(1.0, 0.0, 0.0);
+		glPushMatrix();
+		glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
+		glutSolidSphere(0.03, 16, 16);
+		glPopMatrix();
+		*/
 	}
 			
 	renderInvertedCluster();
@@ -1719,7 +1767,18 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 						p_kernel->surface_point_left[0] = m[0];
 						p_kernel->surface_point_left[1] = m[1];
 						p_kernel->surface_point_left[2] = m[2];
-						
+
+						//for 
+						sbegin[0] = n0[0];
+						sbegin[1] = n0[1];
+						sbegin[2] = n0[2];
+						svec[0] = n0[0];
+						svec[1] = n0[1];
+						svec[2] = n0[2];
+
+						p_kernel->p_needle->_pcluster = fi->node0->incident_cluster[0];
+						p_kernel->p_needle->_cp->coordinate = Vector3d(n0[0], n0[1], n0[2]);
+						p_kernel->p_needle->_cp->target_position = Vector3d(n0[0], n0[1], n0[2]);
 						//cout << m << endl;
 						//cout << n0 * p_kernel->para[0] + n1*p_kernel->para[1] + n2*p_kernel->para[2] << endl;
 					}
@@ -1785,6 +1844,7 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 				break;
 			case Kernel::SINGLE_GRID:
 			case Kernel::SHAPE_MATCHING:
+			case Kernel::NEEDLE_SM:
 				for (; ni!=p_kernel->p_vox_mesh->surface_node_list.end(); ++ni)
 				{
 					p = (*ni)->coordinate + (*ni)->displacement;
@@ -1900,13 +1960,15 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 			//after simulation
 		}
 
-		if (flag_simulating && !flag_show_selection && !flag_show_constraints && !flag_show_mass && !flag_show_cube_static_constraints && !flag_show_cube_active_constraints)
+		if (flag_simulating && !flag_show_selection && !flag_show_constraints && !flag_show_mass && !flag_show_cube_static_constraints && !flag_show_cube_active_constraints
+			&& !flag_rope_dragging)
 		{
 			if(!flag_cube_operation)
 			{
 				switch (p_kernel->used_simulator)
 				{
 				case Kernel::SHAPE_MATCHING:
+				case Kernel::NEEDLE_SM:
 				case Kernel::SINGLE_GRID:
 				case Kernel::HSM_ADAPTIVE_STEP:
 				case Kernel::HSM_FORCE4ITERATION:
@@ -2230,7 +2292,31 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 			{
 				//cube operation
 			}
+
 		} // end if simulation
+			//rope dragging
+			if (flag_rope_dragging)
+			{
+				if (p_kernel->p_rope->activeJoint != -1)
+				{
+					Vector3d mouse_pos_before = p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x;
+
+					double wx, wy, wz;
+
+					gluProject(mouse_pos_before[0], mouse_pos_before[1], mouse_pos_before[2], 
+						currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+					wx = current_mouse_x;
+					wy = win_height - current_mouse_y;
+
+					Vector3d mouse_pos;
+
+					gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+						&mouse_pos[0], &mouse_pos[1], &mouse_pos[2]);
+
+					p_kernel->p_rope->joint_list[p_kernel->p_rope->activeJoint]._x = mouse_pos;
+				}
+			}
 	}
 	
 
@@ -2435,6 +2521,32 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 			p_kernel->myForce.close();
 			cout << "stop exporting position!" << endl;
 		}
+		break;
+	case Qt::Key_F:
+		p_kernel->flag_exportForce = !p_kernel->flag_exportForce;
+		if (p_kernel->flag_exportForce)
+		{
+			p_kernel->myForce.open("force_x.txt", ios::out);
+			p_kernel->myAnotherForce.open("force_y.txt", ios::out);
+			p_kernel->myForce3.open("force_z.txt", ios::out);
+			cout << "start exporting force!" << endl;
+		}	
+		else
+		{
+			p_kernel->myForce.close();
+			p_kernel->myAnotherForce.close();
+			p_kernel->myForce3.close();
+			cout << "stop exporting force!" << endl;
+		}
+		break;
+	case Qt::Key_G:
+		flag_rope_dragging = !flag_rope_dragging;
+		if (flag_rope_dragging)
+		{
+			cout << "rope dragging" << endl;
+		}
+		else
+			cout << "shape matching" << endl;
 		break;
 	default:
 		theCamera.status = Camera::IDLING;
@@ -2874,7 +2986,8 @@ void Renderer::renderCircle(Vector3d c, Vector3d n, double r, double color_r, do
 
 void Renderer::renderMesh(const Mesh* m)
 {
-	glColor3fv(render_mesh_color);
+	//glColor3fv(render_mesh_color, 0.3);
+	glColor4f(render_mesh_color[0],render_mesh_color[1],render_mesh_color[2], 0.8);
 	vector<Face>::iterator fi = p_kernel->p_mesh->face_list.begin();
 	for (; fi!=p_kernel->p_mesh->face_list.end(); ++fi)
 	{
@@ -2892,7 +3005,9 @@ void Renderer::renderMesh(const Mesh* m)
 		fi->normal = n;
 		
 		//display a line mesh
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		glDisable(GL_CULL_FACE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
+		glPolygonMode(GL_FRONT, GL_FILL);
 		glBegin(GL_TRIANGLES);
 		glNormal3d(n[0], n[1], n[2]);
 		glVertex3d(n0[0], n0[1], n0[2]);
@@ -4065,6 +4180,7 @@ void Renderer::renderClusterStaticPosition(const Cluster* c, float* cluster_colo
 			
 	glEnd();
 	
+	/*
 	glColor4f(cluster_color[0], cluster_color[1], cluster_color[2], 0.1);
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glBegin(GL_QUADS);
@@ -4102,7 +4218,7 @@ void Renderer::renderClusterStaticPosition(const Cluster* c, float* cluster_colo
 
 	glEnd();
 
-
+	*/
 	
 }
 

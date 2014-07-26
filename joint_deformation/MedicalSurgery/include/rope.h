@@ -94,6 +94,11 @@ public:
 };
 
 
+struct path{
+public:
+	vector<Vector3d> position_list;
+	vector<int> idx_before_list;
+};
 
 class Rope
 {
@@ -106,6 +111,9 @@ public:
 	int staticJoint;
 	vector<joint> joint_list;
 	vector<int> constraint_list;
+	vector<path> path_list;
+	int num_path;
+	bool flag_path_building;
 	
 	//collision handling
 	vector<Segment> segment_list;
@@ -128,6 +136,10 @@ public:
 	//collision detection
 	void buildSphereTree();
 	void computeSelfCollision();
+
+	//path
+	void addPath();
+	void addPos2Path(Vector3d & pos, int idx);
 };
 
 #endif

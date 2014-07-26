@@ -15,6 +15,8 @@ Kernel::Kernel()
 	p_mesh_low = new Mesh;
 	p_vox_mesh = new VoxMesh;
 	p_body = new Body;
+	p_rope = new Rope();
+	p_needle = new needleTip();
 	//p_body->w = 2;
 
 	grid_density = 1;
@@ -2219,6 +2221,44 @@ void Kernel::initializeSimulator()
 			}
 		}
 
+
+		//ftl
+		p_rope->constraint_list.push_back(0);
+
+		flag_simulator_ready = true;
+		break;
+	case NEEDLE_SM:
+		for (ci=p_vox_mesh->cluster_list.begin(); ci!=p_vox_mesh->cluster_list.end(); ++ci)
+		{
+			ci->computeRestMassCentroid();
+			ci->current_center = ci->original_center;
+			ci->computeAQQ();
+		}
+
+		// link duplicates
+		for (node_iter=p_vox_mesh->node_list.begin(); node_iter!=p_vox_mesh->node_list.end(); ++node_iter)
+		{
+			node_iter->duplicates.clear();
+			node_iter->duplicates.reserve(p_vox_mesh->num_cluster);
+			node_iter->static_position = node_iter->coordinate;
+			node_iter->target_position = node_iter->coordinate;
+		}
+
+		for (ci=p_vox_mesh->cluster_list.begin(); ci!=p_vox_mesh->cluster_list.end(); ++ci)
+		{
+			vector<DuplicatedNode>::iterator dn_iter = ci->node_list.begin();
+			for (; dn_iter!=ci->node_list.end(); ++dn_iter)
+			{
+				dn_iter->mapped_node->duplicates.push_back(&(*dn_iter));
+				dn_iter->static_position = dn_iter->coordinate;
+				dn_iter->target_position = dn_iter->coordinate;
+			}
+		}
+
+
+		//ftl
+		p_rope->constraint_list.push_back(0);
+
 		flag_simulator_ready = true;
 		break;
 	case HSM_FORCE4ITERATION:
@@ -2560,11 +2600,308 @@ double Kernel::getEnergyRatio(VoxMesh * vm, double &speed)
 	return ratio;
 }
 
+bool Kernel::simulateNextStep4NeedleShapeMatching()
+{
+	num_PE_perTimeStep = 0;
+	Vector3d force_gravity = Vector3d::Zero();
+	Vector3d force_wind = Vector3d::Zero();
+	if (flag_exportForce)
+	{
+		myForce << current_force(0) << endl;
+		myAnotherForce << current_force(1) << endl;
+		myForce3 << current_force(2) << endl;
+	}
+	//set gravity
+	if(flag_gravity)
+	{
+		force_gravity(1) = gravity_magnitude;
+	}
+	if(flag_setWindForce)
+	{
+		srand(time(NULL));
+		wind_magnitude = (rand() % 100) * 0.01;
+		force_wind = const_force * sin((time_step_index % 360) * PI / 180) * wind_magnitude;
+	}
+
+	if(flag_setForce && constraintType == Kernel::FORCE_CONSTRAINT)
+	{
+		if (!p_vox_mesh->constraint_node_list.empty())
+		{
+			int size_k = p_vox_mesh->constraint_node_list.size();
+			for(int k = 0; k < size_k; k ++)
+			{
+				p_vox_mesh->constraint_node_list[k]->force = const_force;
+
+				//revised here 0204
+				for(int i=0; i < p_vox_mesh->constraint_node_list[k]->duplicates.size(); ++i)
+				{
+					p_vox_mesh->constraint_node_list[k]->duplicates[i]->force = const_force;
+				}
+			}
+		}
+	}
+	time_counter->StartCounter();
+	if(flag_setForce && constraintType != Kernel::FORCE_CONSTRAINT)
+	{
+		
+		if (!p_vox_mesh->constraint_node_list.empty())
+		{
+			int size_k =p_vox_mesh->constraint_node_list.size();
+			for(int k = 0; k < size_k; k ++)
+			{
+				p_vox_mesh->constraint_node_list[k]->prescribed_position = p_vox_mesh->constraint_node_list[k]->coordinate + const_force;
+			}
+		}
+	}
+	double PI = 3.14159265;
+	if (flag_redo && constraintType == Kernel::FORCE_CONSTRAINT)
+	{
+		if (no_record < force_list.size())
+		{
+			if (!p_vox_mesh->constraint_node_list.empty())
+			{
+				int size_k = p_vox_mesh->constraint_node_list.size();
+				for(int k = 0; k < size_k; k ++)
+				{
+					p_vox_mesh->constraint_node_list[k]->force = force_list[no_record];
+
+					for(int i=0; i < p_vox_mesh->constraint_node_list[k]->duplicates.size(); ++i)
+					{
+						p_vox_mesh->constraint_node_list[k]->duplicates[i]->force = force_list[no_record];
+					}
+				}
+			}
+			//flag_exportObj = true;
+			//cout << force_list[no_record] << endl;
+			no_record ++;
+		}
+		else
+		{
+			//
+			//flag_exportObj = false;
+			cout << "end of redo!" << endl;
+			return true;
+		}
+	}
+	vector<Cluster>::iterator ci = p_vox_mesh->cluster_list.begin();
+	for (; ci!=p_vox_mesh->cluster_list.end(); ++ci)
+	{
+		ci->current_center.setZero();
+		vector<DuplicatedNode>::const_iterator const_ni;
+		double mass_sum = 0.0;
+	
+		for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
+		{
+			ci->current_center += const_ni->target_position * const_ni->mass;
+			mass_sum += const_ni->mass;
+		}
+
+		ci->current_center /= mass_sum;
+
+		ci->a_pq = Matrix3d::Zero();
+		Vector3d p, q;
+
+		for(const_ni=ci->node_list.begin(); const_ni!=ci->node_list.end(); ++const_ni)
+		{
+			p = const_ni->target_position - ci->current_center;
+			q = const_ni->coordinate - ci->original_center;
+			ci->a_pq += const_ni->mass * p * q.transpose();
+		}
+
+		ci->a = ci->a_pq * ci->a_qq;
+		
+
+		JacobiSVD<Matrix3d> jacobi(ci->a_pq, ComputeFullU|ComputeFullV);
+		ci->r = jacobi.matrixU() * jacobi.matrixV().transpose();
+
+		//count for PE
+		num_PE_perTimeStep++;
+		
+		double det_a = det33(ci->a);
+
+		vector<DuplicatedNode>::iterator dni;
+		for (dni=ci->node_list.begin(); dni!=ci->node_list.end(); ++dni)
+		{
+			dni->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(dni->coordinate - ci->original_center) + ci->current_center;
+			if (!dni->mapped_node->flag_anchor_node)
+			{
+				Vector3d _force = dni->force + force_gravity + force_wind;
+				if(flag_dynamics)
+				{
+					dni->velocity = (1.0-ci->kappa)*dni->velocity + ci->alpha*(dni->static_position - dni->coordinate - dni->displacement) / time_step_size
+						+ time_step_size * _force * force_scalar;
+
+					dni->displacement += time_step_size*dni->velocity;
+
+					dni->target_position = dni->coordinate + dni->displacement;
+				}
+				else
+				{
+					dni->target_position = dni->static_position + time_step_size * time_step_size * _force * force_scalar;
+					dni->displacement = dni->target_position - dni->coordinate;
+				}
+				
+			}
+		}
+	}
+
+	//for rendering
+	//p_vox_mesh->new_energy = 0.0;
+	///////////////////////////////
+	for (node_iterator ni=p_vox_mesh->node_list.begin(); ni!=p_vox_mesh->node_list.end(); ++ni)
+	{
+		if(flag_dynamics)
+		{
+			ni->displacement.setZero();
+			ni->velocity.setZero();
+		}
+		ni->target_position.setZero();
+		
+
+		vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+		for (;dn!=ni->duplicates.end();++dn)
+		{
+			if(flag_dynamics)
+			{
+				ni->displacement += (*dn)->displacement;
+				ni->velocity += (*dn)->velocity;
+			}
+			ni->target_position += (*dn)->target_position;
+		}
+
+		ni->target_position /= double(ni->duplicates.size());
+	}
+
+
+	///////////////////////////////////////////////////for experiment
+	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	{
+		nmi->displacement.setZero();
+		for(int i = 0; i < 8; i++)
+		{
+			//nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+			nmi->displacement += (nmi->list_interpolation_nodes[i][level_display]->target_position - nmi->list_interpolation_nodes[i][level_display]->coordinate) * nmi->para_interpolate[i][level_display];
+		}
+	}
+	p_vox_mesh->new_energy = 0.0;
+	for (node_iterator ni=p_vox_mesh->node_list.begin(); ni!=p_vox_mesh->node_list.end(); ++ni)
+	{
+		if(constraintType != Kernel::FORCE_CONSTRAINT  && ni->flag_constraint_node)
+			ni->target_position = ni->prescribed_position;
+
+		if(flag_dynamics)
+		{
+			ni->displacement /= double(ni->duplicates.size());
+			ni->velocity /= double(ni->duplicates.size());
+		}
+		else
+		{
+			ni->displacement = ni->target_position - ni->coordinate;
+		}
+
+		vector<DuplicatedNode*>::iterator dn = ni->duplicates.begin();
+		for (;dn!=ni->duplicates.end();++dn)
+		{
+			if(!ni->flag_anchor_node)
+				(*dn)->target_position = ni->target_position;
+
+			if(flag_dynamics)
+			{
+				(*dn)->displacement = ni->displacement;
+				(*dn)->velocity = ni->velocity;
+			}
+			else
+			{
+				(*dn)->displacement = ni->displacement;
+			}
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(0) - (*dn)->target_position(0)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(1) - (*dn)->target_position(1)), 2);
+			p_vox_mesh->new_energy += pow(((*dn)->static_position(2) - (*dn)->target_position(2)), 2);
+		}
+	}
+	//cout << p_vox_mesh->new_energy << endl;
+	//myEnergy << p_vox_mesh->new_energy << endl;
+	////////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////for rendering
+	//for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	//{
+	//	nmi->displacement.setZero();
+	//	for(int i = 0; i < 8; i++)
+	//	{
+	//		nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+	//	}
+	//}
+	////////////////////////////////////////////////////////////////////////////////
+
+	//networking
+	if(flag_network_ready && network_role == NETWORK_ROLE_SERVER)
+	{
+		for(int i = 0; i < pTransmitter.size(); i++)
+		{
+			if(pTransmitter[i]->_type == HN_TRANSMITTER_TYPE_PC  && pTransmitter[i]->isClientReady)
+				pTransmitter[i]->HSMupdate(data4PC);
+			else if(pTransmitter[i]->_type == HN_TRANSMITTER_TYPE_MOBILE)
+				pTransmitter[i]->HSMupdate(data4Mobile);
+		}
+		
+	}
+
+	
+	if(flag_setForce && !flag_setWindForce)
+	{
+		//double ratio, speed, threshold = 0.0;
+		//ratio = getEnergyRatio(p_vox_mesh, speed);
+		//threshold = abs(p_vox_mesh->new_energy - p_vox_mesh->old_energy);
+		//if (!flag_converge)
+		//{
+		//	time_counter->StopCounter();
+		//	testoutput << time_counter->GetElapsedTime() << endl;
+		//	myEnergy << ratio << endl;
+		//	myHEnergy << p_vox_mesh->new_energy << endl;
+		//}
+		////cout << threshold << endl;
+		////if (p_vox_mesh->old_energy >= p_vox_mesh->new_energy && threshold < 0.0001 && !flag_converge)
+		////{
+		////	timestep_converge = time_step_index;
+		////	flag_converge = true;
+		////	cout << "Iteration #: " << timestep_converge - timestep_begin << endl;
+		////	cout << "converge!" << endl;
+		////}
+		//p_vox_mesh->old_energy = p_vox_mesh->new_energy;
+	}
+	
+	if(flag_exportTxt)
+	{
+		vector<Node>::iterator ni;
+		for (ni = p_mesh->node_list.begin(); ni != p_mesh->node_list.end(); ++ni)
+		{
+			testoutput << "v " << ni->coordinate(0) + ni->displacement(0) 
+				<< " " << ni->coordinate(1) + ni->displacement(1) 
+				<< " " << ni->coordinate(2) + ni->displacement(2) << endl;
+		}
+	}
+	if (flag_redo)
+	{
+		myEnergy << p_vox_mesh->new_energy << endl;
+	}
+	//ftl:
+	//p_rope->FTL(time_step_size);
+	++time_step_index;
+	return true;
+}
+
 bool Kernel::simulateNextStep4ShapeMatching()
 {
 	num_PE_perTimeStep = 0;
 	Vector3d force_gravity = Vector3d::Zero();
 	Vector3d force_wind = Vector3d::Zero();
+	if (flag_exportForce)
+	{
+		myForce << current_force(0) << endl;
+		myAnotherForce << current_force(1) << endl;
+		myForce3 << current_force(2) << endl;
+	}
 	//set gravity
 	if(flag_gravity)
 	{
@@ -2905,6 +3242,8 @@ bool Kernel::simulateNextStep4ShapeMatching()
 	{
 		myEnergy << p_vox_mesh->new_energy << endl;
 	}
+	//ftl:
+	//p_rope->FTL(time_step_size);
 	++time_step_index;
 	return true;
 }
@@ -8550,6 +8889,9 @@ bool Kernel::simulateNextStep()
 		return simulateNextStep4ShapeMatching();
 		break;
 
+	case NEEDLE_SM:
+		return simulateNextStep4NeedleShapeMatching();
+		break;
 	case VELOCITY_MATCHING:
 		return simulateNextStep4VelocityMatching();
 		break;

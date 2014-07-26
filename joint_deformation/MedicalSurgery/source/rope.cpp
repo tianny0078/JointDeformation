@@ -33,6 +33,9 @@ Rope::Rope(int num, double length, double radius)
 
 	bvh._height = num;
 	buildSphereTree();
+
+	num_path = 0;
+	flag_path_building = false;
 }
 
 void Rope::setNum(int num)
@@ -125,6 +128,24 @@ void Rope::render()
 			glPopMatrix();
 		}
 	}
+
+	if (! path_list.empty())
+	{
+		for (int i = 0; i < path_list.size(); i++)
+		{
+			int a = path_list[i].position_list.size()-1;
+			for (int j = 0; j < a; j++)
+			{
+				glLineWidth(3);
+				glBegin(GL_LINES);
+				glColor3ub(100, 100, 100);
+				glVertex3f(path_list[i].position_list[j].x(), path_list[i].position_list[j].y(), path_list[i].position_list[j].z());
+				glVertex3f(path_list[i].position_list[j+1].x(), path_list[i].position_list[j+1].y(), path_list[i].position_list[j+1].z());
+				glEnd();
+			}
+		}
+	}
+
 	glLineWidth(1);
 }
 
@@ -301,4 +322,17 @@ void Rope::buildSphereTree()
 	}
 
 	//cout << "test" << bvh.levelList[1]._spheres[0]._leftChild->_level << endl;
+}
+
+void Rope::addPath()
+{
+	path p;
+	path_list.push_back(p);
+	num_path ++;
+}
+
+void Rope::addPos2Path(Vector3d & pos, int idx)
+{
+	path_list[num_path-1].position_list.push_back(pos);
+	path_list[num_path-1].idx_before_list.push_back(idx);
 }

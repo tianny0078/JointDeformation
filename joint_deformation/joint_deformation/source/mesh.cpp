@@ -237,6 +237,7 @@ Cluster::Cluster()
 	flag_constrained = false;
 	flag_cube_constrained = false;
 	flag_cube_anchored = false;
+	flag_touched = false;
 
 	//penalty
 	inertial_penalty = 1.0;

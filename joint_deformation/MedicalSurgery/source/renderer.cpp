@@ -2544,6 +2544,12 @@ void Renderer::keyPressEvent(QKeyEvent *e)
 			cout << "stop exporting position!" << endl;
 		}
 		break;
+	case Qt::Key_P:
+		p_kernel->p_rope->addPath();
+		break;
+	case Qt::Key_Q:
+		p_kernel->p_rope->addPos2Path(p_kernel->p_rope->joint_list[0]._x,0);
+		break;
 	default:
 		theCamera.status = Camera::IDLING;
 		break;
@@ -4174,7 +4180,7 @@ void Renderer::renderClusterStaticPosition(const Cluster* c, float* cluster_colo
 	}
 			
 	glEnd();
-	
+	/*
 	glColor4f(cluster_color[0], cluster_color[1], cluster_color[2], 0.1);
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glBegin(GL_QUADS);
@@ -4211,7 +4217,7 @@ void Renderer::renderClusterStaticPosition(const Cluster* c, float* cluster_colo
 	}
 
 	glEnd();
-
+	*/
 
 	
 }

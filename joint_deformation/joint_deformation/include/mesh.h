@@ -465,6 +465,10 @@ struct Cluster
 
 	void buildVelocityMatrix();
 
+	void computeCurrentMassCentroid4Needle();
+	void computeRestMassCentroid4Needle();
+	void computeAQQ4Needle();
+
 	vector<DuplicatedNode> node_list;
 	vector<DuplicatedNode*> trigger_node_list;
 	vector<Vox*> vox_list;
@@ -516,6 +520,9 @@ struct Cluster
 	bool flag_constrained;
 	bool flag_cube_constrained;
 	bool flag_cube_anchored;
+
+	//needle
+	bool flag_touched;//if touched by needle tip
 
 	//penalty term
 	double inertial_penalty;
