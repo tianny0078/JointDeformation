@@ -225,7 +225,8 @@ void Renderer::paintGL()
 
 			if (flag_show_target)
 			{
-				float target_color[3] = {1.0, 0.0, 0.0};
+				float target_color[3] = {0.0, 0.0, 0.8};
+				//float target_color[3] = {1.0, 0.0, 0.0};
 
 				////current level(0-)
 				Level * plevel = p_kernel->level_list[p_kernel->level_display];
@@ -287,17 +288,29 @@ void Renderer::paintGL()
 			//renderLevelVertex(p_kernel->p_mesh, plevel, showVox4Vertex);
 			///////////////////////////////////////////////////////////////
 			//for rigid needle
+			if (p_kernel->p_needle->_isTouched)
+			{
+				if (! p_kernel->p_needle->_isPuntured)
+				{
+					sbegin[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0);
+					sbegin[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1);
+					sbegin[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2);
 
-			sbegin[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0);
-			sbegin[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1);
-			sbegin[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2);
-
-			send[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0) +  svec[0];
-			send[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1) +  svec[1];
-			send[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2) +  svec[2];
-			//render a segment line
-			p_kernel->p_needle->setNeedleBeginPos(sbegin[0], sbegin[1], sbegin[2]);
-			p_kernel->p_needle->setNeedleEndPos(send[0], send[1], send[2]);
+					//send[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0) +  svec[0];
+					//send[1] = p_kernel->paraNode[0]->coordinate(1) +  p_kernel->paraNode[0]->displacement(1) +  svec[1];
+					//send[2] = p_kernel->paraNode[0]->coordinate(2) +  p_kernel->paraNode[0]->displacement(2) +  svec[2];
+					//render a segment line
+					p_kernel->p_needle->setNeedleBeginPos(sbegin[0], sbegin[1], sbegin[2]);
+				}
+				else
+				{
+					p_kernel->p_needle->setNeedleBeginPos(p_kernel->p_needle->_nTrueBegin(0), p_kernel->p_needle->_nTrueBegin(1), p_kernel->p_needle->_nTrueBegin(2));
+				}
+			}
+			else
+			{
+				p_kernel->p_needle->setNeedleBeginPos(p_kernel->p_needle->_nTrueBegin(0), p_kernel->p_needle->_nTrueBegin(1), p_kernel->p_needle->_nTrueBegin(2));
+			}
 			p_kernel->p_needle->render();
 
 			//for flexible needle
@@ -1491,6 +1504,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 
 	if (current_mouse_button == Qt::RightButton)
 	{
+		setCursor(QCursor(Qt::BlankCursor));
 		if (flag_show_selection || flag_show_constraints || flag_show_mass || flag_show_cube_static_constraints || flag_show_cube_active_constraints)
 		{
 			bottom_right_x = -1.0;
@@ -1499,7 +1513,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 			upper_left_y = current_mouse_y;
 		}
 	}
-		
+	
 	last_mouse_x = current_mouse_x;
 	last_mouse_y = current_mouse_y;
 	last_mouse_xd = current_mouse_xd;
@@ -1775,10 +1789,35 @@ void Renderer::mouseDoubleClickEvent(QMouseEvent *e)
 						svec[0] = n0[0];
 						svec[1] = n0[1];
 						svec[2] = n0[2];
+						
+
+						if (p_kernel->p_needle->_pcluster != NULL)
+							p_kernel->p_needle->_pcluster->flag_touched = false;
+						p_kernel->p_needle->_isTouched = true;
+						p_kernel->p_needle->_nTrueBegin = Vector3d(n0[0], n0[1], n0[2]);
+						p_kernel->p_needle->_nLastTrueBegin = Vector3d(n0[0], n0[1], n0[2]);
 
 						p_kernel->p_needle->_pcluster = fi->node0->incident_cluster[0];
+						p_kernel->p_needle->_pcluster->flag_touched = true;
+						p_kernel->p_needle->_unitVector = Vector3d(n0[0], n0[1], n0[2]);
+						p_kernel->p_needle->_unitVector.normalize();
 						p_kernel->p_needle->_cp->coordinate = Vector3d(n0[0], n0[1], n0[2]);
 						p_kernel->p_needle->_cp->target_position = Vector3d(n0[0], n0[1], n0[2]);
+						p_kernel->p_needle->_cp->static_position = Vector3d(n0[0], n0[1], n0[2]);
+						p_kernel->p_needle->_gp->coordinate = 2 * p_kernel->p_needle->_pcluster->original_center - p_kernel->p_needle->_cp->coordinate;
+						p_kernel->p_needle->_gp->static_position = p_kernel->p_needle->_gp->coordinate;
+						p_kernel->p_needle->_gp->target_position = p_kernel->p_needle->_gp->coordinate;
+
+						p_kernel->level_list[0]->voxmesh_level->constraint_node_list.clear();
+						p_kernel->level_list[0]->voxmesh_level->constraint_node_list.push_back(p_kernel->p_needle->_cp);
+
+						p_kernel->p_needle->_cp->prescribed_position = p_kernel->p_needle->_cp->target_position;
+						p_kernel->p_needle->_cp->prescribed_preposition = p_kernel->p_needle->_cp->target_position;
+
+						p_kernel->level_list[0]->voxmesh_level->constraint_displacement.clear();
+						Vector3d displacement = Vector3d(0.0, 0.0, 0.0);
+						p_kernel->level_list[0]->voxmesh_level->constraint_displacement.push_back(displacement);
+						p_kernel->level_list[0]->voxmesh_level->constraint_center = p_kernel->p_needle->_cp->target_position;
 						//cout << m << endl;
 						//cout << n0 * p_kernel->para[0] + n1*p_kernel->para[1] + n2*p_kernel->para[2] << endl;
 					}
@@ -1968,7 +2007,6 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 				switch (p_kernel->used_simulator)
 				{
 				case Kernel::SHAPE_MATCHING:
-				case Kernel::NEEDLE_SM:
 				case Kernel::SINGLE_GRID:
 				case Kernel::HSM_ADAPTIVE_STEP:
 				case Kernel::HSM_FORCE4ITERATION:
@@ -2163,6 +2201,42 @@ void Renderer::mouseMoveEvent(QMouseEvent *e)
 						}
 					}
 					break;
+
+
+				case Kernel::NEEDLE_SM:
+					/*
+					if (!p_kernel->level_list[0]->voxmesh_level->constraint_node_list.empty())
+					{
+						int size_k = p_kernel->level_list[0]->voxmesh_level->constraint_node_list.size();
+
+						Vector3d disp_center_before = p_kernel->level_list[0]->voxmesh_level->constraint_center;
+
+						double wx, wy, wz;
+
+						gluProject(disp_center_before[0], disp_center_before[1], disp_center_before[2], 
+							currentmodelview, currentprojection, currentviewport, &wx, &wy, &wz);
+
+						wx = current_mouse_x;
+						wy = win_height - current_mouse_y;
+
+						Vector3d disp_center_after;
+						gluUnProject(wx, wy, wz, currentmodelview, currentprojection, currentviewport, 
+							&disp_center_after[0], &disp_center_after[1], &disp_center_after[2]);
+
+						p_kernel->constraint_first = disp_center_after;
+						p_kernel->level_list[0]->voxmesh_level->constraint_center = disp_center_after;
+						LCS_translation = disp_center_after - disp_center_before;
+
+						for(int k = 0; k < size_k; k ++)
+						{
+							Vector3d preposition = p_kernel->level_list[0]->voxmesh_level->constraint_node_list[k]->prescribed_position;
+							p_kernel->level_list[0]->voxmesh_level->constraint_node_list[k]->prescribed_position = LCS_rotation * p_kernel->level_list[j]->voxmesh_level->constraint_displacement[k] + disp_center_after;
+						}
+					}
+					*/
+					p_kernel->p_needle->_nLastTrueBegin = p_kernel->p_needle->_nTrueBegin;
+					p_kernel->p_needle->_nTrueBegin = delta_y * p_kernel->p_needle->_unitVector + p_kernel->p_needle->_nTrueBegin;
+					break;
 				case Kernel::VELOCITY_MATCHING:
 				case Kernel::MULTIPLE_VELOCITY_MATCHING:
 					//single point
@@ -2345,6 +2419,8 @@ void Renderer::mouseReleaseEvent(QMouseEvent *e)
 	delta_y = current_mouse_yd - last_mouse_yd;*/
 
 	current_mouse_button = e->button();
+
+	setCursor(QCursor(Qt::ArrowCursor));
 	
 	if (current_mouse_button == Qt::RightButton)
 	{
@@ -2987,7 +3063,8 @@ void Renderer::renderCircle(Vector3d c, Vector3d n, double r, double color_r, do
 void Renderer::renderMesh(const Mesh* m)
 {
 	//glColor3fv(render_mesh_color, 0.3);
-	glColor4f(render_mesh_color[0],render_mesh_color[1],render_mesh_color[2], 0.8);
+	//glColor4f(render_mesh_color[0],render_mesh_color[1],render_mesh_color[2], 0.8);
+	glColor4ub(120, 75, 79, 180);
 	vector<Face>::iterator fi = p_kernel->p_mesh->face_list.begin();
 	for (; fi!=p_kernel->p_mesh->face_list.end(); ++fi)
 	{
@@ -3005,9 +3082,9 @@ void Renderer::renderMesh(const Mesh* m)
 		fi->normal = n;
 		
 		//display a line mesh
-		glDisable(GL_CULL_FACE);
+		//glDisable(GL_CULL_FACE);
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
-		glPolygonMode(GL_FRONT, GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBegin(GL_TRIANGLES);
 		glNormal3d(n[0], n[1], n[2]);
 		glVertex3d(n0[0], n0[1], n0[2]);
@@ -4215,10 +4292,10 @@ void Renderer::renderClusterStaticPosition(const Cluster* c, float* cluster_colo
 		glVertex3d(p2[0], p2[1], p2[2]);
 		glVertex3d(p3[0], p3[1], p3[2]);
 	}
-
 	glEnd();
-
 	*/
+
+	
 	
 }
 

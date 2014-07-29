@@ -465,10 +465,6 @@ struct Cluster
 
 	void buildVelocityMatrix();
 
-	void computeCurrentMassCentroid4Needle();
-	void computeRestMassCentroid4Needle();
-	void computeAQQ4Needle();
-
 	vector<DuplicatedNode> node_list;
 	vector<DuplicatedNode*> trigger_node_list;
 	vector<Vox*> vox_list;

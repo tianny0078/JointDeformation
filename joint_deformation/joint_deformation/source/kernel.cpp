@@ -2230,9 +2230,36 @@ void Kernel::initializeSimulator()
 	case NEEDLE_SM:
 		for (ci=p_vox_mesh->cluster_list.begin(); ci!=p_vox_mesh->cluster_list.end(); ++ci)
 		{
+			//compute rest mass centroid
 			ci->computeRestMassCentroid();
+			/*
+			if (ci->flag_touched)
+			{
+				ci->original_center += p_needle->_cp->mass * p_needle->_cp->coordinate;
+				ci->original_center += p_needle->_gp->mass * p_needle->_gp->coordinate;
+			}
+			*/
+
 			ci->current_center = ci->original_center;
-			ci->computeAQQ();
+
+			//compute a_qq, to replace ci->computeAQQ();
+			Vector3d q;
+			Matrix3d a_qq_ = Matrix3d::Zero();
+
+			for(vector<DuplicatedNode>::const_iterator ni = ci->node_list.begin(); ni != ci->node_list.end(); ++ni)
+			{
+				q  = ni->coordinate - ci->original_center;
+				a_qq_ += ni->mass*q*q.transpose();
+			}
+			if (ci->flag_touched)
+			{
+				q  = p_needle->_cp->coordinate - ci->original_center;
+				a_qq_ += p_needle->_cp->mass*q*q.transpose();
+
+				q  = p_needle->_gp->coordinate - ci->original_center;
+				a_qq_ += p_needle->_cp->mass*q*q.transpose();
+			}
+			ci->a_qq = a_qq_.inverse();
 		}
 
 		// link duplicates
@@ -2683,6 +2710,61 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 			return true;
 		}
 	}
+
+	//check if true tip is inside or outside
+	if (paraNode[0] != NULL)
+	{
+		Vector3d surpos = paraNode[0]->coordinate +  paraNode[0]->displacement;
+		Vector3d dis = p_needle->_nTrueBegin - surpos;
+		double res = dis.transpose() * p_needle->_unitVector;
+		if (res >= 0.0)
+		{
+			p_needle->_isTouched = false;
+			cout << "not touched!" << endl;
+			p_needle->no_inside = -1;
+		}
+		else
+		{
+			p_needle->_isTouched = true;
+			p_needle->no_related = 0;
+			cout << "is touched!" << endl;
+		}
+
+
+		//set target position of needle
+		if (p_needle->_isTouched)
+		{
+				p_needle->_cp->coordinate = surpos;
+				p_needle->_cp->static_position = surpos;
+				p_needle->_cp->target_position = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * p_needle->no_related;;
+
+				p_needle->_gp->coordinate = 2 * p_needle->_pcluster->original_center - p_needle->_cp->coordinate;
+				p_needle->_gp->static_position = p_needle->_gp->coordinate;
+				p_needle->_gp->target_position = p_needle->_gp->coordinate;
+				Cluster * ci = p_needle->_pcluster;
+				ci->current_center = ci->original_center;
+
+				//compute a_qq, to replace ci->computeAQQ();
+				Vector3d q;
+				Matrix3d a_qq_ = Matrix3d::Zero();
+
+				for(vector<DuplicatedNode>::const_iterator ni = ci->node_list.begin(); ni != ci->node_list.end(); ++ni)
+				{
+					q  = ni->coordinate - ci->original_center;
+					a_qq_ += ni->mass*q*q.transpose();
+				}
+				if (ci->flag_touched)
+				{
+					q  = p_needle->_cp->coordinate - ci->original_center;
+					a_qq_ += p_needle->_cp->mass*q*q.transpose();
+
+					q  = p_needle->_gp->coordinate - ci->original_center;
+					a_qq_ += p_needle->_cp->mass*q*q.transpose();
+				}
+				ci->a_qq = a_qq_.inverse();
+		}
+	}
+
 	vector<Cluster>::iterator ci = p_vox_mesh->cluster_list.begin();
 	for (; ci!=p_vox_mesh->cluster_list.end(); ++ci)
 	{
@@ -2695,6 +2777,14 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 			ci->current_center += const_ni->target_position * const_ni->mass;
 			mass_sum += const_ni->mass;
 		}
+		if (ci->flag_touched)
+		{
+			ci->current_center += p_needle->_cp->target_position * p_needle->_cp->mass;
+			mass_sum += p_needle->_cp->mass;
+
+			ci->current_center += p_needle->_gp->target_position * p_needle->_gp->mass;
+			mass_sum += p_needle->_gp->mass;
+		}
 
 		ci->current_center /= mass_sum;
 
@@ -2706,6 +2796,16 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 			p = const_ni->target_position - ci->current_center;
 			q = const_ni->coordinate - ci->original_center;
 			ci->a_pq += const_ni->mass * p * q.transpose();
+		}
+		if (ci->flag_touched)
+		{
+			p = p_needle->_cp->target_position - ci->current_center;
+			q = p_needle->_cp->coordinate - ci->original_center;
+			ci->a_pq += p_needle->_cp->mass * p * q.transpose();
+
+			p = p_needle->_gp->target_position - ci->current_center;
+			q = p_needle->_gp->coordinate - ci->original_center;
+			ci->a_pq += p_needle->_gp->mass * p * q.transpose();
 		}
 
 		ci->a = ci->a_pq * ci->a_qq;
@@ -2743,6 +2843,48 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 				
 			}
 		}
+
+		if (ci->flag_touched)
+		{
+			p_needle->_cp->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(p_needle->_cp->coordinate - ci->original_center) + ci->current_center;
+			p_needle->_gp->static_position = (ci->beta*ci->a/det_a + (1.0-ci->beta)*ci->r)*(p_needle->_gp->coordinate - ci->original_center) + ci->current_center;
+
+			if(flag_dynamics)
+			{
+				//cp
+				Vector3d _force = p_needle->_cp->force + force_gravity + force_wind;
+
+				p_needle->_cp->velocity = (1.0-ci->kappa)*p_needle->_cp->velocity + ci->alpha*(p_needle->_cp->static_position - p_needle->_cp->coordinate - p_needle->_cp->displacement) / time_step_size
+				+ time_step_size * _force * force_scalar;
+
+				p_needle->_cp->displacement += time_step_size*p_needle->_cp->velocity;
+
+				p_needle->_cp->target_position = p_needle->_cp->coordinate + p_needle->_cp->displacement;
+
+				//gp
+				_force = p_needle->_gp->force + force_gravity + force_wind;
+
+				p_needle->_gp->velocity = (1.0-ci->kappa)*p_needle->_gp->velocity + ci->alpha*(p_needle->_gp->static_position - p_needle->_gp->coordinate - p_needle->_gp->displacement) / time_step_size
+					+ time_step_size * _force * force_scalar;
+
+				p_needle->_gp->displacement += time_step_size*p_needle->_gp->velocity;
+
+				p_needle->_gp->target_position = p_needle->_gp->coordinate + p_needle->_gp->displacement;
+			}
+			else
+			{
+				//cp
+				Vector3d _force = p_needle->_cp->force + force_gravity + force_wind;
+				p_needle->_cp->target_position = p_needle->_cp->static_position + time_step_size * time_step_size * _force * force_scalar;
+				p_needle->_cp->displacement = p_needle->_cp->target_position - p_needle->_cp->coordinate;
+
+				//gp
+				_force = p_needle->_gp->force + force_gravity + force_wind;
+				p_needle->_gp->target_position = p_needle->_gp->static_position + time_step_size * time_step_size * _force * force_scalar;
+				p_needle->_gp->displacement = p_needle->_gp->target_position - p_needle->_gp->coordinate;
+			}
+
+		}
 	}
 
 	//for rendering
@@ -2774,16 +2916,17 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 
 
 	///////////////////////////////////////////////////for experiment
-	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
-	{
-		nmi->displacement.setZero();
-		for(int i = 0; i < 8; i++)
-		{
-			//nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
-			nmi->displacement += (nmi->list_interpolation_nodes[i][level_display]->target_position - nmi->list_interpolation_nodes[i][level_display]->coordinate) * nmi->para_interpolate[i][level_display];
-		}
-	}
-	p_vox_mesh->new_energy = 0.0;
+	//for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	//{
+	//	nmi->displacement.setZero();
+	//	for(int i = 0; i < 8; i++)
+	//	{
+	//		//nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+	//		nmi->displacement += (nmi->list_interpolation_nodes[i][level_display]->target_position - nmi->list_interpolation_nodes[i][level_display]->coordinate) * nmi->para_interpolate[i][level_display];
+	//	}
+	//}
+	//p_vox_mesh->new_energy = 0.0;
+	/////////////////////////////////////////////////////////////////////
 	for (node_iterator ni=p_vox_mesh->node_list.begin(); ni!=p_vox_mesh->node_list.end(); ++ni)
 	{
 		if(constraintType != Kernel::FORCE_CONSTRAINT  && ni->flag_constraint_node)
@@ -2824,14 +2967,109 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 	////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////for rendering
-	//for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
-	//{
-	//	nmi->displacement.setZero();
-	//	for(int i = 0; i < 8; i++)
-	//	{
-	//		nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
-	//	}
-	//}
+	for (node_iterator nmi=p_mesh->node_list.begin(); nmi!=p_mesh->node_list.end(); ++nmi)
+	{
+		nmi->displacement.setZero();
+		for(int i = 0; i < 8; i++)
+		{
+			nmi->displacement += nmi->list_interpolation_nodes[i][0]->displacement * nmi->para_interpolate[i][0];
+		}
+	}
+	
+	if (paraNode[0] != NULL)
+	{
+		Vector3d surpos = paraNode[0]->coordinate +  paraNode[0]->displacement;
+		Vector3d dis = p_needle->_nTrueBegin - surpos;
+		//if distance is bigger than unit direction
+		if(p_needle->_isTouched)
+		{
+			if (!p_needle->_isPuntured)
+			{
+				if (dis.norm() > ((0.1 * p_needle->_unitVector).norm()))
+				{
+					cout << "punctured!" << endl;
+					p_needle->_isPuntured = true;
+
+					//set new prescribed position as the nearest position
+					for (int i = 1; i < 30; i++)
+					{
+						Vector3d temp = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * i;
+						double res = (temp - surpos).transpose() * p_needle->_unitVector;
+						if (res < 0.0)
+						{
+							p_needle->no_inside = i;
+							p_needle->no_related = i;
+						}
+					}
+				}
+			}
+			else
+			{
+				//check if this is insertion or retraction
+				Vector3d temp = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * p_needle->no_related;
+				Vector3d dis2 = surpos - temp;
+				if (dis2.norm() > ((0.1 * p_needle->_unitVector).norm()))
+				{
+					double direction = p_needle->_unitVector.transpose() * (p_needle->_nTrueBegin - p_needle->_nLastTrueBegin);
+					if (direction <= 0.0)
+					{
+						//insertion
+						//find point inside and related
+						for (int i = 0; i < 30; i++)
+						{
+							Vector3d temp = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * i;
+							double res = (temp - surpos).transpose() * p_needle->_unitVector;
+							if (res <= 0.0)
+							{
+								p_needle->no_inside = i;
+								p_needle->no_related = i;
+							}
+							else
+								break;
+						}
+					}
+					else{
+						//retraction
+						//find point inside and related
+						for (int i = 0; i < 30; i++)
+						{
+							Vector3d temp = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * i;
+							double res = (temp - surpos).transpose() * p_needle->_unitVector;
+							if (res <= 0.0)
+							{
+								p_needle->no_inside = i;
+							}
+							else
+							{
+								p_needle->no_related = i;
+								break;
+							}
+						}
+						
+					}
+				}
+				else
+				{
+					//only find point inside
+					for (int i = 0; i < 30; i++)
+					{
+						Vector3d temp = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * i;
+						double res = (temp - surpos).transpose() * p_needle->_unitVector;
+						if (res < 0.0)
+						{
+							p_needle->no_inside = i;
+						}
+						else
+							break;
+					}
+				}
+			}
+		}
+	}
+	
+	
+	//set target position to be prescribed position
+	//p_needle->_cp->target_position = p_needle->_cp->prescribed_position;
 	////////////////////////////////////////////////////////////////////////////////
 
 	//networking

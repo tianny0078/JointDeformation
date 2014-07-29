@@ -1620,7 +1620,7 @@
     </item>
     <item>
      <property name="text">
-      <string>Needle_SM</string>
+      <string>Needle_Simulator</string>
      </property>
     </item>
    </widget>

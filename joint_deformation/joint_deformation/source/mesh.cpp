@@ -253,7 +253,6 @@ Cluster::Cluster()
 	super_parent_cluster = NULL;
 	term_normlize = 1.0;
 
-
 	flag_isRendering = false;
 
 }
@@ -470,6 +469,7 @@ void Cluster::computeRestMassCentroid()
 	}
 	original_center /= mass_sum;
 }
+
 
 void Cluster::computeCurrentMassCentroid()
 {
