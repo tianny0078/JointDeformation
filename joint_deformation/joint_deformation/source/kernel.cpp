@@ -2736,7 +2736,8 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 		{
 				p_needle->_cp->coordinate = surpos;
 				p_needle->_cp->static_position = surpos;
-				p_needle->_cp->target_position = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * p_needle->no_related;;
+				p_needle->_cp->target_position = p_needle->_nTrueBegin + 0.05 * p_needle->_unitVector * p_needle->no_related;
+				//p_needle->_cp->target_position = surpos + 0.2 * p_needle->_unitVector;
 
 				p_needle->_gp->coordinate = 2 * p_needle->_pcluster->original_center - p_needle->_cp->coordinate;
 				p_needle->_gp->static_position = p_needle->_gp->coordinate;
@@ -3030,6 +3031,7 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 					}
 					else{
 						//retraction
+						
 						//find point inside and related
 						for (int i = 0; i < 30; i++)
 						{
@@ -3045,6 +3047,7 @@ bool Kernel::simulateNextStep4NeedleShapeMatching()
 								break;
 							}
 						}
+						
 						
 					}
 				}
@@ -5888,7 +5891,7 @@ bool Kernel::simulateNextStep4FLSMOriginal()
 	p_body->ShapeMatch();
 	p_body->CalculateParticleVelocities(time_step_size, p_body->kParticleDamping);
 	p_body->SetNodeVelocity();
-	p_body->PerformRegionDamping();
+	//p_body->PerformRegionDamping();
 	p_body->ApplyParticleVelocities(time_step_size);
 	p_body->SetNodePosition();
 	//constraint node

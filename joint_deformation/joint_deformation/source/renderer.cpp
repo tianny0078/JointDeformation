@@ -203,7 +203,22 @@ void Renderer::paintGL()
 			tool->render();
 		}
 
-
+		if (flag_show_mesh && p_kernel->flag_mesh_ready)
+		{
+			renderMesh(p_kernel->p_mesh);
+			/*
+			glColor3f(0.0, 1.0, 0.0);
+			glPushMatrix();
+			glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
+			glutSolidSphere(0.03, 16, 16);
+			glPopMatrix();
+			glColor3f(1.0, 0.0, 0.0);
+			glPushMatrix();
+			glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
+			glutSolidSphere(0.03, 16, 16);
+			glPopMatrix();
+			*/
+		}
 
 		if (flag_show_grid)
 		{
@@ -244,7 +259,7 @@ void Renderer::paintGL()
 		}
 		if (flag_simulating)
 		{
-			//renderForce();
+			renderForce();
 		}
 
 
@@ -312,7 +327,7 @@ void Renderer::paintGL()
 				p_kernel->p_needle->setNeedleBeginPos(p_kernel->p_needle->_nTrueBegin(0), p_kernel->p_needle->_nTrueBegin(1), p_kernel->p_needle->_nTrueBegin(2));
 			}
 			p_kernel->p_needle->render();
-
+			
 			//for flexible needle
 			/*
 			sbegin[0] = p_kernel->paraNode[0]->coordinate(0) +  p_kernel->paraNode[0]->displacement(0) - 0.5 * svec[0];
@@ -332,7 +347,7 @@ void Renderer::paintGL()
 			glTranslatef(send[0], send[1], send[2]);
 			glutSolidCube(0.05);
 			glPopMatrix();
-			*/
+			*/	
 		}
 		break;
 
@@ -364,22 +379,8 @@ void Renderer::paintGL()
 		p_kernel->p_rope->render();
 	}
 	*/
-	if (flag_show_mesh && p_kernel->flag_mesh_ready)
-	{
-		renderMesh(p_kernel->p_mesh);
-		/*
-		glColor3f(0.0, 1.0, 0.0);
-		glPushMatrix();
-		glTranslatef(p_kernel->surface_point_left[0],p_kernel->surface_point_left[1],p_kernel->surface_point_left[2]);
-		glutSolidSphere(0.03, 16, 16);
-		glPopMatrix();
-		glColor3f(1.0, 0.0, 0.0);
-		glPushMatrix();
-		glTranslatef(p_kernel->surface_point_right[0],p_kernel->surface_point_right[1],p_kernel->surface_point_right[2]);
-		glutSolidSphere(0.03, 16, 16);
-		glPopMatrix();
-		*/
-	}
+
+
 			
 	renderInvertedCluster();
 	// aux rendering
